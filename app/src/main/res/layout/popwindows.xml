@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content" android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/fond6"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center">
+
+            <TextView
+                android:text="Descriptif"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView29"
+                android:gravity="center"
+                android:textStyle="normal|bold"
+                android:textSize="18sp" />
+
+            <TextView
+                android:text="⇨ En cliquant sur l'entête de colonne &quot;Date&quot;, les temps collectifs seront classés par ordre décroissant dans le temps"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:id="@+id/textView26"
+                android:padding="5dp"
+                android:layout_below="@+id/textView27"
+                android:layout_centerHorizontal="true"
+                android:layout_width="400dp"
+                android:textSize="15sp" />
+
+            <TextView
+                android:text="⇨ En cliquant sur l'entête de colonne &quot;Nom&quot;, les temps collectifs seront classés par ordre alphabétique"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:id="@+id/textView18"
+                android:padding="5dp"
+                android:layout_below="@+id/textView27"
+                android:layout_centerHorizontal="true"
+                android:layout_width="400dp"
+                android:textSize="15sp" />
+
+            <TextView
+                android:text="⇨ En cliquant sur la ligne d'un temps collectif, un descriptif de ce temps collectif sera affiché"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:id="@+id/textView30"
+                android:padding="5dp"
+                android:layout_below="@+id/textView27"
+                android:layout_centerHorizontal="true"
+                android:layout_width="400dp"
+                android:textSize="15sp" />
+
+            <TextView
+                android:text="⇨ En restant appuyé sur la ligne d'un temps collectif, vous pouvez modifier un temps collectif"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:id="@+id/textView28"
+                android:padding="5dp"
+                android:layout_below="@+id/textView27"
+                android:layout_centerHorizontal="true"
+                android:layout_width="400dp"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

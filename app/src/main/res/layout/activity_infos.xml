@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_informations"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.g_concept.tempscollectifs.Infos"
+    android:background="#636262">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:background="@drawable/couv2"
+                android:layout_height="150dp"
+                android:elevation="1dp">
+
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:gravity="center_vertical">
+
+                    <LinearLayout
+                            android:orientation="horizontal"
+                            android:layout_height="match_parent"
+                        android:layout_marginTop="20dp"
+                            android:layout_marginLeft="20dp"
+                        android:id="@+id/llContentLieu"
+                        android:layout_width="250dp">
+
+                            <RelativeLayout
+                                android:layout_height="match_parent"
+                                android:layout_marginRight="3dp"
+                                android:background="@drawable/bac"
+                                android:orientation="horizontal"
+                                android:layout_width="match_parent">
+
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    app:srcCompat="@drawable/geo"
+                                    android:id="@+id/imageView2"
+                                    android:padding="15dp" />
+
+                                <Spinner
+                                    android:id="@+id/spLieux"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:background="@android:color/transparent"
+                                    android:gravity="center"
+                                    android:layout_marginLeft="50dp"
+                                    android:spinnerMode="dropdown"
+                                    android:layout_alignBottom="@+id/imageView2" />
+
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/trois"
+                                    android:padding="15dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_alignParentTop="true"
+                                    android:layout_alignBottom="@+id/spLieux" />
+
+                            </RelativeLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginLeft="5dp"
+                        android:id="@+id/llContentRAM"
+                        android:layout_width="250dp">
+
+                        <RelativeLayout
+                            android:layout_height="match_parent"
+                            android:layout_marginRight="3dp"
+                            android:background="@drawable/bac"
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:srcCompat="@drawable/geo"
+                                android:id="@+id/imageView3"
+                                android:layout_weight="1"
+                                android:padding="15dp" />
+
+                            <Spinner
+                                android:id="@+id/spRAM"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:background="@android:color/transparent"
+                                android:gravity="center"
+                                android:layout_marginLeft="50dp"
+                                android:spinnerMode="dropdown"
+                                android:layout_alignBottom="@+id/imageView3" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentRight="true"
+                                android:layout_centerVertical="true"
+                                android:layout_gravity="center"
+                                android:src="@drawable/trois"
+                                android:padding="15dp" />
+
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp">
+
+                        <TextView
+                            android:text="Affinez votre recherche"
+                            android:layout_width="wrap_content"
+                            android:layout_height="20dp"
+                            android:id="@+id/textView31"
+                            android:textStyle="normal|bold"
+                            android:textSize="16sp"
+                            android:layout_marginTop="5dp"
+                            android:textColor="@android:color/background_dark" />
+
+                        <RadioGroup
+                            android:id="@+id/radioSex"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent">
+
+                            <RadioButton
+                                android:id="@+id/rbLieu"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:checked="true"
+                                android:text="Filtrer par lieu" />
+
+                            <RadioButton
+                                android:id="@+id/rbRAM"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Filtrer par RAM" />
+
+                        </RadioGroup>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/llDeconnexion"
+                        android:gravity="right|center_vertical"
+                        android:layout_marginLeft="30dp">
+
+                        <Button
+                            android:id="@+id/btnInfo"
+                            android:background="@drawable/info"
+                            android:layout_marginLeft="5dp"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp" />
+
+                        <Button
+                            android:id="@+id/fabButton"
+                            android:clickable="true"
+                            android:background="@drawable/deconnexion"
+                            android:minHeight="0dp"
+                            android:minWidth="0dp"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginRight="16dp"
+                            android:layout_alignParentTop="true"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical" >
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/custom_title_tab">
+
+                        <TextView
+                            android:text="Date"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/tvDate"
+                            android:layout_weight="1"
+                            android:textStyle="normal|bold"
+                            android:padding="15dp"
+                            android:textSize="14sp"
+                            android:textColor="@android:color/background_light"
+                            android:layout_width="89dp" />
+
+                        <TextView
+                            android:text="Réservation"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/tvReservation"
+                            android:layout_weight="1"
+                            android:textStyle="normal|bold"
+                            android:padding="15dp"
+                            android:textSize="14sp"
+                            android:textColor="@android:color/background_light" />
+
+                        <TextView
+                            android:text="Nom"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/tvNom"
+                            android:layout_weight="1"
+                            android:textStyle="normal|bold"
+                            android:padding="15dp"
+                            android:layout_width="110dp"
+                            android:textSize="14sp"
+                            android:textColor="@android:color/background_light" />
+
+                        <TextView
+                            android:text="Horaire"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/tvHoraire"
+                            android:layout_weight="1"
+                            android:textStyle="normal|bold"
+                            android:padding="15dp"
+                            android:layout_width="160dp"
+                            android:textSize="14sp"
+                            android:textColor="@android:color/background_light" />
+
+                        <TextView
+                            android:text="Catégorie"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/tvCategorie"
+                            android:layout_weight="1"
+                            android:textStyle="normal|bold"
+                            android:padding="15dp"
+                            android:textSize="14sp"
+                            android:textColor="@android:color/background_light"
+                            android:layout_width="180dp" />
+
+                        <TextView
+                            android:text="Places restantes"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/tvPlaces"
+                            android:layout_weight="1"
+                            android:textStyle="normal|bold"
+                            android:padding="15dp"
+                            android:textSize="14sp"
+                            android:textColor="@android:color/background_light" />
+                    </LinearLayout>
+
+                    <TableLayout
+                        android:id="@+id/TLtempsColl"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:shrinkColumns="*"
+                        android:stretchColumns="*"
+                        android:background="#636262"
+                        android:layout_marginTop="10dp">
+
+                        <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="#636262"
+                            android:padding="5dp"
+                            android:layout_marginTop="30dp"
+                            android:id="@+id/tableRow">
+
+                            <TextView
+                                android:background="@drawable/cell_shape"
+                                android:layout_column="0"
+                                android:layout_weight="1"
+                                android:textStyle="bold"
+                                android:textAlignment="center"
+                                android:textSize="16dp"
+                                android:padding="10dp"
+                                android:layout_height="wrap_content"
+                                android:layout_width="40dp" />
+
+                            <TextView
+                                android:background="@drawable/cell_shape"
+                                android:layout_column="1"
+                                android:layout_weight="1"
+                                android:textStyle="bold"
+                                android:textAlignment="center"
+                                android:textSize="16dp"
+                                android:padding="10dp"
+                                android:layout_height="wrap_content"
+                                android:layout_width="95dp" />
+
+                            <TextView
+                                android:background="@drawable/cell_shape"
+                                android:layout_column="1"
+                                android:layout_weight="1"
+                                android:textStyle="bold"
+                                android:textAlignment="center"
+                                android:textSize="16dp"
+                                android:padding="10dp"
+                                android:layout_height="wrap_content"
+                                android:layout_width="130dp" />
+                            <TextView
+                                android:background="@drawable/cell_shape"
+                                android:layout_column="1"
+                                android:layout_weight="1"
+                                android:textStyle="bold"
+                                android:textAlignment="center"
+                                android:textSize="16dp"
+                                android:padding="10dp"
+                                android:layout_height="wrap_content"
+                                android:layout_width="130dp" />
+
+                            <TextView
+                                android:background="@drawable/cell_shape"
+                                android:layout_column="1"
+                                android:layout_weight="1"
+                                android:textStyle="bold"
+                                android:textAlignment="center"
+                                android:textSize="16dp"
+                                android:padding="10dp"
+                                android:layout_height="wrap_content" />
+                        </TableRow>
+                    </TableLayout>
+                </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/tvIsEmpty"
+        android:textStyle="normal|bold"
+        android:textSize="16sp" />
+</RelativeLayout>

@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_informations"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.g_concept.tempscollectifs.Infos"
+    android:background="#636262">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:background="@drawable/couv2"
+                android:layout_height="150dp"
+                android:elevation="1dp">
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:gravity="center_vertical">
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginLeft="20dp"
+                        android:id="@+id/llContentLieu"
+                        android:layout_width="250dp">
+
+                        <RelativeLayout
+                            android:layout_height="match_parent"
+                            android:layout_marginRight="3dp"
+                            android:background="@drawable/bac"
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:srcCompat="@drawable/geo"
+                                android:id="@+id/imageView2"
+                                android:layout_weight="1"
+                                android:padding="15dp" />
+
+                            <Spinner
+                                android:id="@+id/spLieux"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:background="@android:color/transparent"
+                                android:gravity="center"
+                                android:layout_marginLeft="50dp"
+                                android:spinnerMode="dropdown"
+                                android:layout_alignBottom="@+id/imageView2" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentRight="true"
+                                android:layout_centerVertical="true"
+                                android:layout_gravity="center"
+                                android:src="@drawable/trois"
+                                android:padding="15dp" />
+
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginLeft="5dp"
+                        android:id="@+id/llContentRAM"
+                        android:layout_width="250dp">
+
+                        <RelativeLayout
+                            android:layout_height="match_parent"
+                            android:layout_marginRight="3dp"
+                            android:background="@drawable/bac"
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:srcCompat="@drawable/geo"
+                                android:id="@+id/imageView3"
+                                android:layout_weight="1"
+                                android:padding="15dp" />
+
+                            <Spinner
+                                android:id="@+id/spRAM"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:background="@android:color/transparent"
+                                android:gravity="center"
+                                android:layout_marginLeft="50dp"
+                                android:spinnerMode="dropdown"
+                                android:layout_alignBottom="@+id/imageView3" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentRight="true"
+                                android:layout_centerVertical="true"
+                                android:layout_gravity="center"
+                                android:src="@drawable/trois"
+                                android:padding="15dp" />
+
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp">
+
+                        <TextView
+                            android:text="Affinez votre recherche"
+                            android:layout_width="wrap_content"
+                            android:layout_height="20dp"
+                            android:id="@+id/textView31"
+                            android:textStyle="normal|bold"
+                            android:textSize="16sp"
+                            android:layout_marginTop="5dp"
+                            android:textColor="@android:color/background_dark" />
+
+                        <RadioGroup
+                            android:id="@+id/radioSex"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent">
+
+                            <RadioButton
+                                android:id="@+id/rbLieu"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:checked="true"
+                                android:text="Filtrer par lieu" />
+
+                            <RadioButton
+                                android:id="@+id/rbRAM"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Filtrer par RAM" />
+
+                        </RadioGroup>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/llDeconnexion"
+                        android:gravity="right|center_vertical"
+                        android:layout_marginLeft="30dp">
+
+                        <Button
+                            android:id="@+id/fabButton"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginRight="16dp"
+                            android:background="@drawable/home"
+                            android:clickable="true"
+                            android:minHeight="0dp"
+                            android:minWidth="0dp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="108dp"
+                    android:gravity="right|center_vertical"
+                    android:layout_marginRight="5dp">
+
+                    <Button
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:id="@+id/btnDeconnexion"
+                        android:background="@drawable/deconnexion" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical" >
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/custom_title_tab">
+
+                        <TextView
+                            android:text="Date"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/textView12"
+                            android:layout_weight="1"
+                            android:textStyle="normal|bold"
+                            android:padding="20dp"
+                            android:layout_width="110dp"
+                            android:textSize="15sp"
+                            android:textColor="@android:color/background_light" />
+
+                        <TextView
+                            android:text="Nom"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/textView13"
+                            android:layout_weight="1"
+                            android:textStyle="normal|bold"
+                            android:padding="20dp"
+                            android:layout_width="110dp"
+                            android:textSize="15sp"
+                            android:textColor="@android:color/background_light" />
+
+                        <TextView
+                            android:text="Horaire"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/textView14"
+                            android:layout_weight="1"
+                            android:textStyle="normal|bold"
+                            android:padding="20dp"
+                            android:layout_width="160dp"
+                            android:textSize="15sp"
+                            android:textColor="@android:color/background_light" />
+
+                        <TextView
+                            android:text="Catégorie"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/textView15"
+                            android:layout_weight="1"
+                            android:textStyle="normal|bold"
+                            android:padding="20dp"
+                            android:layout_width="160dp"
+                            android:textSize="15sp"
+                            android:textColor="@android:color/background_light" />
+
+                        <TextView
+                            android:id="@+id/textView16"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:padding="20dp"
+                            android:text="Participants"
+                            android:textColor="@android:color/background_light"
+                            android:textSize="15sp"
+                            android:textStyle="normal|bold" />
+
+                    </LinearLayout>
+
+                    <TableLayout
+                        android:id="@+id/TLtempsColl"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:shrinkColumns="*"
+                        android:stretchColumns="*"
+                        android:background="#636262"
+                        android:layout_marginTop="10dp">
+
+                        <TableRow
+                            android:layout_width="wrap_content"
+                            android:background="#636262"
+                            android:layout_height="100dp">
+
+                            <TextView
+                                android:background="@drawable/cell_shape"
+                                android:layout_column="0"
+                                android:layout_weight="1"
+                                android:textStyle="bold"
+                                android:textAlignment="center"
+                                android:textSize="16dp"
+                                android:padding="5dp"
+                                android:layout_width="40dp"
+                                android:layout_height="70dp" />
+
+                            <TextView
+                                android:background="@drawable/cell_shape"
+                                android:layout_column="1"
+                                android:layout_weight="1"
+                                android:textStyle="bold"
+                                android:textAlignment="center"
+                                android:textSize="16dp"
+                                android:padding="5dp"
+                                android:layout_width="95dp"
+                                android:layout_height="70dp" />
+
+                            <TextView
+                                android:background="@drawable/cell_shape"
+                                android:layout_column="1"
+                                android:layout_weight="1"
+                                android:textStyle="bold"
+                                android:textAlignment="center"
+                                android:textSize="16dp"
+                                android:padding="5dp"
+                                android:layout_width="130dp"
+                                android:layout_height="70dp" />
+                            <TextView
+                                android:background="@drawable/cell_shape"
+                                android:layout_column="1"
+                                android:layout_weight="1"
+                                android:textStyle="bold"
+                                android:textAlignment="center"
+                                android:textSize="16dp"
+                                android:padding="5dp"
+                                android:layout_width="130dp"
+                                android:layout_height="70dp" />
+
+                            <TextView
+                                android:background="@drawable/cell_shape"
+                                android:layout_column="1"
+                                android:layout_weight="1"
+                                android:textStyle="bold"
+                                android:textAlignment="center"
+                                android:textSize="16dp"
+                                android:padding="5dp"
+                                android:layout_height="70dp" />
+                        </TableRow>
+                    </TableLayout>
+                </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="50dp"
+                android:background="@drawable/fenetretempscoll"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Vous n'avez sélectionné aucun temps collectif"
+                    android:textSize="16sp"
+                    android:textStyle="normal|bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvENF"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textStyle="normal|bold" />
+
+                    <TextView
+                        android:id="@+id/tvEnfPresents"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvAM"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textStyle="normal|bold" />
+
+                    <TextView
+                        android:id="@+id/tvAmPresentes"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvPART"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textStyle="normal|bold" />
+
+                    <TextView
+                        android:id="@+id/tvPartPresents"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvParent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textStyle="normal|bold" />
+
+                    <TextView
+                        android:id="@+id/tvParentsPresents"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btnModifTC"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#10bed3"
+                    android:text="Modifier temps collectif"
+                    android:textColor="#FFFFFF" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>
