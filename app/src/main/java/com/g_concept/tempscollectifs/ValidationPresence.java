@@ -42,11 +42,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-
-
 public class ValidationPresence extends AppCompatActivity implements View.OnClickListener {
-
-    View myView;
     int action, nb;
     Spinner spListeTempsColl;
     ConnectivityManager cm;
@@ -56,6 +52,7 @@ public class ValidationPresence extends AppCompatActivity implements View.OnClic
     JSONObject json;
     ImageView imgPers;
     EditText etAM, etEnf0a3, etEnf3a6, etEnfplus6, etParents, etAutre, etGardeDomicile;
+    TextView tvNbPersonnesCochees;
     Button btnValidationPersonne, btnValidationSaisieQuantitative, btnCocher;
     MyCustomAdapterPersonne dataAdapter4 = null;
     Map<String, String> params = new HashMap<String, String>(), params6 = new HashMap<String, String>();
@@ -96,6 +93,8 @@ public class ValidationPresence extends AppCompatActivity implements View.OnClic
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_validation_presence);
+
+        // Initialisation des variables
         spListeTempsColl = (Spinner) findViewById(R.id.spListeTempsColl);
         fabbuton = (Button) findViewById(R.id.fabButton);
         btnValidationSaisieQuantitative = (Button) findViewById(R.id.btnValidationSaisieQuantitative);
@@ -110,7 +109,9 @@ public class ValidationPresence extends AppCompatActivity implements View.OnClic
         lvPers = (ListView) findViewById(R.id.lvPers);
         requestQueue = Volley.newRequestQueue(getApplicationContext());
         imgPers = (ImageView) findViewById(R.id.imgPers);
-        btnCocher = (Button)findViewById(R.id.btnCocher);
+        btnCocher = (Button) findViewById(R.id.btnCocher);
+
+        tvNbPersonnesCochees = (TextView)findViewById(R.id.tvNbPersonnesCochees);
 
         etAM.setText("0");
         etEnf0a3.setText("0");
@@ -172,14 +173,12 @@ public class ValidationPresence extends AppCompatActivity implements View.OnClic
                 tabs.getTabHost().setCurrentTab(0);
             }
         });
-
     }
 
-        @Override
-        public void onClick(final View v) {
+    @Override
+    public void onClick(final View v) {
 
-        }
-
+    }
 
     /*****
      * Chargement des temps collectifs
@@ -219,7 +218,6 @@ public class ValidationPresence extends AppCompatActivity implements View.OnClic
 
                             System.out.println(" TEST DU HASHMAP " + myHash.get(position - 1));
                             System.out.println(" Mon temp " + temp);
-
 
                             if (temp == initTC) {
                                 listePers.clear();
@@ -649,6 +647,8 @@ public class ValidationPresence extends AppCompatActivity implements View.OnClic
                             }
                         }
                         System.out.println("Nombre d'éléments sélectionnés : " + nb);
+
+                        tvNbPersonnesCochees.setText("Nombre de personne(s) sélectionnée(s) : "+ nb);
                     }
 
                 });
@@ -657,7 +657,7 @@ public class ValidationPresence extends AppCompatActivity implements View.OnClic
                 holder = (ValidationPresence.MyCustomAdapterPersonne.ViewHolder) convertView.getTag();
             }
 
-            PersonneBis pers = personnesListe.get(position);
+            final PersonneBis pers = personnesListe.get(position);
             if (pers.getTypePersonne().equals("1")) {
                 holder.name.setText(pers.getNom() + " " + pers.getPrenom());
                 holder.img.setImageResource(R.drawable.enf);

@@ -158,11 +158,19 @@
                     android:layout_height="wrap_content"
                     android:text="Tout cocher" />
 
+                <TextView
+                    android:id="@+id/tvNbPersonnesCochees"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Nombre de personne(s) sélectionnée(s) : "
+                    android:textStyle="bold" />
+
                 <ListView
                     android:id="@+id/lvPers"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_margin="20dp" />
+
             </LinearLayout>
 
             <LinearLayout

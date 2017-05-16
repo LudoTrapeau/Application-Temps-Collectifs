@@ -671,11 +671,11 @@ public class Historique extends AppCompatActivity {
                         tvParentsPresents.setText("");
                     } else {
                         // On affiche les sous titres et le titre
-                        tvENF.setText("Enfants (" + nbEnf+")");
-                        tvAM.setText("Assistantes maternelles (" + nbAM+")");
-                        tvPART.setText("Partenaires (" + nbPart+")");
+                        tvENF.setText("Enfants (" + nbEnf + ")");
+                        tvAM.setText("Assistantes maternelles (" + nbAM + ")");
+                        tvPART.setText("Partenaires (" + nbPart + ")");
                         tvTitle.setText("Voici les personnes ayant participé au temps collectif : " + nomTC);
-                        tvParents.setText("Parents (" + nbParents+")");
+                        tvParents.setText("Parents (" + nbParents + ")");
 
                         if (listeEnfPresents.size() == 0) {
                             tvEnfPresents.setText("Pas d'enfant");

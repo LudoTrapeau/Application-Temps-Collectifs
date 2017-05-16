@@ -37,6 +37,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,7 +64,7 @@ public class Preinscription extends AppCompatActivity {
     MyCustomAdapterAsmats dataAdapter2 = null;
     MyCustomAdapterPartenaires dataAdapter3 = null;
     MyCustomAdapterForParents dataAdapter4 = null;
-    TextView tvDate, tvLieu, tvCategorie, tvNbPlaces, tvNbPlacesTotal, tvEnfByAm, tvEnfByParent;
+    TextView tvDate, tvLieu, tvCategorie, tvNbPlaces, tvNbPlacesTotal, tvEnfByAm, tvEnfByParent, tnNbAM, tvNbParents, tvNbEnf, tvNbPart;
     JSONObject json, enfant;
     JSONArray adherents, enfants;
     Button btnDeconnexion;
@@ -147,6 +148,8 @@ public class Preinscription extends AppCompatActivity {
         inputSearchParents = (EditText) findViewById(R.id.inputSearchParents);
         inputSearchEnfants = (EditText) findViewById(R.id.inputSearchEnfants);
         inputSearchPartenaires = (EditText) findViewById(R.id.inputSearchPartenaires);
+
+        tnNbAM = (TextView) findViewById(R.id.tvNbPers);
 
         /************** Init ************/
         myFunction();
@@ -1725,6 +1728,8 @@ public class Preinscription extends AppCompatActivity {
                                     nb = nb + 1;
                                     newNumber = nbPlacesDispo - nb;
                                     tvNbPlaces.setText(String.valueOf(newNumber));
+
+                                    tnNbAM.setText("Nb am selectionnée(s) : " + nb);
                                 }
 
                             } else {
@@ -1739,6 +1744,8 @@ public class Preinscription extends AppCompatActivity {
                             nb = nb + 1;
                             newNumber = nbPlacesDispo + nb;
                             tvNbPlaces.setText(String.valueOf(newNumber));
+
+                            tnNbAM.setText("Nb am selectionnée(s) : " + nb);
                         }
 
                         btnReservationAsmat.setOnClickListener(new View.OnClickListener() {
