@@ -111,7 +111,7 @@ public class ValidationPresence extends AppCompatActivity implements View.OnClic
         imgPers = (ImageView) findViewById(R.id.imgPers);
         btnCocher = (Button) findViewById(R.id.btnCocher);
 
-        tvNbPersonnesCochees = (TextView)findViewById(R.id.tvNbPersonnesCochees);
+        tvNbPersonnesCochees = (TextView) findViewById(R.id.tvNbPersonnesCochees);
 
         etAM.setText("0");
         etEnf0a3.setText("0");
@@ -308,7 +308,6 @@ public class ValidationPresence extends AppCompatActivity implements View.OnClic
 
                     displayListView("", "");
                     Toast.makeText(ValidationPresence.this, "Liste pers " + listePers.size(), Toast.LENGTH_SHORT).show();
-
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -648,7 +647,7 @@ public class ValidationPresence extends AppCompatActivity implements View.OnClic
                         }
                         System.out.println("Nombre d'éléments sélectionnés : " + nb);
 
-                        tvNbPersonnesCochees.setText("Nombre de personne(s) sélectionnée(s) : "+ nb);
+                        tvNbPersonnesCochees.setText("Nombre de personne(s) sélectionnée(s) : " + nb);
                     }
 
                 });

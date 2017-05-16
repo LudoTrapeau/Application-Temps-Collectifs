@@ -321,7 +321,8 @@
                         android:id="@+id/tvNbPers"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Nb am selectionnée(s) : " />
+                        android:text="Nb am selectionnée(s) : "
+                        android:textStyle="bold" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -353,8 +354,8 @@
                             android:id="@+id/lvEnfByAM"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:focusable="false"
-                            android:layout_margin="20dp" />
+                            android:layout_margin="20dp"
+                            android:focusable="false" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -465,6 +466,21 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:padding="7dp">
+
+                    <TextView
+                        android:id="@+id/tvNbParents"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Nb parents selectionnée(s) : "
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="400dp"
                     android:orientation="horizontal">
 
@@ -472,8 +488,8 @@
                         android:id="@+id/lvParents"
                         android:layout_width="300dp"
                         android:layout_height="400dp"
-                        android:focusable="false"
-                        android:layout_margin="20dp" />
+                        android:layout_margin="20dp"
+                        android:focusable="false" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -492,8 +508,8 @@
                             android:id="@+id/lvEnfByParent"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:focusable="false"
-                            android:layout_margin="20dp" />
+                            android:layout_margin="20dp"
+                            android:focusable="false" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -604,14 +620,29 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:padding="7dp">
+
+                    <TextView
+                        android:id="@+id/tvNbEnfants"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Nb enfants selectionnée(s) : "
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:orientation="horizontal">
 
                     <ListView
                         android:id="@+id/listView1"
                         android:layout_width="match_parent"
                         android:layout_height="200dp"
-                        android:focusable="false"
-                        android:layout_marginTop="20dp" />
+                        android:layout_marginTop="20dp"
+                        android:focusable="false" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -718,14 +749,29 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:padding="7dp">
+
+                    <TextView
+                        android:id="@+id/tvNbPartenaire"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Nb partenaires selectionnée(s) : "
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:orientation="horizontal">
 
                     <ListView
                         android:id="@+id/lvPart"
                         android:layout_width="match_parent"
                         android:layout_height="200dp"
-                        android:focusable="false"
-                        android:layout_marginTop="20dp" />
+                        android:layout_marginTop="20dp"
+                        android:focusable="false" />
 
                     <LinearLayout
                         android:layout_width="match_parent"

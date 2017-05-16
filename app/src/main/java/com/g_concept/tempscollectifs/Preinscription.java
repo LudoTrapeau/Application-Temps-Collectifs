@@ -47,7 +47,7 @@ import java.util.Map;
 public class Preinscription extends AppCompatActivity {
 
     String id_enfant;
-    int nb, newNumber;
+    int nb, newNumber, myNb=0, myNb2=0, myNb3=0, myNb4=0;
     Spinner spListeTempsColl;
     ArrayAdapter<String> adapter;
     EditText inputSearch, inputSearchParents, inputSearchEnfants, inputSearchPartenaires;
@@ -150,6 +150,9 @@ public class Preinscription extends AppCompatActivity {
         inputSearchPartenaires = (EditText) findViewById(R.id.inputSearchPartenaires);
 
         tnNbAM = (TextView) findViewById(R.id.tvNbPers);
+        tvNbEnf = (TextView) findViewById(R.id.tvNbEnfants);
+        tvNbParents = (TextView) findViewById(R.id.tvNbParents);
+        tvNbPart = (TextView) findViewById(R.id.tvNbPartenaire);
 
         /************** Init ************/
         myFunction();
@@ -174,7 +177,6 @@ public class Preinscription extends AppCompatActivity {
 
         listeTempsColl.add(initTC);
         /****************************/
-
 
         if (isOnline()) {
             getListeAllEnfants(requestQueue);
@@ -1480,6 +1482,19 @@ public class Preinscription extends AppCompatActivity {
                             nbPlacesDispo = Integer.parseInt(tvNbPlaces.getText().toString());
                         }
 
+                        if (!text.equals("Choisir le temps collectif")) {
+                            if (enf.isSelected()) {
+                                myNb3 = myNb3 + 1;
+                            } else {
+                                if (myNb3 > 0) {
+                                    myNb3 = myNb3 - 1;
+                                } else {
+                                    myNb3 = 0;
+                                }
+                            }
+                        }
+                        tvNbEnf.setText("Nb enfants selectionnée(s) : " + myNb3);
+
                         nb = 0;
                         if (enf.isSelected()) {
                             if (!text.equals("Choisir le temps collectif")) {
@@ -1541,7 +1556,7 @@ public class Preinscription extends AppCompatActivity {
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(int position, View convertView, final ViewGroup parent) {
 
             ViewHolder holder = null;
             Log.v("ConvertView", String.valueOf(position));
@@ -1612,6 +1627,20 @@ public class Preinscription extends AppCompatActivity {
                         if (!tvNbPlaces.getText().toString().equals("")) {
                             nbPlacesDispo = Integer.parseInt(tvNbPlaces.getText().toString());
                         }
+
+                        if (!text.equals("Choisir le temps collectif")) {
+                            if (par.isSelected()) {
+                                myNb4 = myNb4 + 1;
+                            } else {
+                                if (myNb4 > 0) {
+                                    myNb4 = myNb4 - 1;
+                                } else {
+                                    myNb4 = 0;
+                                }
+                            }
+                        }
+                        tvNbParents.setText("Nb parent(s) selectionnée(s) : " + myNb4);
+
 
                         nb = 0;
                         if (par.isSelected()) {
@@ -1728,8 +1757,6 @@ public class Preinscription extends AppCompatActivity {
                                     nb = nb + 1;
                                     newNumber = nbPlacesDispo - nb;
                                     tvNbPlaces.setText(String.valueOf(newNumber));
-
-                                    tnNbAM.setText("Nb am selectionnée(s) : " + nb);
                                 }
 
                             } else {
@@ -1745,8 +1772,20 @@ public class Preinscription extends AppCompatActivity {
                             newNumber = nbPlacesDispo + nb;
                             tvNbPlaces.setText(String.valueOf(newNumber));
 
-                            tnNbAM.setText("Nb am selectionnée(s) : " + nb);
                         }
+
+                        if (!text.equals("Choisir le temps collectif")) {
+                            if (asmat.isSelected()) {
+                                myNb = myNb + 1;
+                            } else {
+                                if (myNb > 0) {
+                                    myNb = myNb - 1;
+                                } else {
+                                    myNb = 0;
+                                }
+                            }
+                        }
+                        tnNbAM.setText("Nb am selectionnée(s) : " + myNb);
 
                         btnReservationAsmat.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -1804,8 +1843,6 @@ public class Preinscription extends AppCompatActivity {
                                 }
                             }
                         });
-
-
                     }
                 });
 
@@ -1844,7 +1881,7 @@ public class Preinscription extends AppCompatActivity {
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(int position, View convertView, final ViewGroup parent) {
 
             ViewHolder holder = null;
             Log.v("ConvertView", String.valueOf(position));
@@ -1879,6 +1916,19 @@ public class Preinscription extends AppCompatActivity {
                         if (!tvNbPlaces.getText().equals("")) {
                             nbPlacesDispo = Integer.parseInt(tvNbPlaces.getText().toString());
                         }
+
+                        if (!text.equals("Choisir le temps collectif")) {
+                            if (partenaire.isSelected()) {
+                                myNb2 = myNb2 + 1;
+                            } else {
+                                if (myNb2 > 0) {
+                                    myNb2 = myNb2 - 1;
+                                } else {
+                                    myNb2 = 0;
+                                }
+                            }
+                        }
+                        tvNbPart.setText("Nb partenaire(s) selectionnée(s) : " + myNb2);
 
                         if (partenaire.isSelected()) {
                             if (!text.equals("Choisir le temps collectif")) {

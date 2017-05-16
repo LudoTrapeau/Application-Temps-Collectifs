@@ -81,9 +81,10 @@ public class UpdateTC extends Activity {
             url_obtenir_datas_temps_coll = "https://www.web-familles.fr/AppliTempsCollectifs/Preinscription/getDatasTempsCollectifsById.php",
             dateNaissance, nbPlacesReservees, nbPlacesTotal,
             horaire, idTempsColl, choix, nbPlaces, dateTempsColl,
-            url_update_temps_coll = "https://www.web-familles.fr/AppliTempsCollectifs/Informations/updateTC.php", EXTRA_DB = "donnees", titleRAM, nbPlacesEnfant, nbPlacesAdulte, activiteTempsColl, descriptif, date, heureDebut, heureFin, nomTempsColl, m, j, lieuTempsColl, categorie,
-            initNom = "Choisissez le nom", initActivite = "Choisissez l'activité", initRAM = "Choisissez le RAM", initLieu = "Choisissez le lieu",
-            url_creation_temps_coll = "https://www.web-familles.fr/AppliTempsCollectifs/CreationTempsColl/createTempsColl.php", db2, email, password, initBDD = "Choisir votre structure", db, choixDB,
+            url_update_temps_coll = "https://www.web-familles.fr/AppliTempsCollectifs/Informations/updateTC.php", EXTRA_DB = "donnees",
+            titleRAM, nbPlacesEnfant, nbPlacesAdulte, activiteTempsColl, descriptif, date, heureDebut, heureFin, nomTempsColl, m, j, lieuTempsColl, categorie,
+            initNom = "Modifiez le nom", initActivite = "Modifiez l'activité", initRAM = "Modifiez le RAM", initLieu = "Modifiez le lieu", db2, email,
+            password, initBDD = "Choisir votre structure", db, choixDB,
             url_obtenir_lieu_temps_coll = "https://www.web-familles.fr/AppliTempsCollectifs/Informations/getLieuxTempsCollectifs.php",
             url_obtenir_nom_temps_coll = "https://www.web-familles.fr/AppliTempsCollectifs/CreationTempsColl/getNomsTempsColl.php",
             url_obtenir_ram = "https://www.web-familles.fr/AppliTempsCollectifs/CreationTempsColl/getRAM.php",
@@ -295,6 +296,9 @@ public class UpdateTC extends Activity {
                 }
                 updateTempsCollectifs();
                 finish();
+                /*Intent intent = new Intent(getApplicationContext(), Accueil.class);
+                intent.putExtra("donnees", choixDB);
+                startActivity(intent);*/
             }
         });
     }
@@ -330,9 +334,9 @@ public class UpdateTC extends Activity {
                         //listeTempsColl.add(idTempsColl + " | " + nomTempsColl + " | " + dateTempsColl);
                         System.out.println(numEtId + " Les infos : " + nomTempsColl + " " + "date " + dateTempsColl + " et n° :" + i);
 
-                        listeNomsTempsColl.add(nomTempsColl);
-                        listeActivitesTempsColl.add(activiteTempsColl);
-                        AllLieuxTempsColl.add(lieuTempsColl);
+                        //listeNomsTempsColl.add(nomTempsColl);
+                        //listeActivitesTempsColl.add(activiteTempsColl);
+                        //AllLieuxTempsColl.add(lieuTempsColl);
                         edDate.setText(dateTempsColl);
                         edHeureDebut.setText(heureDebut);
                         edHeureFin.setText(heureFin);
@@ -388,7 +392,6 @@ public class UpdateTC extends Activity {
                         objectNbPlacesTotal = arrayNbPlaceTotal.getJSONObject(i);
                         nbPlacesTotal = objectNbPlacesTotal.getString("nb_places_total");
                     }
-
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -720,5 +723,4 @@ public class UpdateTC extends Activity {
             }
         });
     }
-
 }

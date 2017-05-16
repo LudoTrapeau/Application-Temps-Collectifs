@@ -706,6 +706,7 @@ public class Infos extends AppCompatActivity {
 
                         }
                         else if((res==0)){
+                            finish();
                             intent = new Intent(getApplicationContext(), UpdateTC.class);
                             intent.putExtra("idTC",idTC);
                             intent.putExtra("donnees",choixDB);
