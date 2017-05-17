@@ -594,6 +594,17 @@ public class ValidationPresence extends AppCompatActivity implements View.OnClic
                 holder.img = (ImageView) convertView.findViewById(R.id.imgPers);
                 convertView.setTag(holder);
 
+                btnCocher.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        CheckBox cb = (CheckBox) view;
+                        final PersonneBis pers = (PersonneBis) cb.getTag();
+
+                        pers.setSelected(cb.isChecked());
+                        maListePersonnes.add(pers);
+                    }
+                });
+
                 holder.name.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         CheckBox cb = (CheckBox) v;

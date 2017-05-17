@@ -224,8 +224,13 @@ public class Login extends AppCompatActivity {
                             res = 1;
                             startActivity(intent);
                             }
-                    }else {
+                    }
+
+                    if(choixDB.equals(initBDD)){
                         msgErreur.setText("Veuillez selectionner une base de données !");
+                        System.out.println("Equals : " + choixDB + " et " + initBDD);
+                    }else{
+                        System.out.println("Pas Equals : " + choixDB + " et " + initBDD);
                     }
 
                     if (response.contains("[0]")) {
@@ -433,8 +438,6 @@ public class Login extends AppCompatActivity {
 
         /*********************************************************/
 
-        //HttpsTrustManager.allowAllSSL();
-
         requestQueue = Volley.newRequestQueue(getApplicationContext());
         jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, new Response.Listener<JSONObject>() {
             @Override
@@ -472,5 +475,4 @@ public class Login extends AppCompatActivity {
         });
         requestQueue.add(jsonObjectRequest);
 }
-
 }

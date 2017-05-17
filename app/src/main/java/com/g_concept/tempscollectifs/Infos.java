@@ -57,7 +57,7 @@ public class Infos extends AppCompatActivity {
     Button btnInfos, floatingActionButton;
     ArrayAdapter<String> adapter;
     int tab, res, j;
-    String nbPlacesRestant, var, horaire, initLieu = "Choisir un lieu", initRAM = "Choisir un RAM", idTempsColl, choix, nbPlaces, dateTempsColl,
+    String  var, horaire, initLieu = "Choisir un lieu", initRAM = "Choisir un RAM", idTempsColl, choix, nbPlaces, dateTempsColl,
             url_delete_tc = "https://www.web-familles.fr/AppliTempsCollectifs/Informations/deleteTC.php",
             url_obtenir_temps_coll = "https://www.web-familles.fr/AppliTempsCollectifs/Informations/getTempsCollectifs.php",
             url_places_by_tc = "https://www.web-familles.fr/AppliTempsCollectifs/ValidationPresence/getNbPlacesRestantes.php";
@@ -292,10 +292,10 @@ public class Infos extends AppCompatActivity {
             public void onResponse(String response) {
                 System.out.println("Voici la requête delete to modify : " + response);
                 if(response.contains("[1]")){
-                    Toast.makeText(Infos.this, "Vous venez de supprimer ce temps collectif !", Toast.LENGTH_LONG).show();
+                    Toast.makeText(Infos.this, "Vous venez de supprimer ce temps collectif ! Vous pouvez dès à présent en créer de nouveaux.", Toast.LENGTH_LONG).show();
                     // Permet de switcher de tab quand on clique sur le bouton de validation de présence
                     TabActivity tabs = (TabActivity) getParent();
-                    tabs.getTabHost().setCurrentTab(4);
+                    tabs.getTabHost().setCurrentTab(1);
                 }
                 else if (response.contains("[2]")){
                     Toast.makeText(Infos.this, "Erreur !", Toast.LENGTH_LONG).show();
@@ -659,7 +659,6 @@ public class Infos extends AppCompatActivity {
                                 break;
                             default:
                                 res = 0;
-
                         }
                     }
 
@@ -706,7 +705,6 @@ public class Infos extends AppCompatActivity {
 
                         }
                         else if((res==0)){
-                            finish();
                             intent = new Intent(getApplicationContext(), UpdateTC.class);
                             intent.putExtra("idTC",idTC);
                             intent.putExtra("donnees",choixDB);
