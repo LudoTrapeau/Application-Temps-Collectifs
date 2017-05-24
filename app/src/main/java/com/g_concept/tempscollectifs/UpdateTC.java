@@ -51,7 +51,7 @@ public class UpdateTC extends Activity {
 
     Context context;
     JSONObject leTempsColl, objectNbPlacesReservees, objectNbPlacesTotal, parent, json, leLieuTempsColl, lactiviteTempsColl, leRAM;
-    JSONArray lesTempsColl, arrayNbPlacesReservees, arrayNbPlaceTotal,lesLieuxTempsColl, lesActivitesTempsColl, lesRAM;
+    JSONArray lesTempsColl, arrayNbPlacesReservees, arrayNbPlaceTotal, lesLieuxTempsColl, lesActivitesTempsColl, lesRAM;
     ImageButton ibDate, ibHeureDebut, ibHeureFin;
     DatePickerDialog.OnDateSetListener dpicker;
     TimePickerDialog tpicker;
@@ -68,10 +68,10 @@ public class UpdateTC extends Activity {
     int annee, mois, jour, heure, minute;
     Spinner spLieux, spNom, spActivite, spRAM;
     ArrayList<String> listeNomsTempsColl = new ArrayList<>(),
-                      listeActivitesTempsColl = new ArrayList<>(),
-                      listeRAM = new ArrayList<>(),
-                      numEtId = new ArrayList<>(),
-                      AllLieuxTempsColl = new ArrayList<String>();
+            listeActivitesTempsColl = new ArrayList<>(),
+            listeRAM = new ArrayList<>(),
+            numEtId = new ArrayList<>(),
+            AllLieuxTempsColl = new ArrayList<String>();
     Button floatingActionButton, btnInfos;
     SeekBar seekBar, seekBar2;
     Switch swIndefini, swIndefini2;
@@ -100,6 +100,7 @@ public class UpdateTC extends Activity {
 
         setContentView(R.layout.popupdate);
 
+        // Chargement des paramêtres
         spCategorie = (Spinner) findViewById(R.id.spCategorie);
         edDate = (EditText) findViewById(R.id.edDate);
         spNom = (Spinner) findViewById(R.id.spNom);
@@ -514,7 +515,6 @@ public class UpdateTC extends Activity {
                 dateDeb = edDate;
 
                 dateDeb.setText(j + "-" + m + "-" + annee);
-
             }
         };
     }

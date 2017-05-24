@@ -6,7 +6,7 @@ package com.g_concept.tempscollectifs;
 
 public class Reservation {
 
-    String id;
+    String id, idTC;
     String date, lieu;
     String nom, categorie, horaire;
     String nbPlaces, nbPlacesEnfant, nbPlacesAdulte;
@@ -21,6 +21,19 @@ public class Reservation {
         this.nbPlacesEnfant = monNbPlacesEnfant;
         this.nbPlacesAdulte = monNbPlacesAdulte;
         this.lieu = monLieu;
+    }
+
+    public Reservation(String monId, String maDate, String monNom, String monHoraire, String maCategorie, String monNbPlaces, String monLieu, String monNbPlacesEnfant, String monNbPlacesAdulte, String idTC) {
+        this.id = monId;
+        this.date = maDate;
+        this.nom = monNom;
+        this.horaire = monHoraire;
+        this.categorie = maCategorie;
+        this.nbPlaces = monNbPlaces;
+        this.nbPlacesEnfant = monNbPlacesEnfant;
+        this.nbPlacesAdulte = monNbPlacesAdulte;
+        this.lieu = monLieu;
+        this.idTC = idTC;
     }
 
     public String getId() {
@@ -48,7 +61,6 @@ public class Reservation {
     public String getHoraire() {
         return horaire;
     }
-
 
     public void setId(String monId) {
         this.id = monId;

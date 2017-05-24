@@ -533,24 +533,24 @@
                             android:layout_width="200dp" />
 
                         <LinearLayout
-                            android:orientation="horizontal"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:gravity="right|center_vertical">
+                            android:gravity="right|center_vertical"
+                            android:orientation="horizontal">
 
                             <ImageView
-                                app:srcCompat="@drawable/add2"
                                 android:id="@+id/ivAddLieu"
                                 android:layout_width="30dp"
                                 android:layout_height="30dp"
-                                android:layout_marginRight="30dp" />
+                                android:layout_marginRight="30dp"
+                                app:srcCompat="@drawable/add2" />
 
                             <Button
                                 android:id="@+id/btnRefresh2"
-                                android:background="@drawable/reload"
                                 android:layout_width="30dp"
                                 android:layout_height="30dp"
                                 android:layout_marginRight="20dp"
+                                android:background="@drawable/reload"
                                 android:gravity="center_horizontal" />
                         </LinearLayout>
 

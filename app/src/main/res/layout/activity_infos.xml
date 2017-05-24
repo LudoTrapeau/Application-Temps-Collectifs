@@ -210,17 +210,18 @@
                         android:background="@drawable/custom_title_tab">
 
                         <TextView
-                            android:text="Date"
-                            android:layout_height="wrap_content"
                             android:id="@+id/tvDate"
-                            android:layout_weight="1"
-                            android:textStyle="normal|bold"
+                            android:layout_width="89dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="0.59"
                             android:padding="15dp"
-                            android:textSize="14sp"
+                            android:text="Date"
                             android:textColor="@android:color/background_light"
-                            android:layout_width="89dp" />
+                            android:textSize="14sp"
+                            android:textStyle="normal|bold" />
 
-                        <TextView
+                        <!--<TextView
                             android:text="Réservation"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -229,51 +230,54 @@
                             android:textStyle="normal|bold"
                             android:padding="15dp"
                             android:textSize="14sp"
-                            android:textColor="@android:color/background_light" />
+                            android:textColor="@android:color/background_light" />-->
 
                         <TextView
-                            android:text="Nom"
-                            android:layout_height="wrap_content"
                             android:id="@+id/tvNom"
-                            android:layout_weight="1"
-                            android:textStyle="normal|bold"
-                            android:padding="15dp"
-                            android:layout_width="110dp"
-                            android:textSize="14sp"
-                            android:textColor="@android:color/background_light" />
-
-                        <TextView
-                            android:text="Horaire"
+                            android:layout_width="70dp"
                             android:layout_height="wrap_content"
-                            android:id="@+id/tvHoraire"
+                            android:layout_gravity="center"
                             android:layout_weight="1"
-                            android:textStyle="normal|bold"
                             android:padding="15dp"
-                            android:layout_width="160dp"
-                            android:textSize="14sp"
-                            android:textColor="@android:color/background_light" />
-
-                        <TextView
-                            android:text="Catégorie"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/tvCategorie"
-                            android:layout_weight="1"
-                            android:textStyle="normal|bold"
-                            android:padding="15dp"
-                            android:textSize="14sp"
+                            android:text="Nom"
                             android:textColor="@android:color/background_light"
-                            android:layout_width="180dp" />
+                            android:textSize="14sp"
+                            android:textStyle="normal|bold" />
 
                         <TextView
-                            android:text="Places restantes"
-                            android:layout_width="wrap_content"
+                            android:id="@+id/tvHoraire"
+                            android:layout_width="127dp"
                             android:layout_height="wrap_content"
-                            android:id="@+id/tvPlaces"
-                            android:layout_weight="1"
-                            android:textStyle="normal|bold"
+                            android:layout_gravity="center"
                             android:padding="15dp"
+                            android:text="Horaire"
+                            android:textColor="@android:color/background_light"
                             android:textSize="14sp"
-                            android:textColor="@android:color/background_light" />
+                            android:textStyle="normal|bold"
+                            android:layout_weight="0.34" />
+
+                        <TextView
+                            android:id="@+id/tvCategorie"
+                            android:layout_width="127dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="0.65"
+                            android:padding="15dp"
+                            android:text="Catégorie"
+                            android:textColor="@android:color/background_light"
+                            android:textSize="14sp"
+                            android:textStyle="normal|bold" />
+
+                        <TextView
+                            android:id="@+id/tvPlaces"
+                            android:layout_width="116dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:padding="15dp"
+                            android:text="Places restantes"
+                            android:textColor="@android:color/background_light"
+                            android:textSize="14sp"
+                            android:textStyle="normal|bold" />
                     </LinearLayout>
 
                     <TableLayout
@@ -294,47 +298,48 @@
                             android:id="@+id/tableRow">
 
                             <TextView
-                                android:background="@drawable/cell_shape"
+                                android:layout_width="80dp"
+                                android:layout_height="wrap_content"
                                 android:layout_column="0"
                                 android:layout_weight="1"
-                                android:textStyle="bold"
+                                android:background="@drawable/cell_shape"
+                                android:padding="10dp"
                                 android:textAlignment="center"
                                 android:textSize="16dp"
-                                android:padding="10dp"
-                                android:layout_height="wrap_content"
-                                android:layout_width="40dp" />
+                                android:textStyle="bold" />
 
                             <TextView
-                                android:background="@drawable/cell_shape"
+                                android:layout_width="70dp"
+                                android:layout_height="wrap_content"
                                 android:layout_column="1"
                                 android:layout_weight="1"
-                                android:textStyle="bold"
+                                android:background="@drawable/cell_shape"
+                                android:padding="10dp"
                                 android:textAlignment="center"
                                 android:textSize="16dp"
-                                android:padding="10dp"
-                                android:layout_height="wrap_content"
-                                android:layout_width="95dp" />
+                                android:textStyle="bold" />
 
                             <TextView
-                                android:background="@drawable/cell_shape"
+                                android:layout_width="70dp"
+                                android:layout_height="wrap_content"
                                 android:layout_column="1"
                                 android:layout_weight="1"
-                                android:textStyle="bold"
+                                android:background="@drawable/cell_shape"
+                                android:padding="10dp"
                                 android:textAlignment="center"
                                 android:textSize="16dp"
-                                android:padding="10dp"
-                                android:layout_height="wrap_content"
-                                android:layout_width="130dp" />
+                                android:textStyle="bold" />
+
                             <TextView
-                                android:background="@drawable/cell_shape"
+                                android:layout_width="100dp"
+                                android:layout_height="wrap_content"
                                 android:layout_column="1"
                                 android:layout_weight="1"
-                                android:textStyle="bold"
+                                android:background="@drawable/cell_shape"
+                                android:padding="10dp"
                                 android:textAlignment="center"
                                 android:textSize="16dp"
-                                android:padding="10dp"
-                                android:layout_height="wrap_content"
-                                android:layout_width="130dp" />
+                                android:textStyle="bold" />
 
                             <TextView
                                 android:background="@drawable/cell_shape"

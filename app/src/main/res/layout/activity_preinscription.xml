@@ -16,8 +16,8 @@
         android:id="@+id/mainScrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true">
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -335,7 +335,9 @@
                         android:layout_width="350dp"
                         android:layout_height="400dp"
                         android:layout_margin="10dp"
-                        android:focusable="true" />
+                        android:choiceMode="none"
+                        android:focusableInTouchMode="false"
+                        android:focusable="false" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -355,6 +357,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_margin="20dp"
+                            android:choiceMode="none"
+                            android:focusableInTouchMode="false"
                             android:focusable="false" />
                     </LinearLayout>
 
@@ -489,6 +493,8 @@
                         android:layout_width="300dp"
                         android:layout_height="400dp"
                         android:layout_margin="20dp"
+                        android:choiceMode="none"
+                        android:focusableInTouchMode="false"
                         android:focusable="false" />
 
                     <LinearLayout
@@ -509,6 +515,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_margin="20dp"
+                            android:choiceMode="none"
+                            android:focusableInTouchMode="false"
                             android:focusable="false" />
                     </LinearLayout>
 
@@ -642,6 +650,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="200dp"
                         android:layout_marginTop="20dp"
+                        android:choiceMode="none"
+                        android:focusableInTouchMode="false"
                         android:focusable="false" />
 
                     <LinearLayout
@@ -771,7 +781,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="200dp"
                         android:layout_marginTop="20dp"
-                        android:focusable="false" />
+                        android:choiceMode="none"
+                        android:focusableInTouchMode="true"
+                        android:focusable="true" />
 
                     <LinearLayout
                         android:layout_width="match_parent"

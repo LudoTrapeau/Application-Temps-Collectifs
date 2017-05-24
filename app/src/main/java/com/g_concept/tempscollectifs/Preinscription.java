@@ -47,20 +47,20 @@ import java.util.Map;
 public class Preinscription extends AppCompatActivity {
 
     String id_enfant;
-    int nb, newNumber, myNb=0, myNb2=0, myNb3=0, myNb4=0;
+    int nb, newNumber, myNb = 0, myNb2 = 0, myNb3 = 0, myNb4 = 0, myNb5 = 0;
     Spinner spListeTempsColl;
     ArrayAdapter<String> adapter;
     EditText inputSearch, inputSearchParents, inputSearchEnfants, inputSearchPartenaires;
-    Button btnResValidEnfantParent, btnResValidAM, btnResValidEnfantsByAM, btnResValidEnfants, btnParentPreinscrireEtValider, btnEnfantPreinscrireEtValider, btnAddToListView, btnAddAm, btnAddPartenaire, btnReservationEnfant, btnReservationAsmat, btnReservationPartenaire, btnReservationEnfant2, btnReservationEnfantParent, btnReservationParent;
-    ArrayList<String> listeTempsColl = new ArrayList<String>();
-    ArrayList<String> listeAM = new ArrayList<String>();
+    Button btnResValidAM, btnResValidEnfantsByAM, btnResValidEnfants, btnParentPreinscrireEtValider, btnEnfantPreinscrireEtValider, btnAddToListView, btnAddAm, btnAddPartenaire, btnReservationEnfant, btnReservationAsmat, btnReservationPartenaire, btnReservationEnfant2, btnReservationEnfantParent, btnReservationParent;
+    ArrayList<String> listeTempsColl = new ArrayList<String>(), listeAM = new ArrayList<String>(), listePartenaires = new ArrayList<String>(), numEtId = new ArrayList<>(), listeAsmatsString = new ArrayList<>();
     ArrayList<Reservation> tableauReservations = new ArrayList<Reservation>();
-    ArrayList<String> listePartenaires = new ArrayList<String>();
-    ArrayList<Enfant> listEnfByAM = new ArrayList<Enfant>();
-    ArrayList<Enfant> listEnfByParent = new ArrayList<Enfant>();
-    ArrayList<Enfant> enfantsByAMList = new ArrayList<Enfant>();
-    ArrayList<Enfant> enfantsByParentList = new ArrayList<Enfant>();
+    ArrayList<Enfant> listEnfByAM = new ArrayList<Enfant>(), listEnfByParent = new ArrayList<Enfant>(), enfantsByAMList = new ArrayList<Enfant>(), enfantsByParentList = new ArrayList<Enfant>(), enfantsList = new ArrayList<Enfant>();
+    ArrayList<Parent> parentsList = new ArrayList<Parent>();
+    ArrayList<Asmat> asmatsList = new ArrayList<Asmat>();
+    ArrayList<Partenaire> partenaireList = new ArrayList<Partenaire>();
+    Reservation myReservation = new Reservation("1", "1", "1", "1", "1", "1", "1", "1", "1");
     MyCustomAdapter dataAdapter1 = null;
+    MyCustomAdapterEnfByAM dataAdapter8 = null;
     MyCustomAdapterAsmats dataAdapter2 = null;
     MyCustomAdapterPartenaires dataAdapter3 = null;
     MyCustomAdapterForParents dataAdapter4 = null;
@@ -77,8 +77,6 @@ public class Preinscription extends AppCompatActivity {
     String[] tabChoix;
     int action;
     ListView listViewEnfants, listviewAsmats, listviewPartenaires, listviewEnfByAM, listViewParents, listviewEnfByParent;
-    ArrayList<String> numEtId = new ArrayList<>();
-    ArrayList<String> listeAsmatsString = new ArrayList<>();
     Intent intent;
     String id_parent, nom_parent, prenom_parent, nom_parent2, prenom_parent2, tcChoisi, dateNaissance, nbPlacesReservees, nbPlacesTotal, EXTRA_ID_USER = "idUser", idUser, EXTRA_DB = "donnees", initTC = "Choisir le temps collectif",
             prenom_assmat, id_part, nom_part, prenom_part, id_assmat, nom_assmat, myValue, lieuTempsColl, nom_enfant, prenom_enfant,
@@ -99,10 +97,6 @@ public class Preinscription extends AppCompatActivity {
     JSONObject leTempsColl, objectNbPlacesReservees, objectNbPlacesTotal, parent;
     JSONArray lesTempsColl, arrayNbPlacesReservees, arrayNbPlaceTotal, parents;
     Reservation maReservation;
-    ArrayList<Enfant> enfantsList = new ArrayList<Enfant>();
-    ArrayList<Parent> parentsList = new ArrayList<Parent>();
-    ArrayList<Asmat> asmatsList = new ArrayList<Asmat>();
-    ArrayList<Partenaire> partenaireList = new ArrayList<Partenaire>();
     ScrollView mainScrollView;
 
     @Override
@@ -157,7 +151,12 @@ public class Preinscription extends AppCompatActivity {
         /************** Init ************/
         myFunction();
         myValue = ((Accueil) getParent()).getValue();
-        System.out.println("MYVALUE" + myValue);
+
+        myReservation = ((Accueil) getParent()).getReservation();
+        //System.out.println("MY RESERVATION " + myReservation.getId());
+
+        tableauReservations.add(myReservation);
+
 
         intent = getIntent();
         choixDB = "";
@@ -175,8 +174,27 @@ public class Preinscription extends AppCompatActivity {
         // Initialisation du nombre d'enfant coché à 0
         nb = 0;
 
-        listeTempsColl.add(initTC);
+        if (myReservation != null) {
+            listeTempsColl.add(myReservation.getNom() + " • " + myReservation.getDate() + " • de " + myReservation.getHoraire());
+            tableauReservations.add(myReservation);
+            myHash.put(2, Integer.parseInt(myReservation.getId()));
+            System.out.println("TEST DE LA RESA : " + myReservation.getNom());
+            getDatasTempsCollById(Integer.toString(myHash.get(2)), myReservation.getId());
+        } else {
+            listeTempsColl.add(initTC);
+        }
+
+
+        /*
+        tableauReservations.add(myReservation);
+        myHash.put(0, Integer.parseInt(myReservation.getId()));
+        spListeTempsColl.setSelection(0,true);*/
+
+        spListeTempsColl.setSelection(1, true);
         /****************************/
+
+        View current = getCurrentFocus();
+        if (current != null) current.clearFocus();
 
         if (isOnline()) {
             getListeAllEnfants(requestQueue);
@@ -829,6 +847,7 @@ public class Preinscription extends AppCompatActivity {
                         tableauReservations.add(maReservation);
 
                         listeTempsColl.add(nomTempsColl + " • " + dateTempsColl + " • de " + horaire);
+
                         System.out.println(numEtId + " Les infos : " + nomTempsColl + " " + "date " + dateTempsColl + " et n° :" + i);
 
                         myHash.put(i, Integer.parseInt(idTempsColl));
@@ -852,7 +871,10 @@ public class Preinscription extends AppCompatActivity {
                                 tvNbPlaces.setText("");
                                 tvNbPlacesTotal.setText("");
                             } else {
-                                getDatasTempsCollById(Integer.toString(myHash.get(position - 1)));
+                                System.out.println("MY HASH IS EQUALS TO " + myHash);
+                                if (position != 0) {
+                                    getDatasTempsCollById(Integer.toString(myHash.get(position - 1)), choix);
+                                }
                             }
 
                             System.out.println(" TEST DU HASHMAP " + myHash.get(position - 1));
@@ -863,7 +885,6 @@ public class Preinscription extends AppCompatActivity {
                             // TODO Auto-generated method stub
                         }
                     });
-
 
                     System.out.println("ARRAYLIST " + numEtId.size());
 
@@ -892,7 +913,7 @@ public class Preinscription extends AppCompatActivity {
     /*****
      * On charge les datas correspondants au temps collectif choisi
      *******/
-    public void getDatasTempsCollById(final String id) {
+    public void getDatasTempsCollById(final String id, final String choix) {
         requete_datas_temps_coll = new StringRequest(Request.Method.POST, url_obtenir_datas_temps_coll, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -932,7 +953,7 @@ public class Preinscription extends AppCompatActivity {
                     System.out.println("Nombre de places dispos : " + nbPlacesRestantes);
 
 
-                    getInfosTempsColl(nbPlacesRestantes);
+                    getInfosTempsColl(nbPlacesRestantes, idTempsColl);
 
                     System.out.println("ARRAYLIST " + numEtId.size());
 
@@ -959,20 +980,28 @@ public class Preinscription extends AppCompatActivity {
     /******
      * Chargement des données relatives à un temps collectif
      * *******/
-    public void getInfosTempsColl(int nbPlacesRestantes) {
+    public void getInfosTempsColl(int nbPlacesRestantes, final String choix) {
         // Si aucun lieu n'est choisi, les textviews sont vides
-        if (choix.equals("Choisirletempscollectif")) {
-            tvDate.setText("");
-            tvCategorie.setText("");
-            tvNbPlaces.setText("");
-            tvNbPlacesTotal.setText("");
-            tvLieu.setText("");
-        } else {
+        if (choix == null) {
             tvDate.setText(convertDate(dateTempsColl));
             tvCategorie.setText(categorie);
             tvNbPlaces.setText(Integer.toString(nbPlacesRestantes));
             tvNbPlacesTotal.setText(nbPlaces);
             tvLieu.setText(lieuTempsColl);
+        } else {
+            if (choix.equals("Choisirletempscollectif")) {
+                tvDate.setText("");
+                tvCategorie.setText("");
+                tvNbPlaces.setText("");
+                tvNbPlacesTotal.setText("");
+                tvLieu.setText("");
+            } else {
+                tvDate.setText(convertDate(dateTempsColl));
+                tvCategorie.setText(categorie);
+                tvNbPlaces.setText(Integer.toString(nbPlacesRestantes));
+                tvNbPlacesTotal.setText(nbPlaces);
+                tvLieu.setText(lieuTempsColl);
+            }
         }
     }
 
@@ -1023,7 +1052,7 @@ public class Preinscription extends AppCompatActivity {
             }
         }) {
             protected Map<String, String> getParams() throws AuthFailureError {
-                params.put("idTC", choix);
+                params.put("idTC", idTempsColl);
                 if (typePersonne == "1") {
                     params.put("idEnf", maVariable);
                 } else if (typePersonne == "2") {
@@ -1216,9 +1245,9 @@ public class Preinscription extends AppCompatActivity {
     private void displayListViewEnfByAM() {
 
         //create an ArrayAdaptar from the String Array
-        dataAdapter1 = new MyCustomAdapter(this, R.layout.listviewcheckbox, enfantsByAMList);
+        dataAdapter8 = new MyCustomAdapterEnfByAM(this, R.layout.listviewcheckbox, enfantsByAMList);
         // Assign adapter to ListView
-        listviewEnfByAM.setAdapter(dataAdapter1);
+        listviewEnfByAM.setAdapter(dataAdapter8);
 
         listviewEnfByAM.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
@@ -1352,7 +1381,7 @@ public class Preinscription extends AppCompatActivity {
                         text = spListeTempsColl.getSelectedItem().toString();
                         System.out.println("TC TEST " + text);
 
-                        btnReservationEnfant.setOnClickListener(new View.OnClickListener() {
+                        btnReservationEnfant2.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
 
@@ -1368,7 +1397,10 @@ public class Preinscription extends AppCompatActivity {
                                     getListeAllEnfants(requestQueue);
                                     displayListView();
                                     toast.makeText(getApplicationContext(), "Réservation pour cet enfant " + enf.getNom(), Toast.LENGTH_SHORT).show();
-                                    //Toast.makeText(getApplicationContext(), "Nombre d'enfant(s) : " + maListeEnfants.size(), Toast.LENGTH_SHORT).show();
+
+                                    myNb3 = 0;
+                                    tvNbEnf.setText("Nb enfants selectionnée(s) : " + myNb3);
+
                                 }
                             }
                         });
@@ -1376,7 +1408,6 @@ public class Preinscription extends AppCompatActivity {
                         btnResValidEnfantsByAM.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-
 
                                 if (text.equals("Choisir le temps collectif")) {
                                     toast.makeText(Preinscription.this, "Veuillez sélectionner un temps collectif !", Toast.LENGTH_SHORT).show();
@@ -1405,26 +1436,6 @@ public class Preinscription extends AppCompatActivity {
                                     for (int i = 0; i < maListeEnfants.size(); i++) {
                                         System.out.println(" mon enfant " + maListeEnfants.get(i).getCode());
                                         doReservation(choix, "1", maListeEnfants.get(i).getCode(), "2");
-                                        maListeEnfants.get(i).setSelected(false);
-                                    }
-                                    enfantsList.clear();
-                                    getListeAllEnfants(requestQueue);
-                                    displayListView();
-                                    toast.makeText(getApplicationContext(), "Réservation pour cet enfant " + enf.getNom(), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
-
-                        btnReservationEnfant2.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-
-                                if (text.equals("Choisir le temps collectif")) {
-                                    toast.makeText(Preinscription.this, "Veuillez sélectionner un temps collectif !", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    for (int i = 0; i < maListeEnfants.size(); i++) {
-                                        System.out.println(" mon enfant " + maListeEnfants.get(i).getCode());
-                                        doReservation(choix, "1", maListeEnfants.get(i).getCode(), "1");
                                         maListeEnfants.get(i).setSelected(false);
                                     }
                                     enfantsList.clear();
@@ -1471,6 +1482,9 @@ public class Preinscription extends AppCompatActivity {
                                     getListeAllEnfants(requestQueue);
                                     displayListView();
                                     toast.makeText(getApplicationContext(), "Réservation pour cet enfant " + enf.getNom(), Toast.LENGTH_SHORT).show();
+
+                                    myNb3 = 0;
+                                    tvNbEnf.setText("Nb enfants selectionnée(s) : " + myNb3);
                                 }
                             }
                         });
@@ -1493,7 +1507,139 @@ public class Preinscription extends AppCompatActivity {
                                 }
                             }
                         }
-                        tvNbEnf.setText("Nb enfants selectionnée(s) : " + myNb3);
+
+                        if (nbPlacesDispo > 0) {
+                            tvNbEnf.setText("Nb enfants selectionnée(s) : " + myNb3);
+                        }
+
+                        nb = 0;
+                        if (enf.isSelected()) {
+                            if (!text.equals("Choisir le temps collectif")) {
+                                newNumber = nbPlacesDispo - nb;
+                                tvNbPlaces.setText(String.valueOf(newNumber));
+
+                                if (nbPlacesDispo <= 0) {
+                                    finalHolder.name.setChecked(false);
+                                    toast.makeText(Preinscription.this, "Plus de places !", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    nb = nb + 1;
+                                    newNumber = nbPlacesDispo - nb;
+                                    tvNbPlaces.setText(String.valueOf(newNumber));
+                                }
+                            } else {
+                                finalHolder.name.setChecked(false);
+                                toast.makeText(Preinscription.this, "Veuillez choisir un temps collectif !", Toast.LENGTH_SHORT).show();
+                            }
+
+                        } else {
+                            nb = nb + 1;
+                            newNumber = nbPlacesDispo + nb;
+                            tvNbPlaces.setText(String.valueOf(newNumber));
+                        }
+                    }
+                });
+
+            } else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+
+            enf = enfantsListe.get(position);
+            holder.name.setText(enf.getNom() + " " + enf.getPrenom());
+            holder.name.setChecked(enf.isSelected());
+            holder.name.setTag(enf);
+
+            return convertView;
+        }
+    }
+
+    private class MyCustomAdapterEnfByAM extends ArrayAdapter<Enfant> {
+
+        private ArrayList<Enfant> enfantsListe;
+        final ArrayList<Enfant> maListeEnfants = new ArrayList<Enfant>();
+        String text;
+        Enfant enf;
+        Toast toast;
+        CheckBox cb;
+
+        public MyCustomAdapterEnfByAM(Context context, int textViewResourceId,
+                                      ArrayList<Enfant> enfantsListe) {
+            super(context, textViewResourceId, enfantsListe);
+            this.enfantsListe = new ArrayList<Enfant>();
+            this.enfantsListe.addAll(enfantsListe);
+        }
+
+        private class ViewHolder {
+            CheckBox name;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+            ViewHolder holder = null;
+            Log.v("ConvertView", String.valueOf(position));
+            maListeEnfants.clear();
+
+            if (convertView == null) {
+                LayoutInflater vi = (LayoutInflater) getSystemService(
+                        Context.LAYOUT_INFLATER_SERVICE);
+                convertView = vi.inflate(R.layout.listviewcheckbox, null);
+
+                holder = new ViewHolder();
+                holder.name = (CheckBox) convertView.findViewById(R.id.checkBox1);
+                convertView.setTag(holder);
+
+                final ViewHolder finalHolder = holder;
+                holder.name.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        cb = (CheckBox) v;
+                        enf = (Enfant) cb.getTag();
+                        enf.setSelected(cb.isChecked());
+                        maListeEnfants.add(enf);
+                        for (int i = 0; i < maListeEnfants.size(); i++) {
+                            System.out.println("Le contenu de ma liste : " + maListeEnfants.get(i).getNom());
+                        }
+
+                        text = spListeTempsColl.getSelectedItem().toString();
+                        System.out.println("TC TEST " + text);
+
+                        btnReservationEnfant.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                                if (text.equals("Choisir le temps collectif")) {
+                                    toast.makeText(Preinscription.this, "Veuillez sélectionner un temps collectif !", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    for (int i = 0; i < maListeEnfants.size(); i++) {
+                                        System.out.println(" mon enfant " + maListeEnfants.get(i).getCode());
+                                        doReservation(choix, "1", maListeEnfants.get(i).getCode(), "1");
+                                        maListeEnfants.get(i).setSelected(false);
+                                    }
+                                    enfantsByAMList.clear();
+                                    displayListViewEnfByAM();
+                                    tvEnfByAm.setText("Veuillez sélectionner une Assmat pour afficher ses enfants");
+                                    toast.makeText(getApplicationContext(), "Réservation pour cet enfant " + enf.getNom(), Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(getApplicationContext(), "Nombre d'enfant(s) : " + maListeEnfants.size(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+
+                        int nbPlacesDispo = 0;
+
+                        if (!tvNbPlaces.getText().toString().equals("")) {
+                            nbPlacesDispo = Integer.parseInt(tvNbPlaces.getText().toString());
+                        }
+
+                        if (!text.equals("Choisir le temps collectif")) {
+                            if (enf.isSelected()) {
+                                myNb5 = myNb5 + 1;
+                            } else {
+                                if (myNb5 > 0) {
+                                    myNb5 = myNb5 - 1;
+                                } else {
+                                    myNb5 = 0;
+                                }
+                            }
+                        }
 
                         nb = 0;
                         if (enf.isSelected()) {
@@ -1579,46 +1725,6 @@ public class Preinscription extends AppCompatActivity {
                         par.setSelected(cb.isChecked());
                         maListeParents.add(par);
 
-                        btnReservationParent.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-
-                                if (text.equals("Choisir le temps collectif")) {
-                                    toast.makeText(Preinscription.this, "Veuillez sélectionner un temps collectif !", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    for (int i = 0; i < maListeParents.size(); i++) {
-                                        System.out.println(" mon enfant " + maListeParents.get(i).getCode());
-                                        doReservation(choix, "4", maListeParents.get(i).getCode(), "1");
-                                        maListeParents.get(i).setSelected(false);
-                                    }
-                                    parentsList.clear();
-                                    getListeAllParents(requestQueue);
-                                    displayListViewParents();
-                                    toast.makeText(getApplicationContext(), "Réservation pour cette famille " + par.getNom(), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
-
-                        btnParentPreinscrireEtValider.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-
-                                if (text.equals("Choisir le temps collectif")) {
-                                    toast.makeText(Preinscription.this, "Veuillez sélectionner un temps collectif !", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    for (int i = 0; i < maListeParents.size(); i++) {
-                                        System.out.println(" mon enfant " + maListeParents.get(i).getCode());
-                                        doReservation(choix, "4", maListeParents.get(i).getCode(), "2");
-                                        maListeParents.get(i).setSelected(false);
-                                    }
-                                    parentsList.clear();
-                                    getListeAllParents(requestQueue);
-                                    displayListViewParents();
-                                    toast.makeText(getApplicationContext(), "Réservation pour cette famille " + par.getNom(), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
-
                         text = spListeTempsColl.getSelectedItem().toString();
                         System.out.println("TC TEST " + text);
 
@@ -1639,7 +1745,56 @@ public class Preinscription extends AppCompatActivity {
                                 }
                             }
                         }
-                        tvNbParents.setText("Nb parent(s) selectionnée(s) : " + myNb4);
+
+                        if (nbPlacesDispo > 0) {
+                            tvNbParents.setText("Nb parent(s) selectionnée(s) : " + myNb4);
+                        }
+
+                        btnReservationParent.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                                if (text.equals("Choisir le temps collectif")) {
+                                    toast.makeText(Preinscription.this, "Veuillez sélectionner un temps collectif !", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    for (int i = 0; i < maListeParents.size(); i++) {
+                                        System.out.println(" mon enfant " + maListeParents.get(i).getCode());
+                                        doReservation(choix, "4", maListeParents.get(i).getCode(), "1");
+                                        maListeParents.get(i).setSelected(false);
+                                    }
+                                    parentsList.clear();
+                                    getListeAllParents(requestQueue);
+                                    displayListViewParents();
+                                    toast.makeText(getApplicationContext(), "Réservation pour cette famille " + par.getNom(), Toast.LENGTH_SHORT).show();
+
+                                    myNb4 = 0;
+                                    tvNbParents.setText("Nb parent(s) selectionnée(s) : " + myNb4);
+                                }
+                            }
+                        });
+
+                        btnParentPreinscrireEtValider.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                                if (text.equals("Choisir le temps collectif")) {
+                                    toast.makeText(Preinscription.this, "Veuillez sélectionner un temps collectif !", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    for (int i = 0; i < maListeParents.size(); i++) {
+                                        System.out.println(" mon enfant " + maListeParents.get(i).getCode());
+                                        doReservation(choix, "4", maListeParents.get(i).getCode(), "2");
+                                        maListeParents.get(i).setSelected(false);
+                                    }
+                                    parentsList.clear();
+                                    getListeAllParents(requestQueue);
+                                    displayListViewParents();
+                                    toast.makeText(getApplicationContext(), "Réservation pour cette famille " + par.getNom(), Toast.LENGTH_SHORT).show();
+
+                                    myNb4 = 0;
+                                    tvNbParents.setText("Nb parent(s) selectionnée(s) : " + myNb4);
+                                }
+                            }
+                        });
 
 
                         nb = 0;
@@ -1785,7 +1940,10 @@ public class Preinscription extends AppCompatActivity {
                                 }
                             }
                         }
-                        tnNbAM.setText("Nb am selectionnée(s) : " + myNb);
+                        if (nbPlacesDispo > 0) {
+                            tnNbAM.setText("Nb am selectionnée(s) : " + myNb);
+                        }
+
 
                         btnReservationAsmat.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -1798,6 +1956,10 @@ public class Preinscription extends AppCompatActivity {
                                         doReservation(choix, "2", maListeAsmats.get(i).getId(), "1");
                                         toast.makeText(getApplicationContext(), "Réservation pour cette Asmat " + maListeAsmats.get(i).getNom(), Toast.LENGTH_SHORT).show();
                                     }
+
+                                    myNb = 0;
+
+                                    tnNbAM.setText("Nb am selectionnée(s) : " + myNb);
 
                                     asmatsList.clear();
                                     getListeAllAssmats(requestQueue);
@@ -1821,6 +1983,10 @@ public class Preinscription extends AppCompatActivity {
                                     asmatsList.clear();
                                     getListeAllAssmats(requestQueue);
                                     displayListViewAsmats();
+
+                                    myNb = 0;
+
+                                    tnNbAM.setText("Nb am selectionnée(s) : " + myNb);
                                 }
                             }
                         });
@@ -1859,6 +2025,7 @@ public class Preinscription extends AppCompatActivity {
         }
     }
 
+    /********** Classe permettant de récupérer les partenaires en checkbox ************/
     private class MyCustomAdapterPartenaires extends ArrayAdapter<Partenaire> {
 
         private ArrayList<Partenaire> partenairesListe = new ArrayList<Partenaire>(0);
@@ -1928,7 +2095,10 @@ public class Preinscription extends AppCompatActivity {
                                 }
                             }
                         }
-                        tvNbPart.setText("Nb partenaire(s) selectionnée(s) : " + myNb2);
+
+                        if (nbPlacesDispo > 0) {
+                            tvNbPart.setText("Nb partenaire(s) selectionnée(s) : " + myNb2);
+                        }
 
                         if (partenaire.isSelected()) {
                             if (!text.equals("Choisir le temps collectif")) {
@@ -1968,9 +2138,11 @@ public class Preinscription extends AppCompatActivity {
                                     getListeAllPartenaires(requestQueue);
                                     displayListViewPartenaires();
 
+                                    myNb2 = 0;
+                                    tvNbPart.setText("Nb partenaire(s) selectionnée(s) : " + myNb2);
+
                                     toast.makeText(getApplicationContext(), "Réservation pour ce Partenaire", Toast.LENGTH_SHORT).show();
                                 }
-
                             }
                         });
                     }

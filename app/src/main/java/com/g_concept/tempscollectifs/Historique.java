@@ -91,7 +91,7 @@ public class Historique extends AppCompatActivity {
     LinearLayout llContentLieu, llContentRAM;
     TableRow row;
     Spinner spLieux, spRAM;
-    TextView tvEnfPresents, tvAmPresentes, tvPartPresents, tvTitle, tvENF, tvAM, tvPART, tvParents, tvParentsPresents;
+    TextView tvEnfPresents, tvAmPresentes, tvPartPresents, tvTitle, tvENF, tvAM, tvPART, tvParents, tvParentsPresents, tvAvertissement;
     RadioGroup radioGroup;
     RadioButton rbLieu, rbRAM;
 
@@ -121,6 +121,7 @@ public class Historique extends AppCompatActivity {
         tvENF = (TextView) findViewById(R.id.tvENF);
         tvAM = (TextView) findViewById(R.id.tvAM);
         tvPART = (TextView) findViewById(R.id.tvPART);
+        tvAvertissement = (TextView) findViewById(R.id.tvAvertissement);
 
         btnModifTC = (Button) findViewById(R.id.btnModifTC);
 
@@ -446,7 +447,6 @@ public class Historique extends AppCompatActivity {
                         nbPlaces = leTempsColl.getString("nb_place");
                         horaire = leTempsColl.getString("heureDeb") + " - " + leTempsColl.getString("heureFin");
 
-
                         // Permettra ensuite de distinguer deux lignes en mettant des couleurs différentes
                         int number = 0;
                         if (i % 2 == 0) {
@@ -676,6 +676,7 @@ public class Historique extends AppCompatActivity {
                         tvPART.setText("Partenaires (" + nbPart + ")");
                         tvTitle.setText("Voici les personnes ayant participé au temps collectif : " + nomTC);
                         tvParents.setText("Parents (" + nbParents + ")");
+                        tvAvertissement.setVisibility(View.VISIBLE);
 
                         if (listeEnfPresents.size() == 0) {
                             tvEnfPresents.setText("Pas d'enfant");
@@ -700,9 +701,7 @@ public class Historique extends AppCompatActivity {
                         }
 
                         if (listePartPresents.size() == 0) {
-                            //tvEnfPresents.setText("Pas de personnes");
                             tvPartPresents.setText("Pas de partenaire");
-                            //Toast.makeText(Historique.this, "Liste vide", Toast.LENGTH_SHORT).show();
                         } else {
                             tvPartPresents.setText("");
 
@@ -722,7 +721,6 @@ public class Historique extends AppCompatActivity {
                             }
                         }
                     }
-
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -777,8 +775,7 @@ public class Historique extends AppCompatActivity {
      * Permet de vérifier si notre appareil est connecté à un réseau internet
      *********/
     public boolean isOnline() {
-        cm =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }

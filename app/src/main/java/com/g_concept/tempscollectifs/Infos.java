@@ -52,6 +52,7 @@ public class Infos extends AppCompatActivity {
     ArrayList<String> numEtId = new ArrayList<>();
     ConnectivityManager cm;
     NetworkInfo netInfo;
+    Reservation myReservation;
     Map<Integer, Integer> myMap = new HashMap<Integer, Integer>();
     Spinner spLieux, spRAM;
     Button btnInfos, floatingActionButton;
@@ -86,7 +87,6 @@ public class Infos extends AppCompatActivity {
     RadioGroup radioGroup;
     RequestQueue requestQueue;
     RadioButton rbLieu, rbRAM;
-
     Handler handler;
     Runnable runnable;
 
@@ -461,8 +461,6 @@ public class Infos extends AppCompatActivity {
     private void BuildTable(TableLayout tb, final int variable, int number, final String idTC) {
 
         row = new TableRow(this);
-        /*row.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
-                100));*/
 
         TableLayout.LayoutParams tableRowParams =
                 new TableLayout.LayoutParams
@@ -507,7 +505,7 @@ public class Infos extends AppCompatActivity {
         }
 
         // inner for loop
-        for (int j = 2; j <= 2; j++) {
+        /*for (int j = 2; j <= 2; j++) {
             ImageView tv = new ImageView(this);
 
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -539,18 +537,17 @@ public class Infos extends AppCompatActivity {
                         if (Integer.toString(tab) != "0") {
                             System.out.println(" La valeur au click est de " + tab);
                             myFunction();
-                            TabActivity tabs = (TabActivity) getParent();
-                            tabs.getTabHost().setCurrentTab(2);
+
                             System.out.println("On a cliqué");
                         }
                     }
                 }
             });
             System.out.println("Nous affichons le résultat de la requète" + tab);
-        }
+        }*/
 
         // inner for loop
-        for (int j = 3; j <= 3; j++) {
+        for (int j = 2; j <= 2; j++) {
             TextView tv = new TextView(this);
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
                 tv.setLayoutParams(new TableRow.LayoutParams(80,
@@ -570,7 +567,7 @@ public class Infos extends AppCompatActivity {
         }
 
         // inner for loop
-        for (int j = 4; j <= 4; j++) {
+        for (int j = 3; j <= 3; j++) {
             TextView tv = new TextView(this);
             tv.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -584,7 +581,7 @@ public class Infos extends AppCompatActivity {
         }
 
         // inner for loop
-        for (int j = 5; j <= 5; j++) {
+        for (int j = 4; j <= 4; j++) {
             TextView tv = new TextView(this);
             tv.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -598,7 +595,7 @@ public class Infos extends AppCompatActivity {
         }
 
         // inner for loop
-        for (int j = 6; j <= 6; j++) {
+        for (int j = 5; j <= 5; j++) {
             TextView tv = new TextView(this);
             tv.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
                     TableRow.LayoutParams.WRAP_CONTENT));
@@ -625,8 +622,12 @@ public class Infos extends AppCompatActivity {
                                 "Nb adultes : " + maReservation.getNbPlacesAdulte()
                         , Toast.LENGTH_LONG).show();
                 System.out.println("GET CATEGORIE " + maReservation.getCategorie());
+                myFunction2(maReservation);
+                TabActivity tabs = (TabActivity) getParent();
+                tabs.getTabHost().setCurrentTab(2);
             }
         });
+
 
         row.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -678,13 +679,8 @@ public class Infos extends AppCompatActivity {
                                     @Override
                                     public void run() {
                                         try {
-                                            if(j==0 || j==1 || j==2 || j==3 || j==4 || j==5 || j==6 || j==7 || j==8 || j==9){
                                                 deleteTC(idTC);
-                                            }
-                                            else
-                                            {
-                                                handler.removeCallbacks(this);
-                                            }
+                                                liste.clear();
                                         } catch (Exception e) {
                                             // TODO Auto-generated catch block
                                             e.printStackTrace();
@@ -694,7 +690,7 @@ public class Infos extends AppCompatActivity {
                                         j++;
                                     }
                                 };
-                                handler.postDelayed(runnable,1000);
+                                handler.postDelayed(runnable,20);
 
                             } catch (Exception e) {
                                 Toast.makeText(getApplicationContext(), "Network error"+e,
@@ -740,6 +736,13 @@ public class Infos extends AppCompatActivity {
      ********/
     public void myFunction() {
         ((Accueil) getParent()).setValue(Integer.toString(tab));
+    }
+
+    /***********
+     * Passage de l'objet Reservation vers un autre onglet
+     ********/
+    public void myFunction2(Reservation maResa) {
+        ((Accueil) getParent()).setReservation(maResa);
     }
 
     private int getNbPlacesDispo(final String idTempsColl, final TextView tv) {
