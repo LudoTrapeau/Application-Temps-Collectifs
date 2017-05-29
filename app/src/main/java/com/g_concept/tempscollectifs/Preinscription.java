@@ -2166,7 +2166,6 @@ public class Preinscription extends AppCompatActivity {
      ********/
     private void getEnfByAM(final String idAM) {
         tvEnfByAm.setText("");
-        //enfantsByAMList.clear();
         // Récupération des enfants dans une listview
         requete_enf_by_am = new StringRequest(Request.Method.POST, url_enf_by_am, new Response.Listener<String>() {
             @Override
