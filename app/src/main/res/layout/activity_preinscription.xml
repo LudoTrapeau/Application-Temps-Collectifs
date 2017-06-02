@@ -10,14 +10,13 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.g_concept.tempscollectifs.Preinscription">
+    tools:context="com.g_concept.tempscollectifs.VuesPrincipales.Preinscription">
 
     <ScrollView
         android:id="@+id/mainScrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true">
+        android:focusable="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -49,7 +48,7 @@
                 <Button
                     android:id="@+id/fabButton"
                     android:layout_width="50dp"
-                    android:layout_height="50dp"
+                    android:layout_height="match_parent"
                     android:layout_alignParentTop="true"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
@@ -336,8 +335,8 @@
                         android:layout_height="400dp"
                         android:layout_margin="10dp"
                         android:choiceMode="none"
-                        android:focusableInTouchMode="false"
-                        android:focusable="false" />
+                        android:focusable="false"
+                        android:focusableInTouchMode="false" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -358,8 +357,8 @@
                             android:layout_height="match_parent"
                             android:layout_margin="20dp"
                             android:choiceMode="none"
-                            android:focusableInTouchMode="false"
-                            android:focusable="false" />
+                            android:focusable="false"
+                            android:focusableInTouchMode="false" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -494,8 +493,8 @@
                         android:layout_height="400dp"
                         android:layout_margin="20dp"
                         android:choiceMode="none"
-                        android:focusableInTouchMode="false"
-                        android:focusable="false" />
+                        android:focusable="false"
+                        android:focusableInTouchMode="false" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -516,8 +515,8 @@
                             android:layout_height="match_parent"
                             android:layout_margin="20dp"
                             android:choiceMode="none"
-                            android:focusableInTouchMode="false"
-                            android:focusable="false" />
+                            android:focusable="false"
+                            android:focusableInTouchMode="false" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -649,10 +648,7 @@
                         android:id="@+id/listView1"
                         android:layout_width="match_parent"
                         android:layout_height="200dp"
-                        android:layout_marginTop="20dp"
-                        android:choiceMode="none"
-                        android:focusableInTouchMode="false"
-                        android:focusable="false" />
+                        android:layout_marginTop="20dp" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -782,8 +778,8 @@
                         android:layout_height="200dp"
                         android:layout_marginTop="20dp"
                         android:choiceMode="none"
-                        android:focusableInTouchMode="true"
-                        android:focusable="true" />
+                        android:focusable="true"
+                        android:focusableInTouchMode="true" />
 
                     <LinearLayout
                         android:layout_width="match_parent"

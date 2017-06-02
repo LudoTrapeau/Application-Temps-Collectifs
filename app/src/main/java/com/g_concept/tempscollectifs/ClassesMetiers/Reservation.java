@@ -1,4 +1,4 @@
-package com.g_concept.tempscollectifs;
+package com.g_concept.tempscollectifs.ClassesMetiers;
 
 /**
  * Created by G-CONCEPT on 19/12/2016.
@@ -6,10 +6,7 @@ package com.g_concept.tempscollectifs;
 
 public class Reservation {
 
-    String id, idTC;
-    String date, lieu;
-    String nom, categorie, horaire;
-    String nbPlaces, nbPlacesEnfant, nbPlacesAdulte;
+    String id, idTC, date, lieu, nom, categorie, horaire, nbPlaces, nbPlacesEnfant, nbPlacesAdulte;
 
     public Reservation(String monId, String maDate, String monNom, String monHoraire, String maCategorie, String monNbPlaces, String monLieu, String monNbPlacesEnfant, String monNbPlacesAdulte) {
         this.id = monId;

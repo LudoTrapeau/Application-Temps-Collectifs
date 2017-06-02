@@ -9,7 +9,7 @@
     android:paddingLeft="0dp"
     android:paddingRight="0dp"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.g_concept.tempscollectifs.CreationTempsColl"
+    tools:context="com.g_concept.tempscollectifs.VuesPrincipales.CreationTempsColl"
     android:background="#636262">
 
     <LinearLayout

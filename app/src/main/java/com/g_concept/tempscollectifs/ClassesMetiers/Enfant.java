@@ -1,28 +1,23 @@
-package com.g_concept.tempscollectifs;
+package com.g_concept.tempscollectifs.ClassesMetiers;
 
 /**
- * Created by G-CONCEPT on 06/03/2017.
+ * Created by G-CONCEPT on 10/01/2017.
  */
-
-public class PersonneBis {
+public class Enfant {
 
     String code = null;
-    String typePersonne = null;
     String nom = null;
     String dateNaissance = null;
     String prenom = null;
     boolean selected = false;
-    String idTempsColl = null;
 
-    public PersonneBis(String code, String nom, String prenom, String dateNaissance, boolean selected, String typePersonne, String idTempsColl) {
+    public Enfant(String code,String nom, String prenom, String dateNaissance, boolean selected) {
         super();
         this.code = code;
         this.nom = nom;
         this.prenom = prenom;
         this.dateNaissance = dateNaissance;
         this.selected = selected;
-        this.typePersonne = typePersonne;
-        this.idTempsColl = idTempsColl;
     }
 
     public String getCode() {
@@ -58,27 +53,12 @@ public class PersonneBis {
         return selected;
     }
 
+
     public String getDateNaissance() {
         return dateNaissance;
     }
 
     public void setDateNaissance(String dateNaissance) {
         this.dateNaissance = dateNaissance;
-    }
-
-    public String getIdTempsColl() {
-        return idTempsColl;
-    }
-
-    public void setIdTempsColl(String idTempsColl) {
-        this.idTempsColl = idTempsColl;
-    }
-
-    public String getTypePersonne() {
-        return typePersonne;
-    }
-
-    public void setTypePersonne(String typePersonne) {
-        this.typePersonne = typePersonne;
     }
 }

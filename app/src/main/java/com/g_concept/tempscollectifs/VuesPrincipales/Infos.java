@@ -1,4 +1,4 @@
-package com.g_concept.tempscollectifs;
+package com.g_concept.tempscollectifs.VuesPrincipales;
 
 import android.app.TabActivity;
 import android.content.Context;
@@ -36,6 +36,11 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.g_concept.tempscollectifs.ClassesMetiers.Network;
+import com.g_concept.tempscollectifs.Fonctionnalites.InfoBulle;
+import com.g_concept.tempscollectifs.R;
+import com.g_concept.tempscollectifs.ClassesMetiers.Reservation;
+import com.g_concept.tempscollectifs.Fonctionnalites.UpdateTC;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -51,14 +56,23 @@ public class Infos extends AppCompatActivity {
 
     ArrayList<String> numEtId = new ArrayList<>();
     ConnectivityManager cm;
+    Network myNetwork;
     NetworkInfo netInfo;
     Reservation myReservation;
     Map<Integer, Integer> myMap = new HashMap<Integer, Integer>();
     Spinner spLieux, spRAM;
+    TextView tv;
+    int number;
+    Toast toast;
+    Reservation maReservation;
+    AlertDialog.Builder adb;
+    TableLayout.LayoutParams tableRowParams;
     Button btnInfos, floatingActionButton;
     ArrayAdapter<String> adapter;
-    int tab, res, j;
-    String  var, horaire, initLieu = "Choisir un lieu", initRAM = "Choisir un RAM", idTempsColl, choix, nbPlaces, dateTempsColl,
+    int tab, res, j, i = 0;
+    // Strings to Show In Dialog with Radio Buttons
+    final CharSequence[] items = {"Modifier le Temps Collectif", " Supprimer le Temps Collectif"};
+    String var, horaire, initLieu = "Choisir un lieu", initRAM = "Choisir un RAM", idTempsColl, choix, nbPlaces, dateTempsColl,
             url_delete_tc = "https://www.web-familles.fr/AppliTempsCollectifs/Informations/deleteTC.php",
             url_obtenir_temps_coll = "https://www.web-familles.fr/AppliTempsCollectifs/Informations/getTempsCollectifs.php",
             url_places_by_tc = "https://www.web-familles.fr/AppliTempsCollectifs/ValidationPresence/getNbPlacesRestantes.php";
@@ -70,8 +84,8 @@ public class Infos extends AppCompatActivity {
     ImageView ivDetails;
     TextView tvNom, tvDate;
     Date myDate;
-    ArrayList<String> liste = new ArrayList<String>();
-    ArrayList<String> listeRAM = new ArrayList<String>();
+    TabActivity tabs;
+    ArrayList<String> liste = new ArrayList<String>(), listeRAM = new ArrayList<String>();
     int temp, nbPlacesDispo;
     TableRow row;
     JSONObject json;
@@ -79,7 +93,7 @@ public class Infos extends AppCompatActivity {
     TextView tvIsEmpty;
     String EXTRA_DB = "donnees", titleRAM, nbPlacesEnfant, nbPlacesAdulte, nomTempsColl, choixDB, lieuTempsColl, categorie,
             url_obtenir_lieu_temps_coll = "https://www.web-familles.fr/AppliTempsCollectifs/Informations/getLieuxTempsCollectifs.php",
-            url_obtenir_ram = "https://www.web-familles.fr/AppliTempsCollectifs/CreationTempsColl/getRAM.php";
+            url_obtenir_ram = "https://www.web-familles.fr/AppliTempsCollectifs/CreationTempsColl/getRAM.php", choixRAM;
     StringRequest requete_temps_coll, requete_ram, requete_places_by_tc, requete_delete_tc;
     Map<String, String> params = new HashMap<String, String>();
     JSONObject leLieuTempsColl, leRAM;
@@ -126,14 +140,15 @@ public class Infos extends AppCompatActivity {
         liste.clear();
 
         // Si notre appareil est bien connecté à un réseau internet on récupère les lieux et les RAM sinon on affiche un message
-        if (isOnline()) {
+        cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        myNetwork = new Network(cm);
+
+        if (myNetwork.isOnline()) {
             getLieuxTempsCollectifs();
             getRAMCollectifs();
         } else {
-            Toast.makeText(Infos.this, "Veuillez vérifier votre connexion internet", Toast.LENGTH_SHORT).show();
+            toast.makeText(Infos.this, "Veuillez vérifier votre connexion internet", toast.LENGTH_SHORT).show();
         }
-
-        // TEST
 
         llContentRAM.setVisibility(View.GONE);
 
@@ -141,7 +156,7 @@ public class Infos extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 finish();
-                Toast.makeText(Infos.this, "Déconnexion !", Toast.LENGTH_SHORT).show();
+                toast.makeText(Infos.this, "Déconnexion !", toast.LENGTH_SHORT).show();
             }
         });
 
@@ -151,7 +166,7 @@ public class Infos extends AppCompatActivity {
                 llContentRAM.setVisibility(View.VISIBLE);
                 llContentLieu.setVisibility(View.GONE);
                 spRAM.setSelection(0);
-                Toast.makeText(getApplicationContext(), "Lieu check", Toast.LENGTH_SHORT).show();
+                toast.makeText(getApplicationContext(), "Lieu check", toast.LENGTH_SHORT).show();
             }
         });
 
@@ -161,7 +176,7 @@ public class Infos extends AppCompatActivity {
                 llContentRAM.setVisibility(View.GONE);
                 llContentLieu.setVisibility(View.VISIBLE);
                 spLieux.setSelection(0);
-                Toast.makeText(getApplicationContext(), "Lieu check", Toast.LENGTH_SHORT).show();
+                toast.makeText(getApplicationContext(), "Lieu check", toast.LENGTH_SHORT).show();
             }
         });
 
@@ -198,30 +213,29 @@ public class Infos extends AppCompatActivity {
         spRAM.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
-                choix = String.valueOf(spRAM.getSelectedItem());
+                choixRAM = String.valueOf(spRAM.getSelectedItem());
                 TLtempscoll.removeAllViews();
-                Log.i("Page Emprunt", "Vous avez appuyé sur :" + choix);
+                Log.i("Page Emprunt", "Vous avez appuyé sur :" + choixRAM);
                 System.out.println("LINE " + TLtempscoll.getChildCount());
                 spLieux.setSelection(0);
-                if (isOnline()) {
+                cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                myNetwork = new Network(cm);
+
+                if (myNetwork.isOnline()) {
                     try {
                         liste.clear();
-                        getTempsCollectifs("2", "", choix, "date ASC");
-                        final Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                liste.clear();
-                                getTempsCollectifs("2", "", choix, "date ASC");
-                            }
-                        }, 1000);
+                        i++;
+                        if (i % 2 == 0) {
+                            getTempsCollectifs("2", "", choixRAM, "nom ASC");
+                        } else {
+                            getTempsCollectifs("2", "", choixRAM, "nom DESC");
+                        }
                     } catch (Exception e) {
-                        Toast.makeText(getApplicationContext(), "Network error",
-                                Toast.LENGTH_SHORT).show();
+                        toast.makeText(getApplicationContext(), "Network error",
+                                toast.LENGTH_SHORT).show();
                     }
-
                 } else {
-                    Toast.makeText(Infos.this, "Veuillez vérifier votre connexion internet", Toast.LENGTH_SHORT).show();
+                    toast.makeText(Infos.this, "Veuillez vérifier votre connexion internet", toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -230,7 +244,6 @@ public class Infos extends AppCompatActivity {
                 // TODO Auto-generated method stub
             }
         });
-
 
         ivDetails = new ImageView(this);
         ivDetails.setImageResource(R.drawable.details);
@@ -253,10 +266,13 @@ public class Infos extends AppCompatActivity {
                 Log.i("Page Emprunt", "Vous avez appuyé sur :" + choix);
                 System.out.println("LINE " + TLtempscoll.getChildCount());
                 spRAM.setSelection(0);
-                if (isOnline()) {
+                cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                myNetwork = new Network(cm);
+
+                if (myNetwork.isOnline()) {
                     getTempsCollectifs("1", choix, "", "date ASC");
                 } else {
-                    Toast.makeText(Infos.this, "Veuillez vérifier votre connexion internet", Toast.LENGTH_SHORT).show();
+                    toast.makeText(Infos.this, "Veuillez vérifier votre connexion internet", toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -270,7 +286,12 @@ public class Infos extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 TLtempscoll.removeAllViews();
-                getTempsCollectifs("1", "", choix, "nom");
+                i++;
+                if (i % 2 == 0) {
+                    getTempsCollectifs("1", choix, "", "nom ASC");
+                } else {
+                    getTempsCollectifs("1", choix, "", "nom DESC");
+                }
             }
         });
 
@@ -278,12 +299,14 @@ public class Infos extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 TLtempscoll.removeAllViews();
-                getTempsCollectifs("1", choix, "", "date DESC");
+                i++;
+                if (i % 2 == 0) {
+                    getTempsCollectifs("1", choix, "", "date ASC");
+                } else {
+                    getTempsCollectifs("1", choix, "", "date DESC");
+                }
             }
         });
-
-        System.out.println(" LIGNES TOTALES : " + TLtempscoll.getChildCount());
-
     }
 
     public void deleteTC(final String idTC) {
@@ -291,14 +314,13 @@ public class Infos extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
                 System.out.println("Voici la requête delete to modify : " + response);
-                if(response.contains("[1]")){
-                    Toast.makeText(Infos.this, "Vous venez de supprimer ce temps collectif ! Vous pouvez dès à présent en créer de nouveaux.", Toast.LENGTH_LONG).show();
+                if (response.contains("[1]")) {
+                    toast.makeText(Infos.this, "Vous venez de supprimer ce temps collectif ! Vous pouvez dès à présent en créer de nouveaux.", toast.LENGTH_LONG).show();
                     // Permet de switcher de tab quand on clique sur le bouton de validation de présence
-                    TabActivity tabs = (TabActivity) getParent();
+                    tabs = (TabActivity) getParent();
                     tabs.getTabHost().setCurrentTab(1);
-                }
-                else if (response.contains("[2]")){
-                    Toast.makeText(Infos.this, "Erreur !", Toast.LENGTH_LONG).show();
+                } else if (response.contains("[2]")) {
+                    toast.makeText(Infos.this, "Erreur !", toast.LENGTH_LONG).show();
                 }
             }
         }, new Response.ErrorListener() {
@@ -317,6 +339,9 @@ public class Infos extends AppCompatActivity {
         requestQueue.add(requete_delete_tc);
     }
 
+    /*********
+     * Chargement des lieux de temps collectif
+     * *********/
     public void getLieuxTempsCollectifs() {
         requete_temps_coll = new StringRequest(Request.Method.POST, url_obtenir_lieu_temps_coll, new Response.Listener<String>() {
             @Override
@@ -352,6 +377,9 @@ public class Infos extends AppCompatActivity {
         requestQueue.add(requete_temps_coll);
     }
 
+    /*******
+     * Chargement des temps collectifs dans une liste
+     * *********/
     public void getTempsCollectifs(final String lieuOuRAM, final String monChoix, final String monRAM, final String choixOrderBy) {
         requete_temps_coll = new StringRequest(Request.Method.POST, url_obtenir_temps_coll, new Response.Listener<String>() {
             @Override
@@ -382,7 +410,7 @@ public class Infos extends AppCompatActivity {
                         var = idTempsColl + " \\| " + nomTempsColl + " " + dateTempsColl;
 
                         // Permettra ensuite de distinguer deux lignes en mettant des couleurs différentes
-                        int number = 0;
+                        number = 0;
                         if (i % 2 == 0) {
                             number = 1;
                         } else {
@@ -421,6 +449,9 @@ public class Infos extends AppCompatActivity {
         requestQueue.add(requete_temps_coll);
     }
 
+    /********
+     * Chargement des RAM
+     * ********/
     public void getRAMCollectifs() {
         requete_ram = new StringRequest(Request.Method.POST, url_obtenir_ram, new Response.Listener<String>() {
             @Override
@@ -462,9 +493,7 @@ public class Infos extends AppCompatActivity {
 
         row = new TableRow(this);
 
-        TableLayout.LayoutParams tableRowParams =
-                new TableLayout.LayoutParams
-                        (TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT);
+        tableRowParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT);
 
         // inner for loop
         tableRowParams.setMargins(10, 10, 10, 10);
@@ -478,12 +507,12 @@ public class Infos extends AppCompatActivity {
         myMap.put(variable, Integer.parseInt(idTempsColl));
 
         for (int j = 1; j <= 1; j++) {
-            TextView tv = new TextView(this);
+            tv = new TextView(this);
 
             tv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(Infos.this, "Filtrage", Toast.LENGTH_SHORT).show();
+                    toast.makeText(Infos.this, "Filtrage", toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -505,50 +534,8 @@ public class Infos extends AppCompatActivity {
         }
 
         // inner for loop
-        /*for (int j = 2; j <= 2; j++) {
-            ImageView tv = new ImageView(this);
-
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                tv.setLayoutParams(new TableRow.LayoutParams(80,
-                        ViewGroup.LayoutParams.WRAP_CONTENT));
-            } else {
-                tv.setLayoutParams(new TableRow.LayoutParams(80,
-                        80));
-            }
-
-            tv.getLayoutParams().height = 40;
-            tv.setPadding(5, 5, 5, 5);
-            tv.setImageResource(R.drawable.un);
-            if (number != 1) {
-                tv.setBackgroundColor(Color.parseColor("#6d6c6c"));
-            }
-
-            row.addView(tv);
-            tv.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    for (Map.Entry<Integer, Integer> entry : myMap.entrySet()) {
-                        int key = entry.getKey();
-                        if (key == variable) {
-                            tab = entry.getValue();
-                        }
-
-                        Integer.toString(tab);
-                        if (Integer.toString(tab) != "0") {
-                            System.out.println(" La valeur au click est de " + tab);
-                            myFunction();
-
-                            System.out.println("On a cliqué");
-                        }
-                    }
-                }
-            });
-            System.out.println("Nous affichons le résultat de la requète" + tab);
-        }*/
-
-        // inner for loop
         for (int j = 2; j <= 2; j++) {
-            TextView tv = new TextView(this);
+            tv = new TextView(this);
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
                 tv.setLayoutParams(new TableRow.LayoutParams(80,
                         ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -568,9 +555,8 @@ public class Infos extends AppCompatActivity {
 
         // inner for loop
         for (int j = 3; j <= 3; j++) {
-            TextView tv = new TextView(this);
-            tv.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT));
+            tv = new TextView(this);
+            tv.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             tv.setPadding(5, 5, 5, 5);
             tv.setText(horaire);
             tv.setTextColor(Color.WHITE);
@@ -582,9 +568,8 @@ public class Infos extends AppCompatActivity {
 
         // inner for loop
         for (int j = 4; j <= 4; j++) {
-            TextView tv = new TextView(this);
-            tv.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT));
+            tv = new TextView(this);
+            tv.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             tv.setPadding(5, 5, 5, 5);
             tv.setText(categorie);
             tv.setTextColor(Color.WHITE);
@@ -596,9 +581,8 @@ public class Infos extends AppCompatActivity {
 
         // inner for loop
         for (int j = 5; j <= 5; j++) {
-            TextView tv = new TextView(this);
-            tv.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
-                    TableRow.LayoutParams.WRAP_CONTENT));
+            tv = new TextView(this);
+            tv.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
             tv.setPadding(5, 5, 5, 5);
             getNbPlacesDispo(idTempsColl, tv);
             tv.setTextColor(Color.WHITE);
@@ -608,26 +592,25 @@ public class Infos extends AppCompatActivity {
             row.addView(tv);
         }
 
-        final Reservation maReservation = new Reservation(idTempsColl, dateTempsColl, nomTempsColl, horaire, categorie, nbPlaces, lieuTempsColl, nbPlacesEnfant, nbPlacesAdulte);
+        maReservation = new Reservation(idTempsColl, dateTempsColl, nomTempsColl, horaire, categorie, nbPlaces, lieuTempsColl, nbPlacesEnfant, nbPlacesAdulte);
 
         row.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                Toast.makeText(Infos.this, "Id : " + maReservation.getNom() + "\n" +
+                toast.makeText(Infos.this, "Id : " + maReservation.getNom() + "\n" +
                                 "Date : " + maReservation.getDate() + "\n" +
                                 "Lieu : " + maReservation.getLieu() + "\n" +
                                 "Catégorie : " + maReservation.getCategorie() + "\n" +
                                 "Nb enfants : " + maReservation.getNbPlacesEnfant() + "\n" +
                                 "Nb adultes : " + maReservation.getNbPlacesAdulte()
-                        , Toast.LENGTH_LONG).show();
+                        , toast.LENGTH_LONG).show();
                 System.out.println("GET CATEGORIE " + maReservation.getCategorie());
                 myFunction2(maReservation);
-                TabActivity tabs = (TabActivity) getParent();
+                tabs = (TabActivity) getParent();
                 tabs.getTabHost().setCurrentTab(2);
             }
         });
-
 
         row.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -636,15 +619,8 @@ public class Infos extends AppCompatActivity {
                 // TODO Auto-generated method stub
                 res = 0;
 
-                //On instancie notre layout en tant que View
-                LayoutInflater factory = LayoutInflater.from(Infos.this);
-                final View alertDialogView = factory.inflate(R.layout.alertdialogpresent, null);
-
                 //Création de l'AlertDialog
-                final AlertDialog.Builder adb = new AlertDialog.Builder(Infos.this);
-
-                // Strings to Show In Dialog with Radio Buttons
-                final CharSequence[] items = {"Modifier le Temps Collectif" , " Supprimer le Temps Collectif"};
+                adb = new AlertDialog.Builder(Infos.this);
 
                 adb.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int item) {
@@ -662,7 +638,6 @@ public class Infos extends AppCompatActivity {
                                 res = 0;
                         }
                     }
-
                 });
 
                 //On donne un titre à l'AlertDialog
@@ -673,40 +648,39 @@ public class Infos extends AppCompatActivity {
                         System.out.println("RES " + res);
                         if (res == 1) {
                             try {
-                                final Handler handler = new Handler();
+                                handler = new Handler();
                                 j = 0;
                                 runnable = new Runnable() {
                                     @Override
                                     public void run() {
                                         try {
-                                                deleteTC(idTC);
-                                                liste.clear();
+                                            deleteTC(idTC);
+                                            liste.clear();
                                         } catch (Exception e) {
                                             // TODO Auto-generated catch block
                                             e.printStackTrace();
                                         }
 
-                                        System.out.println("J EST EGAL A "+j);
+                                        System.out.println("J EST EGAL A " + j);
                                         j++;
                                     }
                                 };
-                                handler.postDelayed(runnable,20);
+                                handler.postDelayed(runnable, 20);
 
                             } catch (Exception e) {
-                                Toast.makeText(getApplicationContext(), "Network error"+e,
-                                        Toast.LENGTH_SHORT).show();
+                                toast.makeText(getApplicationContext(), "Network error" + e,
+                                        toast.LENGTH_SHORT).show();
                                 System.out.println("error " + e);
                             }
                             res = 0;
 
-                        }
-                        else if((res==0)){
+                        } else if ((res == 0)) {
                             intent = new Intent(getApplicationContext(), UpdateTC.class);
-                            intent.putExtra("idTC",idTC);
-                            intent.putExtra("donnees",choixDB);
+                            intent.putExtra("idTC", idTC);
+                            intent.putExtra("donnees", choixDB);
                             startActivity(intent);
-                        } else{
-                            Toast.makeText(getApplicationContext(), "Veuillez faire un choix !",Toast.LENGTH_SHORT).show();
+                        } else {
+                            toast.makeText(getApplicationContext(), "Veuillez faire un choix !", toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -725,12 +699,6 @@ public class Infos extends AppCompatActivity {
         tb.addView(row);
     }
 
-    public boolean isOnline() {
-        cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        netInfo = cm.getActiveNetworkInfo();
-        return netInfo != null && netInfo.isConnectedOrConnecting();
-    }
-
     /***********
      * Passage de données vers les autres onglets
      ********/
@@ -745,6 +713,9 @@ public class Infos extends AppCompatActivity {
         ((Accueil) getParent()).setReservation(maResa);
     }
 
+    /*****
+     * Chargement des places disponibles de ce temps collectif
+     * *******/
     private int getNbPlacesDispo(final String idTempsColl, final TextView tv) {
         nbPlacesDispo = 0;
         requete_places_by_tc = new StringRequest(Request.Method.POST, url_places_by_tc, new Response.Listener<String>() {

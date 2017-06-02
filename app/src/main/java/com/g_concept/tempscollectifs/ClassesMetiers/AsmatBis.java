@@ -1,20 +1,21 @@
-package com.g_concept.tempscollectifs;
+package com.g_concept.tempscollectifs.ClassesMetiers;
 
 /**
  * Created by G-CONCEPT on 23/01/2017.
  */
 
-public class Asmat {
+public class AsmatBis {
 
-    String id, nom, prenom, dateNaissance;
+    String id, nom, prenom, dateNaissance, idTempsColl;
     boolean selected;
 
-    public Asmat(String id, String nom, String prenom, boolean selected){
+    public AsmatBis(String id, String nom, String prenom, boolean selected, String idTempsColl){
         super();
         this.id = id;
         this.nom = nom;
         this.prenom = prenom;
         this.selected = selected;
+        this.idTempsColl = idTempsColl;
     }
 
     public String getId() {
@@ -55,5 +56,13 @@ public class Asmat {
 
     public void setSelected(boolean selected) {
         this.selected = selected;
+    }
+
+    public String getIdTempsColl() {
+        return idTempsColl;
+    }
+
+    public void setIdTempsColl(String idTempsColl) {
+        this.idTempsColl = idTempsColl;
     }
 }

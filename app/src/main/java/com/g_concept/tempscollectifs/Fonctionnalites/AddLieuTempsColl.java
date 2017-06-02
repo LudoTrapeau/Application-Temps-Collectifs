@@ -1,4 +1,4 @@
-package com.g_concept.tempscollectifs;
+package com.g_concept.tempscollectifs.Fonctionnalites;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -21,6 +21,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.g_concept.tempscollectifs.R;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package com.g_concept.tempscollectifs;
+package com.g_concept.tempscollectifs.VuesPrincipales;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -36,6 +36,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.g_concept.tempscollectifs.ClassesMetiers.Network;
+import com.g_concept.tempscollectifs.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -54,25 +56,29 @@ import java.util.Map;
 public class Login extends AppCompatActivity {
 
     private static final int REQUEST_READ_CONTACTS = 0;
-
     private static final String[] DUMMY_CREDENTIALS = new String[]{};
-    String url_verif_authent = "https://www.web-familles.fr/AppliTempsCollectifs/toLogIn.php";
     private UserLoginTask mAuthTask = null;
-
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
+    Network myNetwork;
+    char[] inputBuffer;
+    String data;
     Intent intent;
     int res = 0;
+    FileInputStream fIn = null;
+    InputStreamReader isr = null;
     JSONObject ladherent;
     TextView msgErreur;
     ArrayList<String> liste = new ArrayList<>();
     JSONArray jsonArray, adherents;
     JSONObject jsonObject, json;
     String idUser, part1, part2,
-            url = "https://www.web-familles.fr/AppliTempsCollectifs/getAllDB.php", db2, email, password, initBDD = "Choisir votre structure", db, choixDB;
+            url = "https://www.web-familles.fr/AppliTempsCollectifs/getAllDB.php", db2, email, password, initBDD = "Choisir votre structure", db, choixDB,
+            url_verif_authent = "https://www.web-familles.fr/AppliTempsCollectifs/toLogIn.php";
     StringRequest requete_adhrent;
     Button btnConnexion;
+    android.support.v7.app.ActionBar actionBar;
     String[] pieces, parts2;
     int shortAnimTime;
     JsonObjectRequest jsonObjectRequest;
@@ -91,7 +97,7 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        actionBar = getSupportActionBar();
         assert actionBar != null;
         actionBar.setLogo(R.drawable.icone);
         actionBar.setDisplayUseLogoEnabled(true);
@@ -112,10 +118,11 @@ public class Login extends AppCompatActivity {
         mPasswordView = (EditText) findViewById(R.id.password);
 
         /*** Pour l'enregistrement des identifiants ***/
-        //ReadSettings(getBaseContext());
-        //cbMemory.setChecked(true);
 
-        if (isOnline()) {
+        cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        myNetwork = new Network(cm);
+
+        if (myNetwork.isOnline()) {
             getAllDb();
         } else {
             Toast.makeText(getApplicationContext(), "Veuillez vérifier votre connexion internet et relancer l'application", Toast.LENGTH_SHORT).show();
@@ -143,15 +150,6 @@ public class Login extends AppCompatActivity {
             if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             }
         }
-    }
-
-    /*********
-     * Vérification si l'appareil est connecté au réseau internet
-     ********/
-    public boolean isOnline() {
-        cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        netInfo = cm.getActiveNetworkInfo();
-        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
     /******
@@ -212,8 +210,6 @@ public class Login extends AppCompatActivity {
                         idUser = ladherent.getString("id");
                     }
 
-                    //Toast.makeText(Login.this, "L'id est : " + idUser, Toast.LENGTH_SHORT).show();
-
                     // Si on reçoit '[1]' en JSON, l'utilisateur a rentré les bons identifiants et est connecté
                     if (!choixDB.equals(initBDD)) {
                         if (response.contains("[1]")) {
@@ -223,13 +219,13 @@ public class Login extends AppCompatActivity {
                             intent.putExtra("idUser", idUser);
                             res = 1;
                             startActivity(intent);
-                            }
+                        }
                     }
 
-                    if(choixDB.equals(initBDD)){
+                    if (choixDB.equals(initBDD)) {
                         msgErreur.setText("Veuillez selectionner une base de données !");
                         System.out.println("Equals : " + choixDB + " et " + initBDD);
-                    }else{
+                    } else {
                         System.out.println("Pas Equals : " + choixDB + " et " + initBDD);
                     }
 
@@ -317,7 +313,6 @@ public class Login extends AppCompatActivity {
             showProgress(false);
 
             if (success) {
-                //returnLogin();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
@@ -331,69 +326,8 @@ public class Login extends AppCompatActivity {
         }
     }
 
-    /******
-     * Ecriture sur un fichier des données à mémoriser
-     *******/
-    public void WriteSettings(Context context, String data) {
-        FileOutputStream fOut = null;
-        OutputStreamWriter osw = null;
-
-        try {
-            fOut = context.openFileOutput("memoire.dat", MODE_PRIVATE);
-            System.out.println("FOUT " + fOut);
-            osw = new OutputStreamWriter(fOut);
-            osw.write(data);
-            osw.flush();
-            //popup surgissant pour le résultat
-            //Toast.makeText(context, "Settings saved",Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            //Toast.makeText(context, "Settings not saved",Toast.LENGTH_SHORT).show();
-            Log.e("Erreur", String.valueOf(e));
-        } finally {
-            try {
-                osw.close();
-                fOut.close();
-            } catch (IOException e) {
-                //Toast.makeText(context, "Settings not saved",Toast.LENGTH_SHORT).show();
-                Log.e("Erreur", String.valueOf(e));
-            }
-        }
-    }
-
-    /*****
-     * Lecture sur le fichier des données à récupérer
-     ******/
-    public String ReadSettings(Context context) {
-        FileInputStream fIn = null;
-        InputStreamReader isr = null;
-
-        char[] inputBuffer = new char[255];
-        String data = null;
-
-        try {
-            fIn = context.openFileInput("memoire.dat");
-            isr = new InputStreamReader(fIn);
-            isr.read(inputBuffer);
-            data = new String(inputBuffer);
-            //affiche le contenu de mon fichier dans un popup surgissant
-            //Toast.makeText(context, " "+data,Toast.LENGTH_SHORT).show();
-            System.out.println("DATA :" + data);
-            //parts2 = data.split("-");
-            //part1 = parts2[0].replaceAll("_", " ");
-            //part2 = parts2[1];
-            //liste.add(part1);
-            //liste.remove(initBDD);
-            System.out.println("part1 :" + part1);
-            System.out.println("part2 :" + part2);
-            mEmailView.setText(data);
-        } catch (Exception e) {
-            Log.e("Erreur", String.valueOf(e));
-        }
-        return data;
-    }
-
     /************************** Récupération des bdd dans une liste ****************************/
-    public void getAllDb(){
+    public void getAllDb() {
 
         //Menu déroulant contenant les bdd
         spinnerDB = (Spinner) findViewById(R.id.spBDD);
@@ -448,16 +382,7 @@ public class Login extends AppCompatActivity {
                         jsonObject = jsonArray.getJSONObject(i);
                         db = jsonObject.getString("Database");
                         if (!db.equals("information_schema")) {
-                            //if (db.contains("_")) {
-                                //db2 = db.replaceAll("_", " ");
-                                if (!liste.contains(db2)) {
-                                    //liste.add(db2);
-                                }
-                            //} else {
-                              //  if (!liste.contains(db)) {
-                                    liste.add(db);
-                                //}
-                           // }
+                            liste.add(db);
                         }
                     }
                 } catch (
@@ -474,5 +399,5 @@ public class Login extends AppCompatActivity {
             }
         });
         requestQueue.add(jsonObjectRequest);
-}
+    }
 }

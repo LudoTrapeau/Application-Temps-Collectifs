@@ -1,4 +1,4 @@
-package com.g_concept.tempscollectifs;
+package com.g_concept.tempscollectifs.VuesPrincipales;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -18,7 +17,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -40,6 +38,12 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.g_concept.tempscollectifs.ClassesMetiers.Network;
+import com.g_concept.tempscollectifs.Fonctionnalites.AddActiviteTempsColl;
+import com.g_concept.tempscollectifs.Fonctionnalites.AddLieuTempsColl;
+import com.g_concept.tempscollectifs.Fonctionnalites.AddNomTempsColl;
+import com.g_concept.tempscollectifs.Fonctionnalites.InfoBulle;
+import com.g_concept.tempscollectifs.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -57,10 +61,14 @@ public class CreationTempsColl extends AppCompatActivity {
     DatePickerDialog.OnDateSetListener dpicker;
     TimePickerDialog tpicker;
     ImageView ibDelete;
+    String[] tab;
     Calendar mcurrentTime;
-    TextView tvRAM, tvActivite, tvNomTC, tvLieu;
+    TextView tvRAM, tvActivite, tvNomTC, tvLieu, editText;
     EditText edDate, edHeureDebut, edHeureFin, edDetailsPublic, edDetailsRAM, dateDeb;
-    String time;
+    ConnectivityManager cm;
+    StringBuilder sb, sb2;
+    Calendar cal;
+    Network myNetwork, finalMyNetwork;
     Button btnCreateTempsColl, btnRefresh, btnRefresh2, btnRefresh3, btnDeleteLieu, btnDeleteNom, btnDeleteActivite;
     boolean cancel;
     View focusView;
@@ -70,19 +78,18 @@ public class CreationTempsColl extends AppCompatActivity {
             "51", "52", "53", "54", "55", "56", "57", "58", "59", "60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72", "73", "74", "75",
             "76", "77", "78", "79", "80", "81", "82", "83", "84", "85", "86", "87", "88", "89", "90", "91", "92", "93", "94", "95", "96", "97", "98", "99", "100"};
     static final int DIALOG_ID = 0;
-    int annee, mois, jour, heure, minute;
+    int annee, mois, jour, heure, minute, nb = 1;
     Spinner spLieux, spNom, spActivite, spRAM;
-    ArrayList<String> listeNomsTempsColl = new ArrayList<>();
-    ArrayList<String> listeActivitesTempsColl = new ArrayList<>();
-    ArrayList<String> listeRAM = new ArrayList<>();
+    ArrayList<String> listeNomsTempsColl = new ArrayList<>(),listeActivitesTempsColl = new ArrayList<>(), listeRAM = new ArrayList<>(), spinnerArray = new ArrayList<String>();
     JSONObject json;
     Button floatingActionButton, btnInfos;
     SeekBar seekBar, seekBar2;
     Switch swIndefini, swIndefini2;
     TextView tvSeek, tvSeek2, tvNbLimitChar, tvNbLimitChar2;
     Intent intent;
-    String  heureDebParams, heureFinParams, EXTRA_DB="donnees", titleRAM, nbPlacesEnfant, nbPlacesAdulte, activiteTempsColl, descriptif, date, heureDebut, heureFin, nomTempsColl, m, j, lieuTempsColl, categorie,
-            initNom = "Choisissez le nom",initActivite = "Choisissez l'activité",initRAM = "Choisissez le RAM", initLieu = "Choisissez le lieu",
+    Handler handler;
+    String time, heureDebParams, heureFinParams, EXTRA_DB = "donnees", titleRAM, nbPlacesEnfant, nbPlacesAdulte, activiteTempsColl, descriptif, date, heureDebut, heureFin, nomTempsColl, m, j, lieuTempsColl, categorie,
+            initNom = "Choisissez le nom", initActivite = "Choisissez l'activité", initRAM = "Choisissez le RAM", initLieu = "Choisissez le lieu",
             url_creation_temps_coll = "https://www.web-familles.fr/AppliTempsCollectifs/CreationTempsColl/createTempsColl.php", db2, email, password, initBDD = "Choisir votre structure", db, choixDB,
             url_obtenir_lieu_temps_coll = "https://www.web-familles.fr/AppliTempsCollectifs/Informations/getLieuxTempsCollectifs.php",
             url_obtenir_nom_temps_coll = "https://www.web-familles.fr/AppliTempsCollectifs/CreationTempsColl/getNomsTempsColl.php",
@@ -91,13 +98,20 @@ public class CreationTempsColl extends AppCompatActivity {
             url_delete_activite_temps_coll = "https://www.web-familles.fr/AppliTempsCollectifs/CreationTempsColl/deleteLieuTempsColl.php",
             url_obtenir_ram = "https://www.web-familles.fr/AppliTempsCollectifs/CreationTempsColl/getRAM.php",
             url_heures_params = "https://www.web-familles.fr/AppliTempsCollectifs/CreationTempsColl/getHeuresParams.php",
-            url_obtenir_activite_temps_coll = "https://www.web-familles.fr/AppliTempsCollectifs/CreationTempsColl/getActivitesTempsColl.php";
-    StringRequest requete_heures_params,requete_temps_coll, requete_create_temps_coll, requete_nom_temps_coll, requete_activite_temps_coll, requete_ram,
-                  requete_delete_temps_coll, requete_delete_nom_temps_coll, requete_delete_activite_temps_coll;
+            url_obtenir_activite_temps_coll = "https://www.web-familles.fr/AppliTempsCollectifs/CreationTempsColl/getActivitesTempsColl.php",
+            valeurActivite, valeurNom, valeurRAM, valeurLieu;
+    StringRequest requete_heures_params, requete_temps_coll, requete_create_temps_coll, requete_nom_temps_coll, requete_activite_temps_coll, requete_ram,
+            requete_delete_temps_coll, requete_delete_nom_temps_coll, requete_delete_activite_temps_coll;
     Map<String, String> params = new HashMap<String, String>();
     JSONObject leLieuTempsColl, lactiviteTempsColl, leRAM, objectHeureParams;
     JSONArray lesLieuxTempsColl, lesActivitesTempsColl, lesRAM, lesHeuresParams;
     RequestQueue requestQueue;
+    AddLieuTempsColl addLieuTempsColl;
+    AddActiviteTempsColl addActivite;
+    AddNomTempsColl addNom;
+    Animation an;
+    TabActivity tabs;
+    ArrayAdapter spinnerArrayAdapterLieux;
     ArrayList<String> AllLieuxTempsColl = new ArrayList<String>();
     String[] listeCategories = {"ACTIONS COLLECTIVES", "REUNIONS A THEMES", "SORTIES - VISITES - AUTRES"};
 
@@ -112,6 +126,7 @@ public class CreationTempsColl extends AppCompatActivity {
         spRAM = (Spinner) findViewById(R.id.spinnerRAM);
         spCategorie = (Spinner) findViewById(R.id.spCategorie);
         edDate = (EditText) findViewById(R.id.edDate);
+        editText = (TextView) findViewById(R.id.editText);
         spNom = (Spinner) findViewById(R.id.spNom);
         spActivite = (Spinner) findViewById(R.id.spActivite);
         edDetailsPublic = (EditText) findViewById(R.id.edDetailsPublic);
@@ -119,7 +134,7 @@ public class CreationTempsColl extends AppCompatActivity {
         edHeureDebut = (EditText) findViewById(R.id.edHeureDebut);
         edHeureFin = (EditText) findViewById(R.id.edHeureFin);
         btnCreateTempsColl = (Button) findViewById(R.id.btnCreationTempsColl);
-        btnInfos = (Button)findViewById(R.id.btnInfo);
+        btnInfos = (Button) findViewById(R.id.btnInfo);
         ibDelete = (ImageView) findViewById(R.id.ibDelete);
         seekBar = (SeekBar) findViewById(R.id.simpleSeekBar);
         seekBar2 = (SeekBar) findViewById(R.id.simpleSeekBar2);
@@ -137,112 +152,15 @@ public class CreationTempsColl extends AppCompatActivity {
         //btnDeleteNom = (Button)findViewById(R.id.btnDeleteNom);
         //btnDeleteActivite = (Button)findViewById(R.id.btnDeleteActivite);
 
-        tvRAM = (TextView)findViewById(R.id.tvRAM);
-        tvActivite = (TextView)findViewById(R.id.tvActivite);
-        tvNomTC = (TextView)findViewById(R.id.tvNom);
-        tvLieu = (TextView)findViewById(R.id.tvLieu);
-
-        swIndefini.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (swIndefini.isChecked()) {
-                    seekBar.setEnabled(false);
-                    tvSeek.setText("indéfini");
-                } else {
-                    seekBar.setEnabled(true);
-                }
-            }
-        });
+        tvRAM = (TextView) findViewById(R.id.tvRAM);
+        tvActivite = (TextView) findViewById(R.id.tvActivite);
+        tvNomTC = (TextView) findViewById(R.id.tvNom);
+        tvLieu = (TextView) findViewById(R.id.tvLieu);
 
         intent = getIntent();
         choixDB = "";
         choixDB = intent.getStringExtra(EXTRA_DB);
         System.out.println("MA BDD : " + choixDB);
-
-        final TextWatcher mTextEditorWatcher = new TextWatcher() {
-
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                //This sets a textview to the current length
-                tvNbLimitChar.setText(String.valueOf(s.length()));
-            }
-
-            public void afterTextChanged(Editable s) {
-            }
-        };
-        edDetailsPublic.addTextChangedListener(mTextEditorWatcher);
-
-        final TextWatcher mTextEditorWatcher2 = new TextWatcher() {
-
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                //This sets a textview to the current length
-                tvNbLimitChar2.setText(String.valueOf(s.length()));
-            }
-
-            public void afterTextChanged(Editable s) {
-            }
-        };
-        edDetailsRAM.addTextChangedListener(mTextEditorWatcher2);
-
-
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress,
-                                          boolean fromUser) {
-                // TODO Auto-generated method stub
-                tvSeek.setText(String.valueOf(progress));
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                // TODO Auto-generated method stub
-            }
-        });
-
-        swIndefini2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (swIndefini2.isChecked()) {
-                    seekBar2.setEnabled(false);
-                    tvSeek2.setText("indéfini");
-                } else {
-                    seekBar2.setEnabled(true);
-                }
-            }
-        });
-
-        seekBar2.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress,
-                                          boolean fromUser) {
-                // TODO Auto-generated method stub
-                tvSeek2.setText(String.valueOf(progress) + " ");
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                // TODO Auto-generated method stub
-            }
-        });
 
         date = edDate.getText().toString();
         heureDebut = edDate.getText().toString() + " " + edHeureDebut.getText().toString();
@@ -250,9 +168,13 @@ public class CreationTempsColl extends AppCompatActivity {
         descriptif = edDetailsPublic.getText().toString();
 
         showDialog();
+        getSeekBar();
 
         // Si l'appareil a une connexion internet
-        if (isOnline()) {
+        cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        myNetwork = new Network(cm);
+
+        if (myNetwork.isOnline()) {
             getHeuresParams();
             getDate();
             getHorlogeHeureDebut();
@@ -269,7 +191,7 @@ public class CreationTempsColl extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // On ajoute une nouvelle entité de nom pour les temps collectifs
-                AddActiviteTempsColl addActivite = new AddActiviteTempsColl(choixDB);
+                addActivite = new AddActiviteTempsColl(choixDB);
                 addActivite.show(getFragmentManager(), "dialog");
             }
         });
@@ -280,7 +202,7 @@ public class CreationTempsColl extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // On ajoute une nouvelle entité de nom pour les temps collectifs
-                AddNomTempsColl addNom = new AddNomTempsColl(choixDB);
+                addNom = new AddNomTempsColl(choixDB);
                 addNom.show(getFragmentManager(), "dialog");
                 // Récupération des nom de temps collectifs
                 getNomTempsCollectifs();
@@ -293,7 +215,7 @@ public class CreationTempsColl extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // On ajoute une nouvelle entité de nom pour les temps collectifs
-                AddLieuTempsColl addLieuTempsColl = new AddLieuTempsColl(choixDB);
+                addLieuTempsColl = new AddLieuTempsColl(choixDB);
                 addLieuTempsColl.show(getFragmentManager(), "dialog");
                 updateSpinnerLieux();
                 AllLieuxTempsColl.add(initLieu);
@@ -304,12 +226,12 @@ public class CreationTempsColl extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    final Animation an = AnimationUtils.loadAnimation(getBaseContext(), R.anim.rotate);
+                    an = AnimationUtils.loadAnimation(getBaseContext(), R.anim.rotate);
                     btnRefresh.startAnimation(an);
 
                     getNomTempsCollectifs();
                     // Mise à jour de la liste des enfants
-                    final Handler handler = new Handler();
+                    handler = new Handler();
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -328,12 +250,12 @@ public class CreationTempsColl extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    final Animation an = AnimationUtils.loadAnimation(getBaseContext(), R.anim.rotate);
+                    an = AnimationUtils.loadAnimation(getBaseContext(), R.anim.rotate);
                     btnRefresh2.startAnimation(an);
 
                     getLieuxTempsCollectifs();
                     // Mise à jour de la liste des enfants
-                    final Handler handler = new Handler();
+                    handler = new Handler();
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -352,7 +274,7 @@ public class CreationTempsColl extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 intent = new Intent(getApplicationContext(), InfoBulle.class);
-                intent.putExtra("id","2");
+                intent.putExtra("id", "2");
                 startActivity(intent);
             }
         });
@@ -361,12 +283,12 @@ public class CreationTempsColl extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    final Animation an = AnimationUtils.loadAnimation(getBaseContext(), R.anim.rotate);
+                    an = AnimationUtils.loadAnimation(getBaseContext(), R.anim.rotate);
                     btnRefresh3.startAnimation(an);
 
                     getActivitesTempsCollectifs();
                     // Mise à jour de la liste des enfants
-                    final Handler handler = new Handler();
+                    handler = new Handler();
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -386,7 +308,7 @@ public class CreationTempsColl extends AppCompatActivity {
         listeNomsTempsColl.add(initNom);
         listeActivitesTempsColl.add(initActivite);
 
-        ArrayAdapter spinnerArrayAdapterLieux = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, AllLieuxTempsColl);
+        spinnerArrayAdapterLieux = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, AllLieuxTempsColl);
         spLieux.setAdapter(spinnerArrayAdapterLieux);
 
         spLieux.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -402,7 +324,6 @@ public class CreationTempsColl extends AppCompatActivity {
             }
         });
 
-        ArrayList<String> spinnerArray = new ArrayList<String>();
         spinnerArray.add("indéfini");
         for (int i = 1; i <= tabNbPlaces.length; i++) {
             String j = Integer.toString(i);
@@ -457,7 +378,6 @@ public class CreationTempsColl extends AppCompatActivity {
             }
         });
 
-
         final ArrayAdapter spinnerArrayAdapterActivites = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, listeActivitesTempsColl);
         spActivite.setAdapter(spinnerArrayAdapterActivites);
 
@@ -478,19 +398,26 @@ public class CreationTempsColl extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!edDate.getText().toString().equals("")) {
+                    nb = 0;
                     edDate.setText("");
+                    editText.setText("Date temps collectif (AAAA-MM-JJ) : " + nb);
                 } else {
                     Toast.makeText(getApplicationContext(), "Ce champs est déjà vide !", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
+        cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        myNetwork = new Network(cm);
+
         // Lorsque l'on clique sur le bouton de validation
+        finalMyNetwork = myNetwork;
         btnCreateTempsColl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 System.out.println("ELEMENTS : " + edDate.getText().toString());
-                if (isOnline()) {
+
+                if (finalMyNetwork.isOnline()) {
 
                     // Si la date est vide
                     if (edDate.getText().toString().equals("")) {
@@ -499,7 +426,7 @@ public class CreationTempsColl extends AppCompatActivity {
                         cancel = true;
                         edDate.setFocusableInTouchMode(true);
                         edDate.requestFocus();
-                    }else{
+                    } else {
                         cancel = false;
                         edDate.setFocusableInTouchMode(false);
                     }
@@ -522,10 +449,10 @@ public class CreationTempsColl extends AppCompatActivity {
                         edHeureDebut.requestFocus();
                     }
 
-                    String valeurActivite = spActivite.getItemAtPosition(spActivite.getSelectedItemPosition()).toString();
-                    String valeurNom = spNom.getItemAtPosition(spNom.getSelectedItemPosition()).toString();
-                    String valeurRAM = spRAM.getItemAtPosition(spRAM.getSelectedItemPosition()).toString();
-                    String valeurLieu = spLieux.getItemAtPosition(spLieux.getSelectedItemPosition()).toString();
+                    valeurActivite = spActivite.getItemAtPosition(spActivite.getSelectedItemPosition()).toString();
+                    valeurNom = spNom.getItemAtPosition(spNom.getSelectedItemPosition()).toString();
+                    valeurRAM = spRAM.getItemAtPosition(spRAM.getSelectedItemPosition()).toString();
+                    valeurLieu = spLieux.getItemAtPosition(spLieux.getSelectedItemPosition()).toString();
 
                     System.out.println(valeurActivite + " " + initActivite);
                     System.out.println(valeurLieu + " " + initLieu);
@@ -536,48 +463,49 @@ public class CreationTempsColl extends AppCompatActivity {
                             && !edHeureFin.getText().toString().equals("")
                             && !edDate.getText().toString().equals("")) {
 
-                        if(!valeurNom.equals(initNom)){
+                        if (!valeurNom.equals(initNom)) {
                             tvNomTC.setTextColor(Color.BLACK);
                             tvRAM.setTextColor(Color.BLACK);
                             tvLieu.setTextColor(Color.BLACK);
                             tvActivite.setTextColor(Color.BLACK);
 
-                            if(!valeurActivite.equals(initActivite)){
+                            if (!valeurActivite.equals(initActivite)) {
                                 tvNomTC.setTextColor(Color.BLACK);
                                 tvRAM.setTextColor(Color.BLACK);
                                 tvLieu.setTextColor(Color.BLACK);
                                 tvActivite.setTextColor(Color.BLACK);
 
-                                if(!valeurRAM.equals(initRAM)){
+                                if (!valeurRAM.equals(initRAM)) {
                                     tvNomTC.setTextColor(Color.BLACK);
                                     tvRAM.setTextColor(Color.BLACK);
                                     tvLieu.setTextColor(Color.BLACK);
                                     tvActivite.setTextColor(Color.BLACK);
 
-                                    if(!valeurLieu.equals(initLieu)){
+                                    if (!valeurLieu.equals(initLieu)) {
                                         tvNomTC.setTextColor(Color.BLACK);
                                         tvRAM.setTextColor(Color.BLACK);
                                         tvLieu.setTextColor(Color.BLACK);
                                         tvActivite.setTextColor(Color.BLACK);
 
+                                        /*** Création du temps collectif si tous les champs ont été remplis ***/
                                         createTempsCollectifs();
-                                    }else{
+
+                                    } else {
                                         tvLieu.setTextColor(Color.RED);
                                         Toast.makeText(CreationTempsColl.this, "Veuillez saisir tous les champs !", Toast.LENGTH_SHORT).show();
                                     }
 
-                                }else{
+                                } else {
                                     tvRAM.setTextColor(Color.RED);
                                     Toast.makeText(CreationTempsColl.this, "Veuillez saisir tous les champs !", Toast.LENGTH_SHORT).show();
                                 }
 
-
-                            }else{
+                            } else {
                                 tvActivite.setTextColor(Color.RED);
                                 Toast.makeText(CreationTempsColl.this, "Veuillez saisir tous les champs !", Toast.LENGTH_SHORT).show();
                             }
 
-                        }else{
+                        } else {
                             tvNomTC.setTextColor(Color.RED);
                             Toast.makeText(CreationTempsColl.this, "Veuillez saisir tous les champs !", Toast.LENGTH_SHORT).show();
                         }
@@ -589,14 +517,14 @@ public class CreationTempsColl extends AppCompatActivity {
             }
         });
 
-
+        // Bouton lorsque l'on quitte sans avoir fini la création d'un temps collectif
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(edDate.getText().toString().equals("")){
-                    TabActivity tabs = (TabActivity) getParent();
+                if (edDate.getText().toString().equals("")) {
+                    tabs = (TabActivity) getParent();
                     tabs.getTabHost().setCurrentTab(0);
-                }else{
+                } else {
                     Toast.makeText(CreationTempsColl.this, "Infos non enregistrées ! Veuillez finir la création ou supprimer les données saisies.", Toast.LENGTH_LONG).show();
                 }
             }
@@ -625,6 +553,110 @@ public class CreationTempsColl extends AppCompatActivity {
         */
     }
 
+    /***********
+     * Obtention des éléments pour gérer les seekbars pour le nombre de places enfants et parents
+     * ************/
+    public void getSeekBar(){
+        final TextWatcher mTextEditorWatcher = new TextWatcher() {
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                //This sets a textview to the current length
+                tvNbLimitChar.setText(String.valueOf(s.length()));
+            }
+
+            public void afterTextChanged(Editable s) {
+            }
+        };
+        edDetailsPublic.addTextChangedListener(mTextEditorWatcher);
+
+        final TextWatcher mTextEditorWatcher2 = new TextWatcher() {
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                //This sets a textview to the current length
+                tvNbLimitChar2.setText(String.valueOf(s.length()));
+            }
+
+            public void afterTextChanged(Editable s) {
+            }
+        };
+        edDetailsRAM.addTextChangedListener(mTextEditorWatcher2);
+
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress,
+                                          boolean fromUser) {
+                // TODO Auto-generated method stub
+                tvSeek.setText(String.valueOf(progress));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                // TODO Auto-generated method stub
+            }
+        });
+
+        swIndefini.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (swIndefini.isChecked()) {
+                    seekBar.setEnabled(false);
+                    tvSeek.setText("indéfini");
+                } else {
+                    seekBar.setEnabled(true);
+                }
+            }
+        });
+
+
+        swIndefini2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (swIndefini2.isChecked()) {
+                    seekBar2.setEnabled(false);
+                    tvSeek2.setText("indéfini");
+                } else {
+                    seekBar2.setEnabled(true);
+                }
+            }
+        });
+
+        seekBar2.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress,
+                                          boolean fromUser) {
+                // TODO Auto-generated method stub
+                tvSeek2.setText(String.valueOf(progress) + " ");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // TODO Auto-generated method stub
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                // TODO Auto-generated method stub
+            }
+        });
+
+    }
+
     public void showDialog() {
         ibDate = (ImageButton) findViewById(R.id.ibDate);
         ibDate.setOnClickListener(new View.OnClickListener() {
@@ -635,6 +667,9 @@ public class CreationTempsColl extends AppCompatActivity {
         });
     }
 
+    /*********
+     * Obtenir le calendrier et récupérer une date sélectionnée
+     * **********/
     public void getDate() {
         dpicker = new DatePickerDialog.OnDateSetListener() {
 
@@ -643,7 +678,7 @@ public class CreationTempsColl extends AppCompatActivity {
                 annee = year;
                 mois = monthOfYear + 1;
 
-                StringBuilder sb = new StringBuilder();
+                sb = new StringBuilder();
                 sb.append("");
                 sb.append(mois);
                 m = sb.toString();
@@ -656,7 +691,7 @@ public class CreationTempsColl extends AppCompatActivity {
                 }
 
                 jour = dayOfMonth;
-                StringBuilder sb2 = new StringBuilder();
+                sb2 = new StringBuilder();
                 sb2.append("");
                 sb2.append(jour);
                 j = sb2.toString();
@@ -671,13 +706,20 @@ public class CreationTempsColl extends AppCompatActivity {
                 dateDeb = edDate;
                 if (dateDeb.getText().toString().isEmpty()) {
                     dateDeb.setText(annee + "-" + m + "-" + j);
+                    nb = 1;
+                    editText.setText("Date temps collectif (AAAA-MM-JJ) : " + nb);
                 } else {
                     dateDeb.append(" . " + annee + "-" + m + "-" + j);
+                    nb++;
+                    editText.setText("Date temps collectif (AAAA-MM-JJ) : " + nb);
                 }
             }
         };
     }
 
+    /*******
+     * Horloge Début
+     * *******/
     public void getHorlogeHeureDebut() {
         ibHeureDebut = (ImageButton) findViewById(R.id.ibHeureDeb);
         ibHeureDebut.setOnClickListener(new View.OnClickListener() {
@@ -708,6 +750,9 @@ public class CreationTempsColl extends AppCompatActivity {
         });
     }
 
+    /*******
+     * Horloge Fin
+     * *******/
     public void getHorlogeHeureFin() {
         ibHeureFin = (ImageButton) findViewById(R.id.ibHeureFin);
         ibHeureFin.setOnClickListener(new View.OnClickListener() {
@@ -739,7 +784,7 @@ public class CreationTempsColl extends AppCompatActivity {
 
     protected Dialog onCreateDialog(int id) {
         if (id == DIALOG_ID) {
-            final Calendar cal = Calendar.getInstance();
+            cal = Calendar.getInstance();
             annee = cal.get(Calendar.YEAR);
             mois = cal.get(Calendar.MONTH);
             jour = cal.get(Calendar.DAY_OF_MONTH);
@@ -748,6 +793,9 @@ public class CreationTempsColl extends AppCompatActivity {
         return null;
     }
 
+    /*********
+     * Chargement des noms des temps collectifs
+     * *********/
     public void getNomTempsCollectifs() {
         requete_nom_temps_coll = new StringRequest(Request.Method.POST, url_obtenir_nom_temps_coll, new Response.Listener<String>() {
             @Override
@@ -782,6 +830,9 @@ public class CreationTempsColl extends AppCompatActivity {
         requestQueue.add(requete_nom_temps_coll);
     }
 
+    /*********
+     * Chargement des RAM des temps collectifs
+     * *********/
     public void getRAMCollectifs() {
         requete_ram = new StringRequest(Request.Method.POST, url_obtenir_ram, new Response.Listener<String>() {
             @Override
@@ -816,6 +867,9 @@ public class CreationTempsColl extends AppCompatActivity {
         requestQueue.add(requete_ram);
     }
 
+    /*********
+     * Chargement des activités des temps collectifs
+     **********/
     public void getActivitesTempsCollectifs() {
         requete_activite_temps_coll = new StringRequest(Request.Method.POST, url_obtenir_activite_temps_coll, new Response.Listener<String>() {
             @Override
@@ -849,6 +903,9 @@ public class CreationTempsColl extends AppCompatActivity {
         requestQueue.add(requete_activite_temps_coll);
     }
 
+    /********
+     * Chargement des lieux des temps collectifs
+     * *********/
     public void getLieuxTempsCollectifs() {
         requete_temps_coll = new StringRequest(Request.Method.POST, url_obtenir_lieu_temps_coll, new Response.Listener<String>() {
             @Override
@@ -885,6 +942,9 @@ public class CreationTempsColl extends AppCompatActivity {
         requestQueue.add(requete_temps_coll);
     }
 
+    /*********
+     * Supprimer une valeur de lieu de temps collectif
+     * **********/
     public void deleteLieuTempsCollectifs() {
         requete_delete_temps_coll = new StringRequest(Request.Method.POST, url_delete_lieu_temps_coll, new Response.Listener<String>() {
             @Override
@@ -913,6 +973,9 @@ public class CreationTempsColl extends AppCompatActivity {
         requestQueue.add(requete_delete_temps_coll);
     }
 
+    /*********
+     * Supprimer une valeur d'activité de temps collectif
+     * **********/
     public void deleteActiviteTempsCollectifs() {
         requete_delete_activite_temps_coll = new StringRequest(Request.Method.POST, url_delete_activite_temps_coll, new Response.Listener<String>() {
             @Override
@@ -941,6 +1004,9 @@ public class CreationTempsColl extends AppCompatActivity {
         requestQueue.add(requete_delete_activite_temps_coll);
     }
 
+    /***********
+     * Supprimer une valeur de nom de temps collectif
+     * ************/
     public void deleteNomTempsCollectifs() {
         requete_delete_nom_temps_coll = new StringRequest(Request.Method.POST, url_delete_nom_temps_coll, new Response.Listener<String>() {
             @Override
@@ -969,6 +1035,9 @@ public class CreationTempsColl extends AppCompatActivity {
         requestQueue.add(requete_delete_nom_temps_coll);
     }
 
+    /**********
+     * Méthode permettant la création d'un temps collectif
+     * ************/
     public void createTempsCollectifs() {
         requete_create_temps_coll = new StringRequest(Request.Method.POST, url_creation_temps_coll, new Response.Listener<String>() {
             @Override
@@ -988,7 +1057,7 @@ public class CreationTempsColl extends AppCompatActivity {
                     seekBar.setMax(0);
                     seekBar2.setMax(0);
 
-                } else if (response.contains("[0]")){
+                } else if (response.contains("[0]")) {
                     Toast.makeText(CreationTempsColl.this, "Ces temps collectifs ont été ajouté avec succès ! Il y aura " + tvSeek.getText().toString() + " enfants pour " + tvSeek2.getText().toString() + " adultes à ces temps collectifs.", Toast.LENGTH_LONG).show();
 
                     edDetailsPublic.setText("");
@@ -1000,8 +1069,7 @@ public class CreationTempsColl extends AppCompatActivity {
                     spRAM.setSelection(0);
                     seekBar.setMax(0);
                     seekBar2.setMax(0);
-                }
-                else if (response.contains("[2]")) {
+                } else if (response.contains("[2]")) {
                     Toast.makeText(CreationTempsColl.this, "Ce temps collectif n'a pu être ajouté !", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -1015,8 +1083,10 @@ public class CreationTempsColl extends AppCompatActivity {
                 params.put("donnees", choixDB);
                 params.put("nom", nomTempsColl);
                 params.put("ram", titleRAM);
+
+                // Si la chaine de caractères correspondant à la date contient un ou plusieurs '.' ça veut dire que le temps collectif est prévu pour plusieurs dates
                 if (edDate.getText().toString().contains(".")) {
-                    String[] tab = edDate.getText().toString().split("\\.");
+                    tab = edDate.getText().toString().split("\\.");
                     System.out.println("Le premiere case " + tab[0]);
                     params.put("heureDeb", tab[0] + " " + edHeureDebut.getText().toString());
                     params.put("heureFin", tab[0] + " " + edHeureFin.getText().toString());
@@ -1024,7 +1094,6 @@ public class CreationTempsColl extends AppCompatActivity {
                     params.put("heureDeb", edDate.getText().toString() + " " + edHeureDebut.getText().toString());
                     params.put("heureFin", edDate.getText().toString() + " " + edHeureFin.getText().toString());
                 }
-
                 params.put("detailsPublic", edDetailsPublic.getText().toString());
                 params.put("detailsRAM", edDetailsRAM.getText().toString());
                 params.put("date", edDate.getText().toString());
@@ -1040,13 +1109,9 @@ public class CreationTempsColl extends AppCompatActivity {
         requestQueue.add(requete_create_temps_coll);
     }
 
-    public boolean isOnline() {
-        ConnectivityManager cm =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return netInfo != null && netInfo.isConnectedOrConnecting();
-    }
-
+    /*********
+     * Récupération de nouvelles valeurs de lieu de temps collectif
+     * ***********/
     public void updateSpinnerLieux() {
         AllLieuxTempsColl.clear();
         spLieux.invalidate();
@@ -1055,6 +1120,9 @@ public class CreationTempsColl extends AppCompatActivity {
         System.out.println("2/ VOICI " + AllLieuxTempsColl);
     }
 
+    /**********
+     * Obtention des heures paramétrées depuis Gramweb
+     * ************/
     public void getHeuresParams() {
         requete_heures_params = new StringRequest(Request.Method.POST, url_heures_params, new Response.Listener<String>() {
             @Override
@@ -1066,10 +1134,10 @@ public class CreationTempsColl extends AppCompatActivity {
                     for (int i = 0; i < lesHeuresParams.length(); i++) {
                         objectHeureParams = lesHeuresParams.getJSONObject(i);
 
-                        if(i == 0){
+                        if (i == 0) {
                             heureDebParams = objectHeureParams.getString("valeur");
                             edHeureDebut.setText(heureDebParams + ":00");
-                        }else if(i == 1){
+                        } else if (i == 1) {
                             heureFinParams = objectHeureParams.getString("valeur");
                             edHeureFin.setText(heureFinParams + ":00");
                         }

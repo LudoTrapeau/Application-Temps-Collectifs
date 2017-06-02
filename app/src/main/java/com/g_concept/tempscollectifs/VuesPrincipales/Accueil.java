@@ -1,4 +1,4 @@
-package com.g_concept.tempscollectifs;
+package com.g_concept.tempscollectifs.VuesPrincipales;
 
 import android.app.TabActivity;
 import android.content.Context;
@@ -9,6 +9,9 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.WindowManager;
 import android.widget.TabHost;
+
+import com.g_concept.tempscollectifs.R;
+import com.g_concept.tempscollectifs.ClassesMetiers.Reservation;
 
 public class Accueil extends TabActivity {
 
@@ -109,8 +112,7 @@ public class Accueil extends TabActivity {
     }
 
     public static boolean isTablet(Context context) {
-        return (context.getResources().getConfiguration().screenLayout
-                & Configuration.SCREENLAYOUT_SIZE_MASK)
+        return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK)
                 >= Configuration.SCREENLAYOUT_SIZE_LARGE;
     }
 

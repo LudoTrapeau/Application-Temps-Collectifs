@@ -6,7 +6,7 @@
     android:background="@drawable/fond3"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    tools:context=".Login">
+    tools:context=".VuesPrincipales.Login">
 
     <!-- Login progress -->
 
@@ -16,49 +16,49 @@
         android:orientation="vertical">
 
         <TextView
-            android:text="Login"
+            android:id="@+id/textView33"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/textView33"
-            android:textStyle="normal|bold"
-            android:textColor="@android:color/background_light"
             android:gravity="right"
+            android:padding="18dp"
+            android:text="Login"
+            android:textColor="@android:color/background_light"
             android:textSize="30sp"
-            android:padding="18dp" />
+            android:textStyle="normal|bold" />
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginBottom="30dp"
             android:gravity="center_vertical|center_horizontal"
-            android:layout_marginBottom="30dp">
+            android:orientation="vertical">
 
             <LinearLayout
+                android:layout_width="400dp"
+                android:layout_height="520dp"
                 android:layout_gravity="center_vertical|center_horizontal"
+                android:layout_marginTop="40dp"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
-                android:orientation="vertical"
-                android:layout_marginTop="40dp"
-                android:layout_height="520dp"
-                android:layout_width="400dp">
+                android:orientation="vertical">
 
                 <ImageView
-                    app:srcCompat="@drawable/logo"
-                    android:layout_gravity="center"
                     android:id="@+id/imageView"
                     android:layout_width="190dp"
-                    android:layout_height="190dp" />
+                    android:layout_height="190dp"
+                    android:layout_gravity="center"
+                    app:srcCompat="@drawable/logo" />
 
                 <Spinner
                     android:id="@+id/spBDD"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
                     android:layout_marginTop="20dp"
-                    android:spinnerMode="dropdown"
+                    android:alpha="0.9"
                     android:background="@drawable/encadrechampslogin"
-                    android:layout_width="match_parent"
-                    android:alpha="0.9" />
+                    android:spinnerMode="dropdown" />
 
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
@@ -71,33 +71,33 @@
                     android:elevation="0dp">
 
                     <LinearLayout
-                        android:orientation="horizontal"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent">
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
 
                         <AutoCompleteTextView
                             android:id="@+id/email"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_weight="1"
                             android:hint="@string/prompt_email"
                             android:inputType="textEmailAddress"
                             android:maxLines="1"
                             android:singleLine="true"
-                            android:textSize="20dp"
                             android:textColor="@android:color/black"
-                            android:layout_weight="1"
+                            android:textColorHighlight="@android:color/holo_blue_dark"
+                            android:textColorHint="@android:color/holo_blue_dark"
                             android:textColorLink="?attr/colorPrimary"
                             android:textCursorDrawable="@android:color/holo_blue_dark"
-                            android:textColorHint="@android:color/holo_blue_dark"
-                            android:textColorHighlight="@android:color/holo_blue_dark" />
+                            android:textSize="20dp" />
 
                         <ImageView
+                            android:id="@+id/imageView5"
                             android:layout_width="wrap_content"
                             android:layout_height="50dp"
-                            app:srcCompat="@drawable/user"
-                            android:id="@+id/imageView5"
+                            android:layout_weight="3"
                             android:padding="10dp"
-                            android:layout_weight="3" />
+                            app:srcCompat="@drawable/user" />
                     </LinearLayout>
 
                 </android.support.design.widget.TextInputLayout>
@@ -112,14 +112,15 @@
                     android:background="@drawable/encadrechampslogin">
 
                     <LinearLayout
-                        android:orientation="horizontal"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent">
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
 
                         <EditText
                             android:id="@+id/password"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_weight="1"
                             android:hint="@string/prompt_password"
                             android:imeActionId="@+id/login"
                             android:imeActionLabel="@string/action_sign_in_short"
@@ -127,20 +128,19 @@
                             android:inputType="textPassword"
                             android:maxLines="1"
                             android:singleLine="true"
-                            android:textSize="20dp"
-                            android:layout_weight="1"
                             android:textColorHighlight="@android:color/holo_blue_dark"
                             android:textColorHint="@android:color/holo_blue_dark"
                             android:textColorLink="@android:color/holo_blue_dark"
-                            android:textCursorDrawable="@android:color/holo_blue_dark" />
+                            android:textCursorDrawable="@android:color/holo_blue_dark"
+                            android:textSize="20dp" />
 
                         <ImageView
+                            android:id="@+id/imageView5"
                             android:layout_width="wrap_content"
                             android:layout_height="50dp"
-                            app:srcCompat="@drawable/key"
-                            android:id="@+id/imageView5"
                             android:layout_weight="3"
-                            android:padding="10dp" />
+                            android:padding="10dp"
+                            app:srcCompat="@drawable/key" />
                     </LinearLayout>
 
                 </android.support.design.widget.TextInputLayout>
@@ -150,9 +150,9 @@
                     android:id="@+id/btnConnexion"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
                     android:layout_marginTop="30dp"
-                    android:background="@drawable/tolog"
-                    android:layout_marginLeft="30dp" />
+                    android:background="@drawable/tolog" />
 
             </LinearLayout>
 
@@ -166,7 +166,7 @@
 
             <TextView
                 android:id="@+id/msgErreur"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="10dp"

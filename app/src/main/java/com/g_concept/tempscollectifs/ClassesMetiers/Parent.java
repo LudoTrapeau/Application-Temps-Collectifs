@@ -1,4 +1,4 @@
-package com.g_concept.tempscollectifs;
+package com.g_concept.tempscollectifs.ClassesMetiers;
 
 /**
  * Created by G-CONCEPT on 10/01/2017.

@@ -1,15 +1,15 @@
-package com.g_concept.tempscollectifs;
+package com.g_concept.tempscollectifs.ClassesMetiers;
 
 /**
  * Created by G-CONCEPT on 23/01/2017.
  */
 
-public class AsmatBis {
+public class ParentBis {
 
     String id, nom, prenom, dateNaissance, idTempsColl;
     boolean selected;
 
-    public AsmatBis(String id, String nom, String prenom, boolean selected, String idTempsColl){
+    public ParentBis(String id, String nom, String prenom, boolean selected, String idTempsColl){
         super();
         this.id = id;
         this.nom = nom;

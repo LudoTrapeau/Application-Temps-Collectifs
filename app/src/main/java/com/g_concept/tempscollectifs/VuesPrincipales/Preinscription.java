@@ -1,4 +1,4 @@
-package com.g_concept.tempscollectifs;
+package com.g_concept.tempscollectifs.VuesPrincipales;
 
 import android.app.TabActivity;
 import android.content.Context;
@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -33,15 +32,20 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.g_concept.tempscollectifs.ClassesMetiers.Asmat;
+import com.g_concept.tempscollectifs.ClassesMetiers.Enfant;
+import com.g_concept.tempscollectifs.ClassesMetiers.Network;
+import com.g_concept.tempscollectifs.ClassesMetiers.Parent;
+import com.g_concept.tempscollectifs.ClassesMetiers.Partenaire;
+import com.g_concept.tempscollectifs.R;
+import com.g_concept.tempscollectifs.ClassesMetiers.Reservation;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Preinscription extends AppCompatActivity {
@@ -50,6 +54,11 @@ public class Preinscription extends AppCompatActivity {
     int nb, newNumber, myNb = 0, myNb2 = 0, myNb3 = 0, myNb4 = 0, myNb5 = 0;
     Spinner spListeTempsColl;
     ArrayAdapter<String> adapter;
+    ConnectivityManager cm;
+    MyCustomAdapterPartenaires.ViewHolder finalHolder;
+    Network myNetwork;
+    int nbPlacesDispo;
+    MyCustomAdapterPartenaires.ViewHolder holder = null;
     EditText inputSearch, inputSearchParents, inputSearchEnfants, inputSearchPartenaires;
     Button btnResValidAM, btnResValidEnfantsByAM, btnResValidEnfants, btnParentPreinscrireEtValider, btnEnfantPreinscrireEtValider, btnAddToListView, btnAddAm, btnAddPartenaire, btnReservationEnfant, btnReservationAsmat, btnReservationPartenaire, btnReservationEnfant2, btnReservationEnfantParent, btnReservationParent;
     ArrayList<String> listeTempsColl = new ArrayList<String>(), listeAM = new ArrayList<String>(), listePartenaires = new ArrayList<String>(), numEtId = new ArrayList<>(), listeAsmatsString = new ArrayList<>();
@@ -97,6 +106,7 @@ public class Preinscription extends AppCompatActivity {
     JSONObject leTempsColl, objectNbPlacesReservees, objectNbPlacesTotal, parent;
     JSONArray lesTempsColl, arrayNbPlacesReservees, arrayNbPlaceTotal, parents;
     Reservation maReservation;
+    TabActivity tabs;
     ScrollView mainScrollView;
 
     @Override
@@ -104,6 +114,7 @@ public class Preinscription extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preinscription);
 
+        /************************** Initialisation et instantiation des paramêtres **************************/
         spListeTempsColl = (Spinner) findViewById(R.id.spListeTempsColl);
         tvDate = (TextView) findViewById(R.id.tvDate);
         tvLieu = (TextView) findViewById(R.id.tvLieu);
@@ -118,45 +129,44 @@ public class Preinscription extends AppCompatActivity {
         btnReservationAsmat = (Button) findViewById(R.id.btnResAsmat);
         btnReservationPartenaire = (Button) findViewById(R.id.btnResPart);
         btnResValidEnfants = (Button) findViewById(R.id.btnResValidEnfants);
-
         mainScrollView = (ScrollView) findViewById(R.id.mainScrollView);
-
         btnEnfantPreinscrireEtValider = (Button) findViewById(R.id.btnResValidEnfantsParents);
         btnParentPreinscrireEtValider = (Button) findViewById(R.id.btnResValidParents);
-
         btnResValidEnfantsByAM = (Button) findViewById(R.id.btnResEtValidEnfByAM);
         btnResValidAM = (Button) findViewById(R.id.btnResEtValidAsmat);
-
-
         tvEnfByAm = (TextView) findViewById(R.id.tvEnfByAm);
         tvEnfByParent = (TextView) findViewById(R.id.tvEnfByParent);
-
         listViewEnfants = (ListView) findViewById(R.id.listView1);
         listViewParents = (ListView) findViewById(R.id.lvParents);
         listviewAsmats = (ListView) findViewById(R.id.lvAsmat);
         listviewPartenaires = (ListView) findViewById(R.id.lvPart);
         listviewEnfByAM = (ListView) findViewById(R.id.lvEnfByAM);
         listviewEnfByParent = (ListView) findViewById(R.id.lvEnfByParent);
-
         inputSearch = (EditText) findViewById(R.id.inputSearch);
         inputSearchParents = (EditText) findViewById(R.id.inputSearchParents);
         inputSearchEnfants = (EditText) findViewById(R.id.inputSearchEnfants);
         inputSearchPartenaires = (EditText) findViewById(R.id.inputSearchPartenaires);
-
         tnNbAM = (TextView) findViewById(R.id.tvNbPers);
         tvNbEnf = (TextView) findViewById(R.id.tvNbEnfants);
         tvNbParents = (TextView) findViewById(R.id.tvNbParents);
         tvNbPart = (TextView) findViewById(R.id.tvNbPartenaire);
+        /**************************************************************************************/
 
         /************** Init ************/
         myFunction();
         myValue = ((Accueil) getParent()).getValue();
 
         myReservation = ((Accueil) getParent()).getReservation();
-        //System.out.println("MY RESERVATION " + myReservation.getId());
 
         tableauReservations.add(myReservation);
 
+        mainScrollView.post(new Runnable() {
+
+            @Override
+            public void run() {
+                mainScrollView.fullScroll(ScrollView.FOCUS_UP);
+            }
+        });
 
         intent = getIntent();
         choixDB = "";
@@ -184,7 +194,6 @@ public class Preinscription extends AppCompatActivity {
             listeTempsColl.add(initTC);
         }
 
-
         /*
         tableauReservations.add(myReservation);
         myHash.put(0, Integer.parseInt(myReservation.getId()));
@@ -196,19 +205,23 @@ public class Preinscription extends AppCompatActivity {
         View current = getCurrentFocus();
         if (current != null) current.clearFocus();
 
-        if (isOnline()) {
-            getListeAllEnfants(requestQueue);
+        // Récupération du réseau
+        cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        myNetwork = new Network(cm);
+
+        if (myNetwork.isOnline()) {
+            getListeAllEnfants();
             System.out.println("SIZE country : " + enfantsList.size());
 
             asmatsList.clear();
-            getListeAllAssmats(requestQueue);
+            getListeAllAssmats();
             System.out.println(" Nombre d'asmats : " + asmatsList.size());
             displayListViewAsmats();
 
-            getListeAllPartenaires(requestQueue);
+            getListeAllPartenaires();
             displayListViewPartenaires();
 
-            getListeAllParents(requestQueue);
+            getListeAllParents();
             displayListViewParents();
 
             TabActivity tabs = (TabActivity) getParent();
@@ -227,22 +240,21 @@ public class Preinscription extends AppCompatActivity {
         //Enfin on passe l'adapter au Spinner et c'est tout
         spListeTempsColl.setAdapter(adapter);
 
+        // Pour se déconnecter
         btnDeconnexion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TabActivity tabs = (TabActivity) getParent();
+                tabs = (TabActivity) getParent();
                 tabs.getTabHost().setCurrentTab(0);
             }
         });
-
-        mainScrollView.fullScroll(ScrollView.FOCUS_UP);
     }
 
     /*******
      * Permet d'initialiser les listviews
      * ******/
     public void initialiseListView() {
-        listViewEnfants.setOnTouchListener(new ListView.OnTouchListener() {
+        listViewParents.setOnTouchListener(new ListView.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 action = event.getAction();
@@ -260,7 +272,7 @@ public class Preinscription extends AppCompatActivity {
             }
         });
 
-        listViewParents.setOnTouchListener(new ListView.OnTouchListener() {
+        listViewEnfants.setOnTouchListener(new ListView.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 action = event.getAction();
@@ -362,7 +374,7 @@ public class Preinscription extends AppCompatActivity {
     /*******
      * Récupération liste des assmats
      ********/
-    private void getListeAllAssmats(final RequestQueue requestQueue) {
+    private void getListeAllAssmats() {
         // Récupération des enfants dans une listview
         requete_assmats = new StringRequest(Request.Method.POST, url_get_assmats, new Response.Listener<String>() {
             @Override
@@ -411,9 +423,9 @@ public class Preinscription extends AppCompatActivity {
     }
 
     /*******
-     * Récupération liste des assmats
+     * Récupération liste des assmats par filtre
      ********/
-    private void getListeAllAssmatsByFilter(final RequestQueue requestQueue, final String charSequence) {
+    private void getListeAllAssmatsByFilter(final String charSequence) {
         // Récupération des enfants dans une listview
         requete_assmats_by_filter = new StringRequest(Request.Method.POST, url_get_assmats_by_filter, new Response.Listener<String>() {
             @Override
@@ -465,7 +477,7 @@ public class Preinscription extends AppCompatActivity {
     /*******
      * Récupération liste des enfants
      ********/
-    private void getListeAllEnfants(final RequestQueue requestQueue) {
+    private void getListeAllEnfants() {
         // Récupération des enfants dans une listview
         requete_enfants = new StringRequest(Request.Method.POST, url_get_enfants, new Response.Listener<String>() {
             @Override
@@ -509,9 +521,9 @@ public class Preinscription extends AppCompatActivity {
     }
 
     /*******
-     * Récupération liste des enfants
+     * Récupération liste des enfants par filtre
      ********/
-    private void getListeAllEnfantsByFilter(final RequestQueue requestQueue, final String charSequence) {
+    private void getListeAllEnfantsByFilter(final String charSequence) {
         // Récupération des enfants dans une listview
         requete_enfants_by_filter = new StringRequest(Request.Method.POST, url_get_enfants_by_filter, new Response.Listener<String>() {
             @Override
@@ -560,7 +572,7 @@ public class Preinscription extends AppCompatActivity {
     /*******
      * Récupération liste des parents
      ********/
-    private void getListeAllParents(final RequestQueue requestQueue) {
+    private void getListeAllParents() {
         // Récupération des enfants dans une listview
         requete_parents = new StringRequest(Request.Method.POST, url_get_parents, new Response.Listener<String>() {
             @Override
@@ -670,7 +682,7 @@ public class Preinscription extends AppCompatActivity {
     /*******
      * Récupération liste des parents
      ********/
-    private void getListeAllParentsByFilter(final RequestQueue requestQueue, final String charSequence) {
+    private void getListeAllParentsByFilter(final String charSequence) {
         // Récupération des enfants dans une listview
         requete_parents_by_filter = new StringRequest(Request.Method.POST, url_get_parents_by_filter, new Response.Listener<String>() {
             @Override
@@ -724,7 +736,7 @@ public class Preinscription extends AppCompatActivity {
     /*******
      * Récupération liste des partenaires
      ********/
-    private void getListeAllPartenaires(final RequestQueue requestQueue) {
+    private void getListeAllPartenaires() {
         // Récupération des enfants dans une listview
         requete_partenaires = new StringRequest(Request.Method.POST, url_get_partenaire, new Response.Listener<String>() {
             @Override
@@ -773,7 +785,7 @@ public class Preinscription extends AppCompatActivity {
     /*******
      * Récupération liste des partenaires
      ********/
-    private void getListeAllPartenairesByFilter(final RequestQueue requestQueue, final String charSequence) {
+    private void getListeAllPartenairesByFilter(final String charSequence) {
         // Récupération des enfants dans une listview
         requete_partenaires_by_filter = new StringRequest(Request.Method.POST, url_get_partenaire_by_filter, new Response.Listener<String>() {
             @Override
@@ -1120,7 +1132,7 @@ public class Preinscription extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
                 enfantsList.clear();
-                getListeAllEnfantsByFilter(requestQueue, cs.toString());
+                getListeAllEnfantsByFilter(cs.toString());
             }
 
             @Override
@@ -1168,7 +1180,7 @@ public class Preinscription extends AppCompatActivity {
                 System.out.println("cs " + cs + " arg1 " + arg1 + " arg2 " + arg2 + " arg3 " + arg3);
 
                 parentsList.clear();
-                getListeAllParentsByFilter(requestQueue, cs.toString());
+                getListeAllParentsByFilter(cs.toString());
             }
 
             @Override
@@ -1221,7 +1233,7 @@ public class Preinscription extends AppCompatActivity {
                 System.out.println("cs " + cs + " arg1 " + arg1 + " arg2 " + arg2 + " arg3 " + arg3);
 
                 asmatsList.clear();
-                getListeAllAssmatsByFilter(requestQueue, cs.toString());
+                getListeAllAssmatsByFilter(cs.toString());
             }
 
             @Override
@@ -1314,7 +1326,7 @@ public class Preinscription extends AppCompatActivity {
                 System.out.println("cs " + cs + " arg1 " + arg1 + " arg2 " + arg2 + " arg3 " + arg3);
 
                 partenaireList.clear();
-                getListeAllPartenairesByFilter(requestQueue, cs.toString());
+                getListeAllPartenairesByFilter(cs.toString());
             }
 
             @Override
@@ -1331,6 +1343,9 @@ public class Preinscription extends AppCompatActivity {
         });
     }
 
+    /********
+     * Adapter pour afficher la liste des enfants checkbox
+     * *********/
     private class MyCustomAdapter extends ArrayAdapter<Enfant> {
 
         private ArrayList<Enfant> enfantsListe;
@@ -1394,7 +1409,7 @@ public class Preinscription extends AppCompatActivity {
                                         maListeEnfants.get(i).setSelected(false);
                                     }
                                     enfantsList.clear();
-                                    getListeAllEnfants(requestQueue);
+                                    getListeAllEnfants();
                                     displayListView();
                                     toast.makeText(getApplicationContext(), "Réservation pour cet enfant " + enf.getNom(), Toast.LENGTH_SHORT).show();
 
@@ -1418,7 +1433,7 @@ public class Preinscription extends AppCompatActivity {
                                         maListeEnfants.get(i).setSelected(false);
                                     }
                                     enfantsList.clear();
-                                    getListeAllEnfants(requestQueue);
+                                    getListeAllEnfants();
                                     displayListView();
                                     toast.makeText(getApplicationContext(), "Réservation pour cet enfant " + enf.getNom(), Toast.LENGTH_SHORT).show();
                                 }
@@ -1439,7 +1454,7 @@ public class Preinscription extends AppCompatActivity {
                                         maListeEnfants.get(i).setSelected(false);
                                     }
                                     enfantsList.clear();
-                                    getListeAllEnfants(requestQueue);
+                                    getListeAllEnfants();
                                     displayListView();
                                     toast.makeText(getApplicationContext(), "Réservation pour cet enfant " + enf.getNom(), Toast.LENGTH_SHORT).show();
                                 }
@@ -1459,7 +1474,7 @@ public class Preinscription extends AppCompatActivity {
                                         maListeEnfants.get(i).setSelected(false);
                                     }
                                     enfantsList.clear();
-                                    getListeAllEnfants(requestQueue);
+                                    getListeAllEnfants();
                                     displayListView();
                                     toast.makeText(getApplicationContext(), "Réservation pour cet enfant " + enf.getNom(), Toast.LENGTH_SHORT).show();
                                 }
@@ -1479,7 +1494,7 @@ public class Preinscription extends AppCompatActivity {
                                         maListeEnfants.get(i).setSelected(false);
                                     }
                                     enfantsList.clear();
-                                    getListeAllEnfants(requestQueue);
+                                    getListeAllEnfants();
                                     displayListView();
                                     toast.makeText(getApplicationContext(), "Réservation pour cet enfant " + enf.getNom(), Toast.LENGTH_SHORT).show();
 
@@ -1552,6 +1567,9 @@ public class Preinscription extends AppCompatActivity {
         }
     }
 
+    /********
+     * Adapter pour afficher la liste des enfants des assmats sélectionnées checkbox
+     * *********/
     private class MyCustomAdapterEnfByAM extends ArrayAdapter<Enfant> {
 
         private ArrayList<Enfant> enfantsListe;
@@ -1681,6 +1699,9 @@ public class Preinscription extends AppCompatActivity {
         }
     }
 
+    /********
+     * Adapter pour afficher la liste des parents checkbox
+     * *********/
     private class MyCustomAdapterForParents extends ArrayAdapter<Parent> {
 
         private ArrayList<Parent> parentsListe;
@@ -1688,7 +1709,11 @@ public class Preinscription extends AppCompatActivity {
         String text;
         CheckBox cb;
         Parent par;
+        LayoutInflater vi;
         Toast toast;
+        ViewHolder holder = null;
+        ViewHolder finalHolder;
+        int nbPlacesDispo = 0;
 
         public MyCustomAdapterForParents(Context context, int textViewResourceId,
                                          ArrayList<Parent> parentsListe) {
@@ -1704,20 +1729,18 @@ public class Preinscription extends AppCompatActivity {
         @Override
         public View getView(int position, View convertView, final ViewGroup parent) {
 
-            ViewHolder holder = null;
             Log.v("ConvertView", String.valueOf(position));
             maListeParents.clear();
 
             if (convertView == null) {
-                LayoutInflater vi = (LayoutInflater) getSystemService(
-                        Context.LAYOUT_INFLATER_SERVICE);
+                vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = vi.inflate(R.layout.listviewcheckbox, null);
 
                 holder = new ViewHolder();
                 holder.name = (CheckBox) convertView.findViewById(R.id.checkBox1);
                 convertView.setTag(holder);
 
-                final ViewHolder finalHolder = holder;
+                finalHolder = holder;
                 holder.name.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         cb = (CheckBox) v;
@@ -1727,8 +1750,6 @@ public class Preinscription extends AppCompatActivity {
 
                         text = spListeTempsColl.getSelectedItem().toString();
                         System.out.println("TC TEST " + text);
-
-                        int nbPlacesDispo = 0;
 
                         if (!tvNbPlaces.getText().toString().equals("")) {
                             nbPlacesDispo = Integer.parseInt(tvNbPlaces.getText().toString());
@@ -1763,7 +1784,7 @@ public class Preinscription extends AppCompatActivity {
                                         maListeParents.get(i).setSelected(false);
                                     }
                                     parentsList.clear();
-                                    getListeAllParents(requestQueue);
+                                    getListeAllParents();
                                     displayListViewParents();
                                     toast.makeText(getApplicationContext(), "Réservation pour cette famille " + par.getNom(), Toast.LENGTH_SHORT).show();
 
@@ -1786,7 +1807,7 @@ public class Preinscription extends AppCompatActivity {
                                         maListeParents.get(i).setSelected(false);
                                     }
                                     parentsList.clear();
-                                    getListeAllParents(requestQueue);
+                                    getListeAllParents();
                                     displayListViewParents();
                                     toast.makeText(getApplicationContext(), "Réservation pour cette famille " + par.getNom(), Toast.LENGTH_SHORT).show();
 
@@ -1838,6 +1859,9 @@ public class Preinscription extends AppCompatActivity {
         }
     }
 
+    /********
+     * Adapter pour afficher la liste des Assmats checkbox
+     * *********/
     private class MyCustomAdapterAsmats extends ArrayAdapter<Asmat> {
 
         private ArrayList<Asmat> asmatsListe;
@@ -1849,6 +1873,9 @@ public class Preinscription extends AppCompatActivity {
         Asmat asmat;
         String[] temp;
         Toast toast;
+        LayoutInflater vi;
+        ViewHolder finalHolder;
+        int nbPlacesDispo = 0;
 
         public MyCustomAdapterAsmats(Context context, int textViewResourceId,
                                      ArrayList<Asmat> asmatsList, ArrayList<Enfant> enfantsList) {
@@ -1870,8 +1897,7 @@ public class Preinscription extends AppCompatActivity {
             Log.v("ConvertView", String.valueOf(position));
 
             if (convertView == null) {
-                LayoutInflater vi = (LayoutInflater) getSystemService(
-                        Context.LAYOUT_INFLATER_SERVICE);
+                vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = vi.inflate(R.layout.listviewcheckbox, null);
 
                 holder = new ViewHolder();
@@ -1880,7 +1906,7 @@ public class Preinscription extends AppCompatActivity {
 
                 nb = 0;
 
-                final ViewHolder finalHolder = holder;
+                finalHolder = holder;
                 holder.name.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         cb = (CheckBox) v;
@@ -1892,7 +1918,6 @@ public class Preinscription extends AppCompatActivity {
                         text = spListeTempsColl.getSelectedItem().toString();
                         System.out.println("TC TEST " + text);
 
-                        int nbPlacesDispo = 0;
                         nb = 0;
 
                         if (!tvNbPlaces.getText().toString().equals("")) {
@@ -1962,7 +1987,7 @@ public class Preinscription extends AppCompatActivity {
                                     tnNbAM.setText("Nb am selectionnée(s) : " + myNb);
 
                                     asmatsList.clear();
-                                    getListeAllAssmats(requestQueue);
+                                    getListeAllAssmats();
                                     displayListViewAsmats();
                                 }
                             }
@@ -1981,7 +2006,7 @@ public class Preinscription extends AppCompatActivity {
                                     }
 
                                     asmatsList.clear();
-                                    getListeAllAssmats(requestQueue);
+                                    getListeAllAssmats();
                                     displayListViewAsmats();
 
                                     myNb = 0;
@@ -2004,7 +2029,7 @@ public class Preinscription extends AppCompatActivity {
                                         maListeEnfants.get(i).setSelected(false);
                                     }
                                     enfantsList.clear();
-                                    getListeAllEnfants(requestQueue);
+                                    getListeAllEnfants();
                                     displayListView();
                                 }
                             }
@@ -2035,6 +2060,7 @@ public class Preinscription extends AppCompatActivity {
         Partenaire partenaire;
         String[] temp;
         CheckBox cb;
+        LayoutInflater vi;
 
         public MyCustomAdapterPartenaires(Context context, int textViewResourceId,
                                           ArrayList<Partenaire> partenaireList) {
@@ -2050,12 +2076,10 @@ public class Preinscription extends AppCompatActivity {
         @Override
         public View getView(int position, View convertView, final ViewGroup parent) {
 
-            ViewHolder holder = null;
             Log.v("ConvertView", String.valueOf(position));
 
             if (convertView == null) {
-                LayoutInflater vi = (LayoutInflater) getSystemService(
-                        Context.LAYOUT_INFLATER_SERVICE);
+                vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = vi.inflate(R.layout.listviewcheckbox, null);
 
                 holder = new ViewHolder();
@@ -2064,7 +2088,7 @@ public class Preinscription extends AppCompatActivity {
 
                 nb = 0;
 
-                final ViewHolder finalHolder = holder;
+                finalHolder = holder;
                 holder.name.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         cb = (CheckBox) v;
@@ -2077,7 +2101,7 @@ public class Preinscription extends AppCompatActivity {
                         text = spListeTempsColl.getSelectedItem().toString();
                         System.out.println("TC TEST " + text);
 
-                        int nbPlacesDispo = 0;
+                        nbPlacesDispo = 0;
                         nb = 0;
 
                         if (!tvNbPlaces.getText().equals("")) {
@@ -2135,7 +2159,7 @@ public class Preinscription extends AppCompatActivity {
                                         doReservation(choix, "3", maListePartenaire.get(i).getId(), "1");
                                     }
                                     partenaireList.clear();
-                                    getListeAllPartenaires(requestQueue);
+                                    getListeAllPartenaires();
                                     displayListViewPartenaires();
 
                                     myNb2 = 0;
@@ -2215,15 +2239,5 @@ public class Preinscription extends AppCompatActivity {
             }
         };
         requestQueue.add(requete_enf_by_am);
-    }
-
-    /********
-     * Permet de vérifier si notre appareil est connecté à un réseau internet
-     *********/
-    public boolean isOnline() {
-        ConnectivityManager cm =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 }

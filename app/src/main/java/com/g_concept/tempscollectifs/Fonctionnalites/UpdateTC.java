@@ -1,4 +1,4 @@
-package com.g_concept.tempscollectifs;
+package com.g_concept.tempscollectifs.Fonctionnalites;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -6,7 +6,7 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
+import android.net.ConnectivityManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -17,7 +17,6 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -32,15 +31,15 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.g_concept.tempscollectifs.ClassesMetiers.Network;
+import com.g_concept.tempscollectifs.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.*;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,12 +49,16 @@ import java.util.Map;
 public class UpdateTC extends Activity {
 
     Context context;
+    ConnectivityManager cm;
+    Network myNetwork;
     JSONObject leTempsColl, objectNbPlacesReservees, objectNbPlacesTotal, parent, json, leLieuTempsColl, lactiviteTempsColl, leRAM;
     JSONArray lesTempsColl, arrayNbPlacesReservees, arrayNbPlaceTotal, lesLieuxTempsColl, lesActivitesTempsColl, lesRAM;
     ImageButton ibDate, ibHeureDebut, ibHeureFin;
     DatePickerDialog.OnDateSetListener dpicker;
     TimePickerDialog tpicker;
     ImageView ibDelete;
+    Calendar cal;
+    StringBuilder sb, sb2;
     Calendar mcurrentTime;
     TextView tvRAM, tvActivite, tvNomTC, tvLieu;
     EditText edDate, edHeureDebut, edHeureFin, edDetailsPublic, edDetailsRAM, dateDeb;
@@ -63,9 +66,10 @@ public class UpdateTC extends Activity {
     Button btnCreateTempsColl, btnRefresh, btnRefresh2, btnRefresh3;
     boolean cancel;
     View focusView;
+    DisplayMetrics dm;
     Spinner spCategorie;
     static final int DIALOG_ID = 0;
-    int annee, mois, jour, heure, minute;
+    int annee, mois, jour, heure, minute, width, height;
     Spinner spLieux, spNom, spActivite, spRAM;
     ArrayList<String> listeNomsTempsColl = new ArrayList<>(),
             listeActivitesTempsColl = new ArrayList<>(),
@@ -100,6 +104,7 @@ public class UpdateTC extends Activity {
 
         setContentView(R.layout.popupdate);
 
+        /****************************** Initialisation des paramêtres *************************************/
         // Chargement des paramêtres
         spCategorie = (Spinner) findViewById(R.id.spCategorie);
         edDate = (EditText) findViewById(R.id.edDate);
@@ -132,6 +137,8 @@ public class UpdateTC extends Activity {
         tvActivite = (TextView) findViewById(R.id.tvActivite);
         tvNomTC = (TextView) findViewById(R.id.tvNom);
         tvLieu = (TextView) findViewById(R.id.tvLieu);
+        cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        myNetwork = new Network(cm);
 
         intent = getIntent();
         choix = intent.getStringExtra(EXTRA_ID_TC);
@@ -142,37 +149,44 @@ public class UpdateTC extends Activity {
         choixDB = "";
         choixDB = intent.getStringExtra(EXTRA_DB);
 
-        DisplayMetrics dm = new DisplayMetrics();
+        dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
 
-        int width = dm.widthPixels;
-        int height = dm.widthPixels;
+        width = dm.widthPixels;
+        height = dm.widthPixels;
 
         getWindow().setLayout((int) (width * .8), (int) (height * .9));
 
-        // Récupération des informations liées au temps collectif choisi
-        getDatasTempsCollById(choix);
+        /*************************************************************************************/
 
-        // Obtention des noms de temps collectifs
-        getNomTempsCollectifs();
 
-        // Obtention des RAM
-        getRAMCollectifs();
 
-        // Obtention des activités de temps collectif
-        getActivitesTempsCollectifs();
+        if (myNetwork.isOnline()) {
 
-        // Obtention des lieux
-        getLieuxTempsCollectifs();
+            // Récupération des informations liées au temps collectif choisi
+            getDatasTempsCollById(choix);
 
-        showDialog();
+            // Obtention des noms de temps collectifs
+            getNomTempsCollectifs();
 
-        // On récupère la date
-        getDate();
+            // Obtention des RAM
+            getRAMCollectifs();
 
-        getHorlogeHeureDebut();
+            // Obtention des activités de temps collectif
+            getActivitesTempsCollectifs();
 
-        getHorlogeHeureFin();
+            // Obtention des lieux
+            getLieuxTempsCollectifs();
+
+            showDialog();
+
+            // On récupère la date
+            getDate();
+
+            getHorlogeHeureDebut();
+
+            getHorlogeHeureFin();
+        }
 
         // Ajout des initialisations
         listeRAM.add(initRAM);
@@ -297,9 +311,6 @@ public class UpdateTC extends Activity {
                 }
                 updateTempsCollectifs();
                 finish();
-                /*Intent intent = new Intent(getApplicationContext(), Accueil.class);
-                intent.putExtra("donnees", choixDB);
-                startActivity(intent);*/
             }
         });
     }
@@ -457,7 +468,7 @@ public class UpdateTC extends Activity {
      * ********/
     protected Dialog onCreateDialog(int id) {
         if (id == DIALOG_ID) {
-            final Calendar cal = Calendar.getInstance();
+            cal = Calendar.getInstance();
             annee = cal.get(Calendar.YEAR);
             mois = cal.get(Calendar.MONTH);
             jour = cal.get(Calendar.DAY_OF_MONTH);
@@ -487,7 +498,7 @@ public class UpdateTC extends Activity {
                 annee = year;
                 mois = monthOfYear + 1;
 
-                StringBuilder sb = new StringBuilder();
+                sb = new StringBuilder();
                 sb.append("");
                 sb.append(mois);
                 m = sb.toString();
@@ -500,7 +511,7 @@ public class UpdateTC extends Activity {
                 }
 
                 jour = dayOfMonth;
-                StringBuilder sb2 = new StringBuilder();
+                sb2 = new StringBuilder();
                 sb2.append("");
                 sb2.append(jour);
                 j = sb2.toString();
