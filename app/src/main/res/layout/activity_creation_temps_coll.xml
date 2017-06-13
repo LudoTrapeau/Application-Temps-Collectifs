@@ -96,72 +96,89 @@
                 android:layout_marginRight="40dp">
 
                 <LinearLayout
-                    android:orientation="horizontal"
-                    android:gravity="center_horizontal|center"
+                    android:id="@+id/llDate"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginTop="15dp"
-                    android:id="@+id/llDate">
+                    android:gravity="center_horizontal|center"
+                    android:orientation="horizontal">
 
                     <LinearLayout
-                        android:orientation="horizontal"
-                        android:background="@drawable/encadrecreationtempscoll"
-                        android:weightSum="1"
-                        android:layout_gravity="center_vertical"
+                        android:layout_width="530dp"
                         android:layout_height="50dp"
-                        android:layout_width="530dp">
-
-                        <TextView
-                            android:layout_height="wrap_content"
-                            android:text="Date temps collectif (AAAA-MM-JJ) :"
-                            android:id="@+id/editText"
-                            android:textStyle="bold"
-                            android:layout_gravity="center_vertical|center_vertical"
-                            android:layout_below="@+id/textView2"
-                            android:layout_alignParentStart="true"
-                            android:padding="5dp"
-                            android:textColor="@android:color/black"
-                            android:layout_width="190dp"
-                            android:textSize="15sp"
-                            android:layout_marginLeft="15dp" />
+                        android:layout_gravity="center_vertical"
+                        android:background="@drawable/encadrecreationtempscoll"
+                        android:orientation="horizontal"
+                        android:weightSum="1">
 
                         <EditText
+                            android:id="@+id/edDate"
+                            android:layout_width="150dp"
                             android:layout_height="wrap_content"
-                            android:inputType="date"
                             android:layout_gravity="center_vertical|center_vertical"
                             android:ems="10"
-                            android:id="@+id/edDate"
                             android:enabled="false"
-                            android:layout_width="150dp" />
+                            android:inputType="date"
+                            android:visibility="gone" />
 
+
+                        <TextView
+                            android:id="@+id/editText"
+                            android:layout_width="160dp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:layout_below="@+id/textView2"
+                            android:layout_gravity="center_vertical|center_vertical"
+                            android:layout_marginLeft="15dp"
+                            android:padding="5dp"
+                            android:text="Date temps collectif : "
+                            android:textColor="@android:color/black"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
 
                         <LinearLayout
-                            android:orientation="horizontal"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent">
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
 
                             <LinearLayout
-                                android:orientation="horizontal"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:gravity="right">
+                                android:gravity="right"
+                                android:orientation="horizontal">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:id="@+id/tvNbDates"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:gravity="center"
+                                        android:text="Vous n'avez pas sélectionné de date"
+                                        android:textColor="@android:color/background_dark" />
+                                </LinearLayout>
 
                                 <ImageButton
                                     android:id="@+id/ibDate"
-                                    android:background="@drawable/calendar2"
-                                    android:scaleType="matrix"
-                                    android:layout_marginTop="10dp"
                                     android:layout_width="30dp"
                                     android:layout_height="30dp"
-                                    android:layout_marginRight="30dp" />
+                                    android:layout_marginRight="30dp"
+                                    android:layout_marginTop="10dp"
+                                    android:background="@drawable/calendar2"
+                                    android:scaleType="matrix" />
 
                                 <ImageView
-                                    app:srcCompat="@drawable/delete3"
                                     android:id="@+id/ibDelete"
-                                    android:layout_marginTop="10dp"
                                     android:layout_width="30dp"
                                     android:layout_height="30dp"
-                                    android:layout_marginRight="20dp" />
+                                    android:layout_marginRight="20dp"
+                                    android:layout_marginTop="10dp"
+                                    app:srcCompat="@drawable/delete3" />
                             </LinearLayout>
 
                         </LinearLayout>
@@ -171,67 +188,100 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:orientation="horizontal"
-                    android:gravity="center_horizontal|center"
+                    android:id="@+id/llEncadre"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:id="@+id/llHeures">
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:gravity="center_horizontal|center"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
 
                     <LinearLayout
+                        android:layout_width="530dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:background="@drawable/encadrecreationtempscoll"
                         android:orientation="horizontal"
+                        android:weightSum="1">
+
+
+                        <TextView
+                            android:id="@+id/tvDatesListe"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+
+                        <ListView
+                            android:id="@+id/listviewDates"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/llHeures"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_horizontal|center"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="530dp"
                         android:layout_height="match_parent"
-                        android:layout_width="530dp">
+                        android:orientation="horizontal">
 
                         <LinearLayout
-                            android:orientation="horizontal"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
-                            android:layout_marginTop="15dp">
+                            android:layout_marginTop="15dp"
+                            android:orientation="horizontal">
 
                             <LinearLayout
-                                android:orientation="horizontal"
-                                android:layout_gravity="center_vertical|center_vertical"
-                                android:background="@drawable/encadrecreationtempscoll"
-                                android:weightSum="1"
-                                android:layout_marginRight="10dp"
+                                android:layout_width="260dp"
                                 android:layout_height="50dp"
-                                android:layout_width="260dp">
+                                android:layout_gravity="center_vertical|center_vertical"
+                                android:layout_marginRight="10dp"
+                                android:background="@drawable/encadrecreationtempscoll"
+                                android:orientation="horizontal"
+                                android:weightSum="1">
 
                                 <TextView
-                                    android:layout_height="wrap_content"
-                                    android:text="Heure début\n(HH-MM-SS) :"
-                                    android:layout_gravity="center_vertical|center_vertical"
                                     android:id="@+id/editText2"
-                                    android:textStyle="bold"
-                                    android:layout_alignTop="@+id/ibHeureFin"
+                                    android:layout_width="110dp"
+                                    android:layout_height="wrap_content"
                                     android:layout_alignParentStart="false"
+                                    android:layout_alignTop="@+id/ibHeureFin"
+                                    android:layout_gravity="center_vertical|center_vertical"
+                                    android:layout_marginLeft="15dp"
                                     android:padding="5dp"
+                                    android:text="Heure début\n(HH-MM-SS) :"
                                     android:textColor="@android:color/black"
                                     android:textSize="15sp"
-                                    android:layout_marginLeft="15dp"
-                                    android:layout_width="110dp" />
+                                    android:textStyle="bold" />
 
                                 <EditText
+                                    android:id="@+id/edHeureDebut"
+                                    android:layout_width="80dp"
                                     android:layout_height="wrap_content"
                                     android:ems="10"
-                                    android:id="@+id/edHeureDebut"
                                     android:enabled="false"
-                                    android:inputType="time"
-                                    android:layout_width="80dp" />
+                                    android:inputType="time" />
 
                                 <LinearLayout
-                                    android:orientation="horizontal"
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
+                                    android:layout_marginRight="20dp"
                                     android:gravity="right"
-                                    android:layout_marginRight="20dp">
+                                    android:orientation="horizontal">
 
                                     <ImageButton
                                         android:id="@+id/ibHeureDeb"
-                                        android:background="@drawable/time"
-                                        android:layout_marginTop="10dp"
                                         android:layout_width="30dp"
-                                        android:layout_height="30dp" />
+                                        android:layout_height="30dp"
+                                        android:layout_marginTop="10dp"
+                                        android:background="@drawable/time" />
                                 </LinearLayout>
 
                             </LinearLayout>
@@ -239,55 +289,55 @@
                         </LinearLayout>
 
                         <LinearLayout
-                            android:orientation="horizontal"
+                            android:layout_width="260dp"
                             android:layout_height="match_parent"
                             android:layout_marginTop="15dp"
-                            android:layout_width="260dp">
+                            android:orientation="horizontal">
 
                             <LinearLayout
-                                android:orientation="horizontal"
-                                android:layout_gravity="center_vertical|center_vertical"
-                                android:background="@drawable/encadrecreationtempscoll"
-                                android:weightSum="1"
-                                android:layout_marginLeft="10dp"
+                                android:layout_width="250dp"
                                 android:layout_height="match_parent"
-                                android:layout_width="250dp">
+                                android:layout_gravity="center_vertical|center_vertical"
+                                android:layout_marginLeft="10dp"
+                                android:background="@drawable/encadrecreationtempscoll"
+                                android:orientation="horizontal"
+                                android:weightSum="1">
 
                                 <TextView
-                                    android:layout_height="wrap_content"
-                                    android:text="Heure fin \n(HH-MM-SS)"
-                                    android:layout_gravity="center_vertical|center_vertical"
                                     android:id="@+id/editText3"
-                                    android:textStyle="bold"
-                                    android:layout_alignTop="@+id/ibHeureFin"
+                                    android:layout_width="110dp"
+                                    android:layout_height="wrap_content"
                                     android:layout_alignParentStart="false"
+                                    android:layout_alignTop="@+id/ibHeureFin"
+                                    android:layout_gravity="center_vertical|center_vertical"
                                     android:padding="5dp"
+                                    android:text="Heure fin \n(HH-MM-SS)"
                                     android:textColor="@android:color/black"
                                     android:textSize="15sp"
-                                    android:layout_width="110dp" />
+                                    android:textStyle="bold" />
 
                                 <EditText
-                                    android:layout_height="wrap_content"
-                                    android:inputType="time"
                                     android:id="@+id/edHeureFin"
-                                    android:enabled="false"
+                                    android:layout_width="80dp"
+                                    android:layout_height="wrap_content"
                                     android:elevation="0dp"
-                                    android:layout_width="80dp" />
+                                    android:enabled="false"
+                                    android:inputType="time" />
 
                                 <LinearLayout
-                                    android:orientation="horizontal"
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
+                                    android:layout_marginRight="20dp"
                                     android:gravity="right"
-                                    android:layout_marginRight="20dp">
+                                    android:orientation="horizontal">
 
                                     <ImageButton
                                         android:id="@+id/ibHeureFin"
-                                        android:background="@drawable/time"
+                                        android:layout_width="30dp"
+                                        android:layout_height="30dp"
                                         android:layout_marginLeft="20dp"
                                         android:layout_marginTop="10dp"
-                                        android:layout_width="30dp"
-                                        android:layout_height="30dp" />
+                                        android:background="@drawable/time" />
                                 </LinearLayout>
 
                             </LinearLayout>

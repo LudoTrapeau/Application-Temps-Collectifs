@@ -35,85 +35,85 @@
                     android:gravity="center_vertical">
 
                     <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_height="match_parent"
-                        android:layout_marginTop="20dp"
-                            android:layout_marginLeft="20dp"
                         android:id="@+id/llContentLieu"
-                        android:layout_width="250dp">
-
-                            <RelativeLayout
-                                android:layout_height="match_parent"
-                                android:layout_marginRight="3dp"
-                                android:background="@drawable/bac"
-                                android:orientation="horizontal"
-                                android:layout_width="match_parent">
-
-                                <ImageView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    app:srcCompat="@drawable/geo"
-                                    android:id="@+id/imageView2"
-                                    android:padding="15dp" />
-
-                                <Spinner
-                                    android:id="@+id/spLieux"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:layout_gravity="center"
-                                    android:background="@android:color/transparent"
-                                    android:gravity="center"
-                                    android:layout_marginLeft="50dp"
-                                    android:spinnerMode="dropdown"
-                                    android:layout_alignBottom="@+id/imageView2" />
-
-                                <ImageView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center"
-                                    android:src="@drawable/trois"
-                                    android:padding="15dp"
-                                    android:layout_alignParentEnd="true"
-                                    android:layout_alignParentTop="true"
-                                    android:layout_alignBottom="@+id/spLieux" />
-
-                            </RelativeLayout>
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:orientation="horizontal"
+                        android:layout_width="250dp"
                         android:layout_height="match_parent"
-                        android:layout_marginTop="20dp"
                         android:layout_marginLeft="5dp"
-                        android:id="@+id/llContentRAM"
-                        android:layout_width="250dp">
+                        android:layout_marginTop="20dp"
+                        android:orientation="horizontal">
 
                         <RelativeLayout
+                            android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_marginRight="3dp"
                             android:background="@drawable/bac"
-                            android:orientation="horizontal"
-                            android:layout_width="match_parent">
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:id="@+id/imageView2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:padding="15dp"
+                                app:srcCompat="@drawable/geo" />
+
+                            <Spinner
+                                android:id="@+id/spLieux"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_alignBottom="@+id/imageView2"
+                                android:layout_gravity="center"
+                                android:layout_marginLeft="50dp"
+                                android:background="@android:color/transparent"
+                                android:gravity="center"
+                                android:spinnerMode="dropdown" />
 
                             <ImageView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                app:srcCompat="@drawable/geo"
+                                android:layout_alignBottom="@+id/spLieux"
+                                android:layout_alignParentEnd="true"
+                                android:layout_alignParentTop="true"
+                                android:layout_gravity="center"
+                                android:padding="15dp"
+                                android:src="@drawable/trois" />
+
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/llContentRAM"
+                        android:layout_width="250dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginTop="20dp"
+                        android:orientation="horizontal">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginRight="3dp"
+                            android:background="@drawable/bac"
+                            android:orientation="horizontal">
+
+                            <ImageView
                                 android:id="@+id/imageView3"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:padding="15dp" />
+                                android:padding="15dp"
+                                app:srcCompat="@drawable/geo" />
 
                             <Spinner
                                 android:id="@+id/spRAM"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
+                                android:layout_alignBottom="@+id/imageView3"
                                 android:layout_gravity="center"
+                                android:layout_marginLeft="50dp"
                                 android:background="@android:color/transparent"
                                 android:gravity="center"
-                                android:layout_marginLeft="50dp"
-                                android:spinnerMode="dropdown"
-                                android:layout_alignBottom="@+id/imageView3" />
+                                android:spinnerMode="dropdown" />
 
                             <ImageView
                                 android:layout_width="wrap_content"
@@ -121,8 +121,8 @@
                                 android:layout_alignParentRight="true"
                                 android:layout_centerVertical="true"
                                 android:layout_gravity="center"
-                                android:src="@drawable/trois"
-                                android:padding="15dp" />
+                                android:padding="15dp"
+                                android:src="@drawable/trois" />
 
                         </RelativeLayout>
 

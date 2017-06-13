@@ -48,38 +48,35 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ValidationPresence extends AppCompatActivity {
-    int action, nb;
     Spinner spListeTempsColl;
     ConnectivityManager cm;
     Network myNetwork;
+    PartenaireBis part;
+    ParentBis parentBis;
     TabActivity tabs;
     LayoutInflater vi;
-    NetworkInfo netInfo;
-    ArrayList<String> listeTempsColl = new ArrayList<String>();
-    ArrayList<Reservation> tableauReservations = new ArrayList<Reservation>();
     JSONObject json;
     ImageView imgPers;
-    int total;
-    int amQuantite, enfant0a3Quant, enfant3a6Quant, enfant6plusQuant, parQuantite;
-    final ArrayList<Integer> tabNb = new ArrayList<Integer>();
+    int amQuantite, enfant0a3Quant, enfant3a6Quant, enfant6plusQuant, parQuantite,total, action, nb, autreQuantite, gardeDomQuant;
     PersonneBis pers;
     EditText etAM, etEnf0a3, etEnf3a6, etEnfplus6, etParents, etAutre, etGardeDomicile;
     TextView tvNbPersonnesCochees;
     Button btnValidationPersonne, btnValidationSaisieQuantitative, btnCocher;
-    CheckBox cbDeTest, cb;
+    CheckBox cb;
     MyCustomAdapterPersonne dataAdapter4 = null;
     Map<String, String> params = new HashMap<String, String>(), params6 = new HashMap<String, String>();
     HashMap<Integer, Integer> myHash = new HashMap<Integer, Integer>();
-    Context context;
     ListView lvPers;
     RequestQueue requestQueue;
-    ArrayList<String> numEtId = new ArrayList<>();
+    ArrayList<String> numEtId = new ArrayList<>(), listeTempsColl = new ArrayList<String>();
     ArrayList<EnfantBis> listeEnfants = new ArrayList<>();
     ArrayList<AsmatBis> listeAM = new ArrayList<>();
     ArrayList<PartenaireBis> listePart = new ArrayList<>();
     ArrayList<PersonneBis> listePers = new ArrayList<>();
     ArrayList<ParentBis> parentsList = new ArrayList<>();
+    ArrayList<Reservation> tableauReservations = new ArrayList<Reservation>();
     ArrayAdapter<String> adapter;
+    final ArrayList<Integer> tabNb = new ArrayList<Integer>();
     Intent intent;
     String text, amQuant, enf0a3Quant, enf3a6Quant, enfPlus6, parentQuant, autreQuant, gardeDomicileQuant, idEnf, nomEnf, prenomEnf,
             id_parent, nom_parent, prenom_parent, idPart, nomPart, prenomPart, temp, idAM, nomAM, prenomAM, idPreinscrit,
@@ -96,7 +93,8 @@ public class ValidationPresence extends AppCompatActivity {
             url_delete_by_tc = "https://www.web-familles.fr/AppliTempsCollectifs/ValidationPresence/deleteReservation.php",
             url_places_by_tc = "https://www.web-familles.fr/AppliTempsCollectifs/ValidationPresence/getNbPlacesRestantes.php",
             choixDB;
-    StringRequest requete_parents, requete_delete_by_tc, requete_places_by_tc, requete_temps_coll, requete_enfants_by_tc, requete_validation_presence, requete_asmats_by_tc, requete_personnes_by_tc, requete_partenaires_by_tc, requete_validation_saisie_quantitative;
+    StringRequest requete_parents, requete_delete_by_tc, requete_places_by_tc, requete_temps_coll, requete_enfants_by_tc, requete_validation_presence,
+                  requete_asmats_by_tc, requete_personnes_by_tc, requete_partenaires_by_tc, requete_validation_saisie_quantitative;
     JSONObject leTempsColl, leTempsColl1, leTempsColl2, leTempsColl3, leTempsColl4, parent;
     JSONArray lesTempsColl, lesTempsColl1, lesTempsColl2, lesTempsColl3, lesTempsColl4, parents;
     Reservation maReservation;
@@ -123,8 +121,6 @@ public class ValidationPresence extends AppCompatActivity {
         requestQueue = Volley.newRequestQueue(getApplicationContext());
         imgPers = (ImageView) findViewById(R.id.imgPers);
         btnCocher = (Button) findViewById(R.id.btnCocher);
-        cbDeTest = (CheckBox) findViewById(R.id.cbDeTest);
-
         tvNbPersonnesCochees = (TextView) findViewById(R.id.tvNbPersonnesCochees);
 
         etAM.setText("0");
@@ -172,7 +168,9 @@ public class ValidationPresence extends AppCompatActivity {
         myNetwork = new Network(cm);
 
         if (myNetwork.isOnline()) {
-            getTempsCollectifs("1", "", "date ASC");
+            getTempsCollectifs("1", "date ASC");
+        }else{
+            Toast.makeText(ValidationPresence.this, "Veuillez vérifier votre connexion internet", Toast.LENGTH_SHORT).show();
         }
 
         //Le Spinner a besoin d'un adapter pour sa presentation
@@ -195,7 +193,7 @@ public class ValidationPresence extends AppCompatActivity {
     /*****
      * Chargement des temps collectifs
      ****/
-    public void getTempsCollectifs(final String lieuOuRAM, final String id, final String choixOrderBy) {
+    public void getTempsCollectifs(final String lieuOuRAM, final String choixOrderBy) {
         requete_temps_coll = new StringRequest(Request.Method.POST, url_obtenir_temps_coll, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -253,7 +251,6 @@ public class ValidationPresence extends AppCompatActivity {
                                 System.out.println("Liste Parents : " + parentsList.size());
 
                                 getPersonnesByTC((myHash.get(position - 1)).toString());
-
                             }
                         }
 
@@ -306,19 +303,18 @@ public class ValidationPresence extends AppCompatActivity {
                         nom_parent = parent.getString("nom");
                         prenom_parent = parent.getString("prenom");
 
-                        ParentBis parent = new ParentBis(id_parent, nom_parent, prenom_parent, false, idTC);
-                        parentsList.add(parent);
+                        parentBis = new ParentBis(id_parent, nom_parent, prenom_parent, false, idTC);
+                        parentsList.add(parentBis);
 
-                        PersonneBis pers = new PersonneBis(id_parent, nom_parent, prenom_parent, "", false, "4", idTempsColl);
+                        pers = new PersonneBis(id_parent, nom_parent, prenom_parent, "", false, "4", idTempsColl);
                         listePers.add(pers);
-
 
                         System.out.println("Liste Personnes with enf and am and part and parents : " + listePers.size());
 
-                        System.out.println("Mon parent : " + parent.getNom());
+                        System.out.println("Mon parent : " + parentBis.getNom());
                     }
 
-                    displayListView("", "");
+                    displayListView();
                     Toast.makeText(ValidationPresence.this, "Liste pers " + listePers.size(), Toast.LENGTH_SHORT).show();
 
                 } catch (JSONException e) {
@@ -341,6 +337,9 @@ public class ValidationPresence extends AppCompatActivity {
         requestQueue.add(requete_parents);
     }
 
+    /***********
+     * Permet la saisie quantitative des personnes qui sont présentes mais pas en nominatif
+     * ************/
     public void doSaisieQuantitative(final String idTempsColl) {
         amQuant = etAM.getText().toString();
         enf0a3Quant = etEnf0a3.getText().toString();
@@ -354,13 +353,15 @@ public class ValidationPresence extends AppCompatActivity {
         enfant0a3Quant = 0;
         enfant3a6Quant = 0;
         enfant6plusQuant = 0;
-        parQuantite= 0;
+        parQuantite = 0;
+        autreQuantite = 0;
+        gardeDomQuant = 0;
 
         amQuantite = Integer.parseInt(amQuant);
         enfant0a3Quant = Integer.parseInt(enf0a3Quant);
         enfant3a6Quant = Integer.parseInt(enf3a6Quant);
         enfant6plusQuant = Integer.parseInt(enfPlus6);
-        parQuantite= Integer.parseInt(parentQuant);
+        parQuantite = Integer.parseInt(parentQuant);
 
         etAM.setText("0");
         etEnf0a3.setText("0");
@@ -389,7 +390,7 @@ public class ValidationPresence extends AppCompatActivity {
             tabNb.add(Integer.parseInt(autreQuant));
             tabNb.add(Integer.parseInt(gardeDomicileQuant));
 
-            if(amQuantite>0){
+            if (amQuantite >= 1) {
                 System.out.println(" Parent am ");
                 //Toast.makeText(ValidationPresence.this, String.valueOf(total), Toast.LENGTH_SHORT).show();
                 for (int i = 0; i < amQuantite; i++) {
@@ -423,7 +424,7 @@ public class ValidationPresence extends AppCompatActivity {
                 }
             }
 
-            if(enfant0a3Quant>0){
+            if (enfant0a3Quant >= 1) {
                 System.out.println(" Parent enf 0 a 3 ");
                 //Toast.makeText(ValidationPresence.this, String.valueOf(total), Toast.LENGTH_SHORT).show();
                 for (int i = 0; i < enfant0a3Quant; i++) {
@@ -457,7 +458,7 @@ public class ValidationPresence extends AppCompatActivity {
                 }
             }
 
-            if(enfant3a6Quant>0){
+            if (enfant3a6Quant >= 1) {
                 System.out.println(" Parent enf 3 a 6 ");
                 //Toast.makeText(ValidationPresence.this, String.valueOf(total), Toast.LENGTH_SHORT).show();
                 for (int i = 0; i < enfant3a6Quant; i++) {
@@ -491,7 +492,7 @@ public class ValidationPresence extends AppCompatActivity {
                 }
             }
 
-            if(enfant6plusQuant>0){
+            if (enfant6plusQuant >= 1) {
                 System.out.println(" Parent enf 6 plus  ");
                 //Toast.makeText(ValidationPresence.this, String.valueOf(total), Toast.LENGTH_SHORT).show();
                 for (int i = 0; i < enfant6plusQuant; i++) {
@@ -525,7 +526,7 @@ public class ValidationPresence extends AppCompatActivity {
                 }
             }
 
-            if(parQuantite>0){
+            if (parQuantite >= 1) {
                 //Toast.makeText(ValidationPresence.this, String.valueOf(total), Toast.LENGTH_SHORT).show();
                 System.out.println(" Parent quantite ");
                 for (int i = 0; i < parQuantite; i++) {
@@ -559,39 +560,79 @@ public class ValidationPresence extends AppCompatActivity {
                 }
             }
 
-            //Toast.makeText(ValidationPresence.this, String.valueOf(total), Toast.LENGTH_SHORT).show();
-            /*for (int i = 0; i < total; i++) {
-                requete_validation_saisie_quantitative = new StringRequest(Request.Method.POST, url_valider_presences_saisie_quantitative, new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        System.out.println("Voici la réponse à la validation saisie quantitative : " + response);
-                        if (response.contains("[3]")) {
-                            Toast.makeText(getApplicationContext(), "Il ne reste pas assez de places pour ce temps collectif", Toast.LENGTH_SHORT).show();
-                        } else if (response.contains("[1]")) {
-                            Toast.makeText(getApplicationContext(), "Validation prise en compte", Toast.LENGTH_SHORT).show();
-                        } else if (response.contains("[2]")) {
-                            Toast.makeText(getApplicationContext(), "Validation impossible ", Toast.LENGTH_SHORT).show();
+            /*if (autreQuantite > 0) {
+                System.out.println(" Parent autre ");
+                //Toast.makeText(ValidationPresence.this, String.valueOf(total), Toast.LENGTH_SHORT).show();
+                for (int i = 0; i < autreQuantite; i++) {
+                    requete_validation_saisie_quantitative = new StringRequest(Request.Method.POST, url_valider_presences_saisie_quantitative, new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            System.out.println("Voici la réponse à la validation saisie quantitative : " + response);
+                            if (response.contains("[3]")) {
+                                Toast.makeText(getApplicationContext(), "Il ne reste pas assez de places pour ce temps collectif", Toast.LENGTH_SHORT).show();
+                            } else if (response.contains("[1]")) {
+                                Toast.makeText(getApplicationContext(), "Validation prise en compte", Toast.LENGTH_SHORT).show();
+                            } else if (response.contains("[2]")) {
+                                Toast.makeText(getApplicationContext(), "Validation impossible ", Toast.LENGTH_SHORT).show();
+                            }
                         }
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e("Error :", String.valueOf(error));
-                    }
-                }) {
-                    protected Map<String, String> getParams() throws AuthFailureError {
-                        params.put("idTempsColl", idTempsColl);
-                        params.put("tabNb", String.valueOf(tabNb));
-                        params.put("total", String.valueOf(total));
-                        Log.e("Do saisie quantitative", params.toString());
-                        return params;
-                    }
-                };
-                requestQueue.add(requete_validation_saisie_quantitative);
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.e("Error :", String.valueOf(error));
+                        }
+                    }) {
+                        protected Map<String, String> getParams() throws AuthFailureError {
+                            params.put("idTempsColl", idTempsColl);
+                            params.put("tabNb", String.valueOf(tabNb));
+                            params.put("autreQuantite", "autreQuantite");
+                            Log.e("Do saisie quantitative", params.toString());
+                            return params;
+                        }
+                    };
+                    requestQueue.add(requete_validation_saisie_quantitative);
+                }
+            }
+
+            if (gardeDomQuant > 0) {
+                System.out.println(" Parent am ");
+                //Toast.makeText(ValidationPresence.this, String.valueOf(total), Toast.LENGTH_SHORT).show();
+                for (int i = 0; i < gardeDomQuant; i++) {
+                    requete_validation_saisie_quantitative = new StringRequest(Request.Method.POST, url_valider_presences_saisie_quantitative, new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            System.out.println("Voici la réponse à la validation saisie quantitative : " + response);
+                            if (response.contains("[3]")) {
+                                Toast.makeText(getApplicationContext(), "Il ne reste pas assez de places pour ce temps collectif", Toast.LENGTH_SHORT).show();
+                            } else if (response.contains("[1]")) {
+                                Toast.makeText(getApplicationContext(), "Validation prise en compte", Toast.LENGTH_SHORT).show();
+                            } else if (response.contains("[2]")) {
+                                Toast.makeText(getApplicationContext(), "Validation impossible ", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.e("Error :", String.valueOf(error));
+                        }
+                    }) {
+                        protected Map<String, String> getParams() throws AuthFailureError {
+                            params.put("idTempsColl", idTempsColl);
+                            params.put("tabNb", String.valueOf(tabNb));
+                            params.put("gardeDomQuant", "gardeDomQuant");
+                            Log.e("Do saisie quantitative", params.toString());
+                            return params;
+                        }
+                    };
+                    requestQueue.add(requete_validation_saisie_quantitative);
+                }
             }*/
         }
     }
 
+    /*************
+     * Récupération des places disponibles pour ce temps collectif
+     * **************/
     private void getNbPlacesDispo(final String idTempsColl) {
         requete_places_by_tc = new StringRequest(Request.Method.POST, url_places_by_tc, new Response.Listener<String>() {
             @Override
@@ -618,7 +659,7 @@ public class ValidationPresence extends AppCompatActivity {
     /*********
      * Affichage du listview
      * **********/
-    private void displayListView(String choice, final String idTempsColl) {
+    private void displayListView() {
 
         System.out.println(" On est dans la vague 4");
         System.out.println(" Avant l'appel ");
@@ -629,14 +670,6 @@ public class ValidationPresence extends AppCompatActivity {
         lvPers.setAdapter(dataAdapter4);
 
         System.out.println(" Après l'appel ");
-
-        /*lvPers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                // When clicked, show a toast with the TextView text
-                PersonneBis pers = (PersonneBis) parent.getItemAtPosition(position);
-            }
-        });*/
     }
 
     /*******
@@ -707,7 +740,7 @@ public class ValidationPresence extends AppCompatActivity {
 
                     }
 
-                    displayListView("", "");
+                    displayListView();
                     System.out.println("Liste des assmats : " + listeAM.toString());
 
                 } catch (JSONException e) {
@@ -762,10 +795,16 @@ public class ValidationPresence extends AppCompatActivity {
         ((Accueil) getParent()).setValue(myValue);
     }
 
+    /*********
+     * Adapter pour afficher les personnes pré-inscrites à un temps collectif
+     * ***********/
     private class MyCustomAdapterPersonne extends ArrayAdapter<PersonneBis> {
 
         private ArrayList<PersonneBis> personnesListe;
         final ArrayList<PersonneBis> maListePersonnes = new ArrayList<PersonneBis>();
+        int i;
+        PartenaireBis part;
+        PersonneBis pers;
 
         public MyCustomAdapterPersonne(Context context, int textViewResourceId,
                                        ArrayList<PersonneBis> personnesListe) {
@@ -797,6 +836,7 @@ public class ValidationPresence extends AppCompatActivity {
                 holder.name = (CheckBox) convertView.findViewById(R.id.checkBox1);
                 holder.img = (ImageView) convertView.findViewById(R.id.imgPers);
                 holder.name.setSelected(true);
+                holder.name.setChecked(true);
                 convertView.setTag(holder);
 
                 btnCocher.setOnClickListener(new View.OnClickListener() {
@@ -809,20 +849,10 @@ public class ValidationPresence extends AppCompatActivity {
                     }
                 });
 
-                cbDeTest.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        cb = (CheckBox) view;
-                        pers = (PersonneBis) cb.getTag();
-                        cb.setSelected(true);
-                        maListePersonnes.add(pers);
-                    }
-                });
-
                 holder.name.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         cb = (CheckBox) v;
-                        pers = (PersonneBis) cb.getTag();
+                        PersonneBis pers = (PersonneBis) cb.getTag();
 
                         pers.setSelected(cb.isChecked());
                         maListePersonnes.add(pers);
@@ -845,14 +875,12 @@ public class ValidationPresence extends AppCompatActivity {
                                 if (text.equals(initTC)) {
                                     Toast.makeText(ValidationPresence.this, "Veuillez sélectionner un temps collectif !", Toast.LENGTH_SHORT).show();
                                 } else {
-                                    int i;
                                     for (i = 0; i < maListePersonnes.size(); i++) {
                                         System.out.println(" ma personne " + maListePersonnes.get(i).getCode() + " " + maListePersonnes.get(i).getIdTempsColl());
                                         validerPresence(maListePersonnes.get(i).getCode(), maListePersonnes.get(i).getIdTempsColl(), maListePersonnes.get(i).getTypePersonne());
                                         maListePersonnes.get(i).setSelected(false);
+                                        doSaisieQuantitative(maListePersonnes.get(i).getIdTempsColl());
                                     }
-
-                                    doSaisieQuantitative(maListePersonnes.get(i).getIdTempsColl());
 
                                     // Permet de switcher de tab quand on clique sur le bouton de validation de présence
                                     tabs = (TabActivity) getParent();
@@ -919,10 +947,10 @@ public class ValidationPresence extends AppCompatActivity {
                         nomPart = leTempsColl.getString("nom");
                         prenomPart = leTempsColl.getString("prenom");
 
-                        PartenaireBis part = new PartenaireBis(idPart, nomPart, prenomPart, false, idTempsColl);
+                        part = new PartenaireBis(idPart, nomPart, prenomPart, false, idTempsColl);
                         listePart.add(part);
 
-                        PersonneBis pers = new PersonneBis(idPart, nomPart, prenomPart, "", false, "3", idTempsColl);
+                        pers = new PersonneBis(idPart, nomPart, prenomPart, "", false, "3", idTempsColl);
                         listePers.add(pers);
 
                         System.out.println("Liste Personnes with enf and am and part : " + listePers.size());

@@ -29,9 +29,7 @@ public class Accueil extends TabActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         if (isTablet(getApplicationContext())) {
-            //Toast.makeText(this, "C'est une tablette", Toast.LENGTH_SHORT).show();
         } else {
-            //Toast.makeText(this, "C'est un téléphone", Toast.LENGTH_SHORT).show();
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
         }
 
@@ -70,9 +68,6 @@ public class Accueil extends TabActivity {
 
         /** Ajout du premier onglet à la table */
         spec = tabHost.newTabSpec("Réservé").setIndicator("Création de groupes").setContent(intent);
-
-        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        //tabHost.addTab(spec);
 
         intent = new Intent().setClass(this, Preinscription.class).putExtra("donnees", choixDB).putExtra("idUser", idUser).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 

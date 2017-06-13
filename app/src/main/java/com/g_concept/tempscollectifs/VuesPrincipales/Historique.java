@@ -35,11 +35,10 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.g_concept.tempscollectifs.ClassesMetiers.Asmat;
 import com.g_concept.tempscollectifs.ClassesMetiers.Enfant;
-import com.g_concept.tempscollectifs.ClassesMetiers.Network;
 import com.g_concept.tempscollectifs.ClassesMetiers.Parent;
 import com.g_concept.tempscollectifs.ClassesMetiers.Partenaire;
-import com.g_concept.tempscollectifs.R;
 import com.g_concept.tempscollectifs.ClassesMetiers.Reservation;
+import com.g_concept.tempscollectifs.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -56,20 +55,16 @@ public class Historique extends AppCompatActivity {
     Context context;
     View post;
     ConnectivityManager cm;
-    Network myNetwork;
     ArrayAdapter<String> adapter, adapter2;
     NetworkInfo netInfo;
-    TextView tv;
-    TabActivity tabs;
-    Reservation maReservation;
+    LayoutInflater inflater;
+    Date myDate;
     String prenomParentPres, nbPlacesReservees, nbPlacesTotal,
             url_obtenir_datas_temps_coll = "https://www.web-familles.fr/AppliTempsCollectifs/Preinscription/getDatasTempsCollectifsById.php";
     StringRequest requete_datas_temps_coll;
     JSONObject objectNbPlacesReservees, objectNbPlacesTotal, monObjetParentsPresents;
     JSONArray arrayNbPlacesReservees, arrayNbPlaceTotal, monArrayParentsPresents;
     ArrayList<String> numEtId = new ArrayList<>();
-    LayoutInflater inflater;
-    Date myDate;
     JSONObject json;
     String[] countries = {"Lyon", "Marseille", "Paris"};
     AutoCompleteTextView autoCompleteNom;
@@ -87,29 +82,29 @@ public class Historique extends AppCompatActivity {
     JSONObject leTempsColl, leLieuTempsColl, leRAM, monObjetPersPresente, monObjetEnfPresente, monObjetAMPresente, monObjetPartPresente;
     JSONArray lesTempsColl, lesLieuxTempsColl, lesDetails, lesRAM, monArrayPersPresentes, monArrayENFPresents, monArrayAMPresentes, monArrayPARTPresents;
     TableLayout TLtempscoll;
-    int i = 0, nbPlacesDispo, nbPlacesRestantes, number = 0, nbEnf = 0, nbAM = 0, nbPart = 0, nbParents = 0, temp;
+    int i = 0, nbPlacesDispo, nbPlacesRestantes;
     Button btnBackHome, btnModifTC;
     ImageView ivDetails;
     RequestQueue requestQueue;
-    ArrayList<String> liste = new ArrayList<String>(),listeRAM = new ArrayList<String>(), listeEnfPresents = new ArrayList<String>(), listeAMPresents = new ArrayList<String>(),
-    listePartPresents = new ArrayList<String>(), listeParentsPresents = new ArrayList<String>();
+    ArrayList<String> liste = new ArrayList<String>();
+    ArrayList<String> listeRAM = new ArrayList<String>();
+    ArrayList<String> listeEnfPresents = new ArrayList<String>();
+    ArrayList<String> listeAMPresents = new ArrayList<String>();
+    ArrayList<String> listePartPresents = new ArrayList<String>();
+    ArrayList<String> listeParentsPresents = new ArrayList<String>();
+    int temp;
     LinearLayout llContentLieu, llContentRAM;
     TableRow row;
     Spinner spLieux, spRAM;
     TextView tvEnfPresents, tvAmPresentes, tvPartPresents, tvTitle, tvENF, tvAM, tvPART, tvParents, tvParentsPresents, tvAvertissement;
     RadioGroup radioGroup;
     RadioButton rbLieu, rbRAM;
-    Enfant monEnfant;
-    Partenaire monPartenaire;
-    Asmat monAsmat;
-    Parent monParent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_historique);
 
-        /*************************       On initialise toutes les variables et on les instancie       ***********************/
         intent = getIntent();
         choixDB = "";
         choixDB = intent.getStringExtra(EXTRA_DB);
@@ -131,11 +126,12 @@ public class Historique extends AppCompatActivity {
         tvENF = (TextView) findViewById(R.id.tvENF);
         tvAM = (TextView) findViewById(R.id.tvAM);
         tvPART = (TextView) findViewById(R.id.tvPART);
-        tvAvertissement = (TextView) findViewById(R.id.tvAvertissement);
+
         btnModifTC = (Button) findViewById(R.id.btnModifTC);
-        /*******************************************************************************************************/
 
         btnModifTC.setVisibility(View.INVISIBLE);
+
+        tvAvertissement = (TextView)findViewById(R.id.tvAvertissement);
 
         //Menu déroulant contenant les bdd
         spLieux = (Spinner) findViewById(R.id.spLieux);
@@ -167,7 +163,7 @@ public class Historique extends AppCompatActivity {
         btnBackHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tabs = (TabActivity) getParent();
+                TabActivity tabs = (TabActivity) getParent();
                 tabs.getTabHost().setCurrentTab(0);
             }
         });
@@ -184,11 +180,7 @@ public class Historique extends AppCompatActivity {
 
         liste.clear();
 
-        // Initialisation des éléments de connexion au réseau
-        cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        myNetwork = new Network(cm);
-
-        if (myNetwork.isOnline()) {
+        if (isOnline()) {
             getLieuxTempsCollectifs();
             getRAMCollectifs();
         } else {
@@ -228,10 +220,7 @@ public class Historique extends AppCompatActivity {
                 Log.i("Page Emprunt", "Vous avez appuyé sur :" + choix);
                 System.out.println("LINE " + TLtempscoll.getChildCount());
 
-                cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-                myNetwork = new Network(cm);
-
-                if (myNetwork.isOnline()) {
+                if (isOnline()) {
                     getTempsCollectifs("1", choix, "", "date desc", "hist");
                 } else {
                     Toast.makeText(Historique.this, "Veuillez vérifier votre connexion internet", Toast.LENGTH_SHORT).show();
@@ -243,6 +232,7 @@ public class Historique extends AppCompatActivity {
                 // TODO Auto-generated method stub
             }
         });
+
 
         //Le Spinner a besoin d'un adapter pour sa presentation
         adapter2 = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, listeRAM);
@@ -261,10 +251,7 @@ public class Historique extends AppCompatActivity {
                 Log.i("Page Emprunt", "Vous avez appuyé sur :" + choix);
                 System.out.println("LINE " + TLtempscoll.getChildCount());
                 spLieux.setSelection(0);
-                cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-                myNetwork = new Network(cm);
-
-                if (myNetwork.isOnline()) {
+                if (isOnline()) {
                     getTempsCollectifs("2", "", choix, "date desc", "hist");
                 } else {
                     Toast.makeText(Historique.this, "Veuillez vérifier votre connexion internet", Toast.LENGTH_SHORT).show();
@@ -420,7 +407,7 @@ public class Historique extends AppCompatActivity {
 
                             deleteTCtoMofify(id);
                             // Permet de switcher de tab quand on clique sur le bouton de validation de présence
-                            tabs = (TabActivity) getParent();
+                            TabActivity tabs = (TabActivity) getParent();
                             tabs.getTabHost().setCurrentTab(3);
                         }
                     });
@@ -466,7 +453,9 @@ public class Historique extends AppCompatActivity {
                         nbPlaces = leTempsColl.getString("nb_place");
                         horaire = leTempsColl.getString("heureDeb") + " - " + leTempsColl.getString("heureFin");
 
+
                         // Permettra ensuite de distinguer deux lignes en mettant des couleurs différentes
+                        int number = 0;
                         if (i % 2 == 0) {
                             number = 1;
                         } else {
@@ -511,9 +500,10 @@ public class Historique extends AppCompatActivity {
         row = new TableRow(this);
         row.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
                 50));
+        // inner for loop
 
         for (int j = 1; j <= 1; j++) {
-            tv = new TextView(this);
+            TextView tv = new TextView(this);
             tv.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT));
             tv.setPadding(5, 5, 5, 5);
@@ -528,7 +518,7 @@ public class Historique extends AppCompatActivity {
 
         // inner for loop
         for (int j = 2; j <= 2; j++) {
-            tv = new TextView(this);
+            TextView tv = new TextView(this);
             tv.setLayoutParams(new TableRow.LayoutParams(60,
                     ViewGroup.LayoutParams.WRAP_CONTENT));
             tv.setPadding(5, 5, 5, 5);
@@ -543,7 +533,7 @@ public class Historique extends AppCompatActivity {
 
         // inner for loop
         for (int j = 3; j <= 3; j++) {
-            tv = new TextView(this);
+            TextView tv = new TextView(this);
             tv.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT));
             tv.setPadding(5, 5, 5, 5);
@@ -558,7 +548,7 @@ public class Historique extends AppCompatActivity {
 
         // inner for loop
         for (int j = 4; j <= 4; j++) {
-            tv = new TextView(this);
+            TextView tv = new TextView(this);
             tv.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT));
             tv.setPadding(5, 5, 5, 5);
@@ -573,7 +563,7 @@ public class Historique extends AppCompatActivity {
 
         // inner for loop
         for (int j = 5; j <= 5; j++) {
-            tv = new TextView(this);
+            TextView tv = new TextView(this);
             tv.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
                     TableRow.LayoutParams.WRAP_CONTENT));
             tv.setPadding(5, 5, 5, 5);
@@ -586,7 +576,8 @@ public class Historique extends AppCompatActivity {
             row.addView(tv);
         }
 
-        maReservation = new Reservation(idTempsColl, dateTempsColl, nomTempsColl, horaire, categorie, nbPlaces, lieuTempsColl, nbPlacesEnfant, nbPlacesAdulte);
+        final Reservation maReservation = new Reservation(idTempsColl, dateTempsColl, nomTempsColl, horaire, categorie, nbPlaces, lieuTempsColl, nbPlacesEnfant, nbPlacesAdulte);
+
 
         row.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -625,13 +616,15 @@ public class Historique extends AppCompatActivity {
                     getDatasTempsCollById(idTC);
                     System.out.println("L'id est : " + idTC);
 
+                    int nbEnf = 0, nbAM = 0, nbPart = 0, nbParents = 0;
+
                     for (int i = 0; i < monArrayENFPresents.length(); i++) {
                         monObjetEnfPresente = monArrayENFPresents.getJSONObject(i);
                         idEnfPres = monObjetEnfPresente.getString("id");
                         nomEnfPres = monObjetEnfPresente.getString("nom");
                         prenomEnfPres = monObjetEnfPresente.getString("prenom");
 
-                        monEnfant = new Enfant(idEnfPres, nomEnfPres, prenomEnfPres, "", true);
+                        Enfant monEnfant = new Enfant(idEnfPres, nomEnfPres, prenomEnfPres, "", true);
                         listeEnfPresents.add(monEnfant.getNom() + " " + monEnfant.getPrenom());
                         System.out.println("Pour i = " + i + " on a " + listeEnfPresents);
                         nbEnf++;
@@ -643,7 +636,7 @@ public class Historique extends AppCompatActivity {
                         nomAMPres = monObjetAMPresente.getString("nom_naissance");
                         prenomAMPres = monObjetAMPresente.getString("prenom_naissance");
 
-                        monAsmat = new Asmat(idAMPres, nomAMPres, prenomAMPres, true);
+                        Asmat monAsmat = new Asmat(idAMPres, nomAMPres, prenomAMPres, true);
                         listeAMPresents.add(monAsmat.getNom() + " " + monAsmat.getPrenom());
                         System.out.println("Pour i = " + i + " on a " + listeAMPresents);
                         nbAM++;
@@ -655,7 +648,7 @@ public class Historique extends AppCompatActivity {
                         nomPartPres = monObjetPartPresente.getString("nom");
                         prenomPartPres = monObjetPartPresente.getString("prenom");
 
-                        monPartenaire = new Partenaire(idPartPres, nomPartPres, prenomPartPres, true);
+                        Partenaire monPartenaire = new Partenaire(idPartPres, nomPartPres, prenomPartPres, true);
                         listePartPresents.add(monPartenaire.getNom() + " " + monPartenaire.getPrenom());
                         System.out.println("Pour i = " + i + " on a " + listePartPresents);
                         nbPart++;
@@ -667,7 +660,7 @@ public class Historique extends AppCompatActivity {
                         nomParentPres = monObjetParentsPresents.getString("nom");
                         prenomParentPres = monObjetParentsPresents.getString("prenom");
 
-                        monParent = new Parent(idParentPres, nomParentPres, prenomParentPres, true);
+                        Parent monParent = new Parent(idParentPres, nomParentPres, prenomParentPres, true);
                         listeParentsPresents.add(monParent.getNom() + " " + prenomParentPres);
                         System.out.println("Pour i = " + i + " on a " + listeParentsPresents);
                         nbParents++;
@@ -685,11 +678,11 @@ public class Historique extends AppCompatActivity {
                         tvParentsPresents.setText("");
                     } else {
                         // On affiche les sous titres et le titre
-                        tvENF.setText("Enfants (" + nbEnf + ")");
-                        tvAM.setText("Assistantes maternelles (" + nbAM + ")");
-                        tvPART.setText("Partenaires (" + nbPart + ")");
+                        tvENF.setText("Enfants (" + nbEnf+")");
+                        tvAM.setText("Assistantes maternelles (" + nbAM+")");
+                        tvPART.setText("Partenaires (" + nbPart+")");
                         tvTitle.setText("Voici les personnes ayant participé au temps collectif : " + nomTC);
-                        tvParents.setText("Parents (" + nbParents + ")");
+                        tvParents.setText("Parents (" + nbParents+")");
                         tvAvertissement.setVisibility(View.VISIBLE);
 
                         if (listeEnfPresents.size() == 0) {
@@ -715,7 +708,9 @@ public class Historique extends AppCompatActivity {
                         }
 
                         if (listePartPresents.size() == 0) {
+                            //tvEnfPresents.setText("Pas de personnes");
                             tvPartPresents.setText("Pas de partenaire");
+                            //Toast.makeText(Historique.this, "Liste vide", Toast.LENGTH_SHORT).show();
                         } else {
                             tvPartPresents.setText("");
 
@@ -735,6 +730,7 @@ public class Historique extends AppCompatActivity {
                             }
                         }
                     }
+
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -783,5 +779,14 @@ public class Historique extends AppCompatActivity {
         requestQueue.add(requete_places_by_tc);
 
         return nbPlacesDispo;
+    }
+
+    /********
+     * Permet de vérifier si notre appareil est connecté à un réseau internet
+     *********/
+    public boolean isOnline() {
+        cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 }

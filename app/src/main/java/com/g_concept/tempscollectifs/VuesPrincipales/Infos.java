@@ -592,7 +592,7 @@ public class Infos extends AppCompatActivity {
             row.addView(tv);
         }
 
-        maReservation = new Reservation(idTempsColl, dateTempsColl, nomTempsColl, horaire, categorie, nbPlaces, lieuTempsColl, nbPlacesEnfant, nbPlacesAdulte);
+        final Reservation maReservation = new Reservation(idTempsColl, dateTempsColl, nomTempsColl, horaire, categorie, nbPlaces, lieuTempsColl, nbPlacesEnfant, nbPlacesAdulte);
 
         row.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -627,11 +627,9 @@ public class Infos extends AppCompatActivity {
 
                         switch (item) {
                             case 0:
-                                // Your code when first option seletced
                                 res = 0;
                                 break;
                             case 1:
-                                // Your code when 2nd  option seletced
                                 res = 1;
                                 break;
                             default:

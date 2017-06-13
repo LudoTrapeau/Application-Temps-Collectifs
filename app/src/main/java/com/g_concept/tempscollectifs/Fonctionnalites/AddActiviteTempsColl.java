@@ -120,7 +120,7 @@ public class AddActiviteTempsColl extends DialogFragment {
                 Log.e("Params ajout nom TC", params.toString());
                 return params;
             }
-        };
+    };
         requestQueue.add(requete_add_activite_temps_coll);
     }
 }
