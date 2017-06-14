@@ -16,12 +16,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.Spinner;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,19 +52,26 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Preinscription extends AppCompatActivity {
 
-    String id_enfant;
-    int nb, newNumber, myNb = 0, myNb2 = 0, myNb3 = 0, myNb4 = 0, myNb5 = 0;
+    JSONObject monObjetParentsPresents;
+    JSONArray monArrayParentsPresents;
+    JSONObject monObjetEnfPresente, monObjetAMPresente, monObjetPartPresente;
+    JSONArray monArrayENFPresents, monArrayAMPresentes, monArrayPARTPresents;
+    ArrayList<String> listeEnfPresents = new ArrayList<String>();
+    ArrayList<String> listeAMPresents = new ArrayList<String>();
+    ArrayList<String> listePartPresents = new ArrayList<String>();
+    ArrayList<String> listeParentsPresents = new ArrayList<String>();
+    int nb, newNumber, myNb = 0, myNb2 = 0, myNb3 = 0, myNb4 = 0, myNb5 = 0, nbPlacesDispo;
     Spinner spListeTempsColl;
     ArrayAdapter<String> adapter;
     ConnectivityManager cm;
     MyCustomAdapterPartenaires.ViewHolder finalHolder;
     Network myNetwork;
-    int nbPlacesDispo;
     MyCustomAdapterPartenaires.ViewHolder holder = null;
     EditText inputSearch, inputSearchParents, inputSearchEnfants, inputSearchPartenaires;
     Button btnResValidAM, btnResValidEnfantsByAM, btnResValidEnfants, btnParentPreinscrireEtValider, btnEnfantPreinscrireEtValider, btnAddToListView, btnAddAm, btnAddPartenaire, btnReservationEnfant, btnReservationAsmat, btnReservationPartenaire, btnReservationEnfant2, btnReservationEnfantParent, btnReservationParent;
@@ -77,17 +91,16 @@ public class Preinscription extends AppCompatActivity {
     JSONObject json, enfant;
     JSONArray adherents, enfants;
     Button btnDeconnexion;
-    TextView nbCheck;
+    TextView tvEnfPresents, tvAmPresentes, tvPartPresents, tvENF, tvAM, tvPART, tvParents, tvParentsPresents;
     StringRequest requete_enfants, requete_partenaires, requete_parents, requete_enf_by_parent;
     Map<String, String> params = new HashMap<String, String>(), params6 = new HashMap<String, String>();
     HashMap<Integer, Integer> myHash = new HashMap<Integer, Integer>();
-    Context context;
     RequestQueue requestQueue;
     String[] tabChoix;
     int action;
     ListView listViewEnfants, listviewAsmats, listviewPartenaires, listviewEnfByAM, listViewParents, listviewEnfByParent;
     Intent intent;
-    String id_parent, nom_parent, prenom_parent, nom_parent2, prenom_parent2, tcChoisi, dateNaissance, nbPlacesReservees, nbPlacesTotal, EXTRA_ID_USER = "idUser", idUser, EXTRA_DB = "donnees", initTC = "Choisir le temps collectif",
+    String prenomParentPres, idParentPres, nomParentPres, idAMPres, nomAMPres, prenomAMPres, idPartPres, nomPartPres, prenomPartPres, idEnfPres, nomEnfPres, prenomEnfPres,id_enfant, id_parent, nom_parent, prenom_parent, nom_parent2, prenom_parent2, tcChoisi, dateNaissance, nbPlacesReservees, nbPlacesTotal, EXTRA_ID_USER = "idUser", idUser, EXTRA_DB = "donnees", initTC = "Choisir le temps collectif",
             prenom_assmat, id_part, nom_part, prenom_part, id_assmat, nom_assmat, myValue, lieuTempsColl, nom_enfant, prenom_enfant,
             url_get_enfants = "https://www.web-familles.fr/AppliTempsCollectifs/Informations/getAllEnfants.php", horaire, idTempsColl, choix, nbPlaces, categorie, nomTempsColl, dateTempsColl,
             url_get_enfants_by_filter = "https://www.web-familles.fr/AppliTempsCollectifs/Informations/getAllEnfantsByFilter.php",
@@ -96,18 +109,20 @@ public class Preinscription extends AppCompatActivity {
             url_obtenir_temps_coll = "https://www.web-familles.fr/AppliTempsCollectifs/Informations/getTempsCollectifs.php",
             url_do_reservation = "https://www.web-familles.fr/AppliTempsCollectifs/Preinscription/doReservation.php",
             url_get_assmats = "https://www.web-familles.fr/AppliTempsCollectifs/Preinscription/getAllAsmats.php",
+            url_obtenir_pers_presentes = "https://www.web-familles.fr/AppliTempsCollectifs/Informations/getPersPreinscrites.php",
             url_get_assmats_by_filter = "https://www.web-familles.fr/AppliTempsCollectifs/Preinscription/getAllAsmatsByFilter.php",
             url_enf_by_am = "https://www.web-familles.fr/AppliTempsCollectifs/Preinscription/getEnfByAM.php",
             url_enf_by_parent = "https://www.web-familles.fr/AppliTempsCollectifs/Preinscription/getEnfByParent.php",
             url_get_partenaire = "https://www.web-familles.fr/AppliTempsCollectifs/Preinscription/getAllPartenaires.php",
             url_get_partenaire_by_filter = "https://www.web-familles.fr/AppliTempsCollectifs/Preinscription/getAllPartenairesByFilter.php",
             url_obtenir_datas_temps_coll = "https://www.web-familles.fr/AppliTempsCollectifs/Preinscription/getDatasTempsCollectifsById.php", choixDB;
-    StringRequest requete_enfants_by_filter, requete_partenaires_by_filter, requete_parents_by_filter, requete_temps_coll, requete_datas_temps_coll, requete_do_reservation, requete_assmats, requete_enf_by_am, requete_assmats_by_filter;
+    StringRequest requete_pers_presentes, requete_enfants_by_filter, requete_partenaires_by_filter, requete_parents_by_filter, requete_temps_coll, requete_datas_temps_coll, requete_do_reservation, requete_assmats, requete_enf_by_am, requete_assmats_by_filter;
     JSONObject leTempsColl, objectNbPlacesReservees, objectNbPlacesTotal, parent;
     JSONArray lesTempsColl, arrayNbPlacesReservees, arrayNbPlaceTotal, parents;
     Reservation maReservation;
     TabActivity tabs;
     ScrollView mainScrollView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,6 +165,15 @@ public class Preinscription extends AppCompatActivity {
         tvNbEnf = (TextView) findViewById(R.id.tvNbEnfants);
         tvNbParents = (TextView) findViewById(R.id.tvNbParents);
         tvNbPart = (TextView) findViewById(R.id.tvNbPartenaire);
+
+        tvEnfPresents = (TextView) findViewById(R.id.tvEnfPresents);
+        tvAmPresentes = (TextView) findViewById(R.id.tvAmPresentes);
+        tvPartPresents = (TextView) findViewById(R.id.tvPartPresents);
+        tvENF = (TextView) findViewById(R.id.tvENF);
+        tvAM = (TextView) findViewById(R.id.tvAM);
+        tvPART = (TextView) findViewById(R.id.tvPART);
+        tvParents = (TextView) findViewById(R.id.tvParent);
+        tvParentsPresents = (TextView) findViewById(R.id.tvParentsPresents);
         /**************************************************************************************/
 
         /************** Init ************/
@@ -188,14 +212,10 @@ public class Preinscription extends AppCompatActivity {
             myHash.put(2, Integer.parseInt(myReservation.getId()));
             System.out.println("TEST DE LA RESA : " + myReservation.getNom());
             getDatasTempsCollById(Integer.toString(myHash.get(2)));
+            getPersPresentes(myReservation.getId());
         } else {
             listeTempsColl.add(initTC);
         }
-
-        /*
-        tableauReservations.add(myReservation);
-        myHash.put(0, Integer.parseInt(myReservation.getId()));
-        spListeTempsColl.setSelection(0,true);*/
 
         spListeTempsColl.setSelection(1, true);
         /****************************/
@@ -207,6 +227,7 @@ public class Preinscription extends AppCompatActivity {
         cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         myNetwork = new Network(cm);
 
+        // Si on est connecté au réseau, on récupère toutes les listes d'enfants, asmats, parents et partenaires
         if (myNetwork.isOnline()) {
             getListeAllEnfants();
             System.out.println("SIZE country : " + enfantsList.size());
@@ -887,6 +908,7 @@ public class Preinscription extends AppCompatActivity {
                                 System.out.println("MY HASH IS EQUALS TO " + myHash);
                                 if (position != 0) {
                                     getDatasTempsCollById(Integer.toString(myHash.get(position - 1)));
+                                    getPersPresentes(Integer.toString(myHash.get(position - 1)));
                                     System.out.println("Mon hashmap " + myHash);
                                 }
                             }
@@ -1058,6 +1080,7 @@ public class Preinscription extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "Ce parent est déjà inscrit à ce temps collectif", Toast.LENGTH_SHORT).show();
                     }
                 }
+                getPersPresentes(idTempsColl);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -1087,6 +1110,9 @@ public class Preinscription extends AppCompatActivity {
         requestQueue.add(requete_do_reservation);
     }
 
+    /*************
+     * Cela nous permet d'avoir une date au format francais au lieu du format YYYY-MM-DD
+     * ***************/
     public String convertDate(String date) {
         String[] dateTab = date.split("-");
         String moisLettre = "00";
@@ -1532,8 +1558,8 @@ public class Preinscription extends AppCompatActivity {
                         }
 
                         nb = 0;
-                            if (!text.equals("Choisir le temps collectif")) {
-                                if (enf.isSelected()) {
+                        if (!text.equals("Choisir le temps collectif")) {
+                            if (enf.isSelected()) {
                                 newNumber = nbPlacesDispo - nb;
                                 tvNbPlaces.setText(String.valueOf(newNumber));
 
@@ -1546,9 +1572,9 @@ public class Preinscription extends AppCompatActivity {
                                     tvNbPlaces.setText(String.valueOf(newNumber));
                                 }
                             } else {
-                                    nb = nb + 1;
-                                    newNumber = nbPlacesDispo + nb;
-                                    tvNbPlaces.setText(String.valueOf(newNumber));
+                                nb = nb + 1;
+                                newNumber = nbPlacesDispo + nb;
+                                tvNbPlaces.setText(String.valueOf(newNumber));
                             }
 
                         } else {
@@ -1941,8 +1967,8 @@ public class Preinscription extends AppCompatActivity {
                             tnNbAM.setText("Nb am selectionnée(s) : " + myNb);
                         }
 
-                         if (!text.equals("Choisir le temps collectif")) {
-                                if (asmat.isSelected()) {
+                        if (!text.equals("Choisir le temps collectif")) {
+                            if (asmat.isSelected()) {
                                 getEnfByAM(asmat.getId());
                                 System.out.println("Ma liste enfant by am ");
                                 tvNbPlaces.setText(String.valueOf(newNumber));
@@ -1966,8 +1992,8 @@ public class Preinscription extends AppCompatActivity {
                             }
 
                         } else {
-                             finalHolder.name.setChecked(false);
-                             toast.makeText(Preinscription.this, "Veuillez choisir un temps collectif !", Toast.LENGTH_SHORT).show();
+                            finalHolder.name.setChecked(false);
+                            toast.makeText(Preinscription.this, "Veuillez choisir un temps collectif !", Toast.LENGTH_SHORT).show();
                         }
 
                         btnReservationAsmat.setOnClickListener(new View.OnClickListener() {
@@ -2239,5 +2265,163 @@ public class Preinscription extends AppCompatActivity {
             }
         };
         requestQueue.add(requete_enf_by_am);
+    }
+
+    /************
+     * Obtenir les personnes ayant été pré inscrites à un temps collectif
+     * ***************/
+    private void getPersPresentes(final String idTC) {
+        requete_pers_presentes = new StringRequest(Request.Method.POST, url_obtenir_pers_presentes, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                System.out.println("Voici la réponse à la requète pour les personnes présentes à un tc : " + response);
+
+                try {
+                    json = new JSONObject(response);
+                    monArrayENFPresents = json.getJSONArray("enf");
+                    monArrayAMPresentes = json.getJSONArray("am");
+                    monArrayPARTPresents = json.getJSONArray("part");
+                    monArrayParentsPresents = json.getJSONArray("parents");
+
+                    listeEnfPresents.clear();
+                    listeAMPresents.clear();
+                    listePartPresents.clear();
+                    listePartPresents.clear();
+                    listeParentsPresents.clear();
+
+                    getDatasTempsCollById(idTC);
+                    System.out.println("L'id est : " + idTC);
+
+                    int nbEnf = 0, nbAM = 0, nbPart = 0, nbParents = 0;
+
+                    for (int i = 0; i < monArrayENFPresents.length(); i++) {
+                        monObjetEnfPresente = monArrayENFPresents.getJSONObject(i);
+                        idEnfPres = monObjetEnfPresente.getString("id");
+                        nomEnfPres = monObjetEnfPresente.getString("nom");
+                        prenomEnfPres = monObjetEnfPresente.getString("prenom");
+
+                        Enfant monEnfant = new Enfant(idEnfPres, nomEnfPres, prenomEnfPres, "", true);
+                        listeEnfPresents.add(monEnfant.getNom() + " " + monEnfant.getPrenom());
+                        System.out.println("Pour i = " + i + " on a " + listeEnfPresents);
+                        nbEnf++;
+                    }
+
+                    for (int i = 0; i < monArrayAMPresentes.length(); i++) {
+                        monObjetAMPresente = monArrayAMPresentes.getJSONObject(i);
+                        idAMPres = monObjetAMPresente.getString("id");
+                        nomAMPres = monObjetAMPresente.getString("nom_naissance");
+                        prenomAMPres = monObjetAMPresente.getString("prenom_naissance");
+
+                        Asmat monAsmat = new Asmat(idAMPres, nomAMPres, prenomAMPres, true);
+                        listeAMPresents.add(monAsmat.getNom() + " " + monAsmat.getPrenom());
+                        System.out.println("Pour i = " + i + " on a " + listeAMPresents);
+                        nbAM++;
+                    }
+
+                    for (int i = 0; i < monArrayPARTPresents.length(); i++) {
+                        monObjetPartPresente = monArrayPARTPresents.getJSONObject(i);
+                        idPartPres = monObjetPartPresente.getString("id");
+                        nomPartPres = monObjetPartPresente.getString("nom");
+                        prenomPartPres = monObjetPartPresente.getString("prenom");
+
+                        Partenaire monPartenaire = new Partenaire(idPartPres, nomPartPres, prenomPartPres, true);
+                        listePartPresents.add(monPartenaire.getNom() + " " + monPartenaire.getPrenom());
+                        System.out.println("Pour i = " + i + " on a " + listePartPresents);
+                        nbPart++;
+                    }
+
+                    for (int i = 0; i < monArrayParentsPresents.length(); i++) {
+                        monObjetParentsPresents = monArrayParentsPresents.getJSONObject(i);
+                        idParentPres = monObjetParentsPresents.getString("id");
+                        nomParentPres = monObjetParentsPresents.getString("nom");
+                        prenomParentPres = monObjetParentsPresents.getString("prenom");
+
+                        Parent monParent = new Parent(idParentPres, nomParentPres, prenomParentPres, true);
+                        listeParentsPresents.add(monParent.getNom() + " " + prenomParentPres);
+                        System.out.println("Pour i = " + i + " on a " + listeParentsPresents);
+                        nbParents++;
+                    }
+
+                    if (listeEnfPresents.size() == 0 && listeAMPresents.size() == 0 && listePartPresents.size() == 0 && listeParentsPresents.size() == 0) {
+                        tvENF.setText("");
+                        tvAM.setText("");
+                        tvPART.setText("");
+                        tvParents.setText("");
+                        tvEnfPresents.setText("");
+                        tvPartPresents.setText("");
+                        tvAmPresentes.setText("");
+                        tvParentsPresents.setText("");
+                    } else {
+                        // On affiche les sous titres et le titre
+                        tvENF.setText("Enfants (" + nbEnf + ")");
+                        tvAM.setText("Assistantes maternelles (" + nbAM + ")");
+                        tvPART.setText("Partenaires (" + nbPart + ")");
+                        tvParents.setText("Parents (" + nbParents + ")");
+
+                        if (listeEnfPresents.size() == 0) {
+                            tvEnfPresents.setText("Pas d'enfant");
+                            //Toast.makeText(Historique.this, "Liste vide", Toast.LENGTH_SHORT).show();
+                        } else {
+                            tvEnfPresents.setText("");
+
+                            for (int i = 0; i < listeEnfPresents.size(); i++) {
+                                tvEnfPresents.append(" • " + listeEnfPresents.get(i) + "\n");
+                            }
+                        }
+
+                        if (listeAMPresents.size() == 0) {
+                            tvAmPresentes.setText("Pas d'AM");
+                            //Toast.makeText(Historique.this, "Liste vide", Toast.LENGTH_SHORT).show();
+                        } else {
+                            tvAmPresentes.setText("");
+
+                            for (int i = 0; i < listeAMPresents.size(); i++) {
+                                tvAmPresentes.append(" • " + listeAMPresents.get(i) + "\n");
+                            }
+                        }
+
+                        if (listePartPresents.size() == 0) {
+                            //tvEnfPresents.setText("Pas de personnes");
+                            tvPartPresents.setText("Pas de partenaire");
+                            //Toast.makeText(Historique.this, "Liste vide", Toast.LENGTH_SHORT).show();
+                        } else {
+                            tvPartPresents.setText("");
+
+                            for (int i = 0; i < listePartPresents.size(); i++) {
+                                tvPartPresents.append(" • " + listePartPresents.get(i) + "\n");
+                            }
+                        }
+
+                        if (listeParentsPresents.size() == 0) {
+                            tvParentsPresents.setText("Pas de parents");
+                            //Toast.makeText(Historique.this, "Liste vide", Toast.LENGTH_SHORT).show();
+                        } else {
+                            tvParentsPresents.setText("");
+
+                            for (int i = 0; i < listeParentsPresents.size(); i++) {
+                                tvParentsPresents.append(" • " + listeParentsPresents.get(i) + "\n");
+                            }
+                        }
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("Error :", String.valueOf(error));
+            }
+        }) {
+            protected Map<String, String> getParams() throws AuthFailureError {
+                params.put("donnees", choixDB);
+                params.put("idTC", idTC);
+                Log.e("Envoi params Reserv", params.toString());
+                return params;
+            }
+        };
+        requestQueue.add(requete_pers_presentes);
     }
 }
