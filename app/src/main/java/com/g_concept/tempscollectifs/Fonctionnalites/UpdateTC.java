@@ -125,7 +125,6 @@ public class UpdateTC extends Activity {
         tvSeek = (TextView) findViewById(R.id.tvNbEnf);
         tvSeek2 = (TextView) findViewById(R.id.tvNbAdultes);
         swIndefini = (Switch) findViewById(R.id.swIndefini);
-        swIndefini2 = (Switch) findViewById(R.id.swIndefini2);
         btnRefresh = (Button) findViewById(R.id.btnRefresh);
         btnRefresh2 = (Button) findViewById(R.id.btnRefresh2);
         btnRefresh3 = (Button) findViewById(R.id.btnRefresh3);
@@ -152,13 +151,13 @@ public class UpdateTC extends Activity {
         dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
 
-        width = dm.widthPixels;
-        height = dm.widthPixels;
+        /********   Permet de gérer la taille de la fenêtre ********/
+        width = dm.widthPixels + 100;
+        height = dm.heightPixels;
 
-        getWindow().setLayout((int) (width * .8), (int) (height * .9));
+        getWindow().setLayout((int) (width * .9), (int) (height * .8));
 
         /*************************************************************************************/
-
 
 
         if (myNetwork.isOnline()) {
@@ -183,9 +182,12 @@ public class UpdateTC extends Activity {
             // On récupère la date
             getDate();
 
+            // Obtention de l'horloge de début
             getHorlogeHeureDebut();
 
+            // Obtention de l'horloge de fin
             getHorlogeHeureFin();
+
         }
 
         // Ajout des initialisations
@@ -346,9 +348,6 @@ public class UpdateTC extends Activity {
                         //listeTempsColl.add(idTempsColl + " | " + nomTempsColl + " | " + dateTempsColl);
                         System.out.println(numEtId + " Les infos : " + nomTempsColl + " " + "date " + dateTempsColl + " et n° :" + i);
 
-                        //listeNomsTempsColl.add(nomTempsColl);
-                        //listeActivitesTempsColl.add(activiteTempsColl);
-                        //AllLieuxTempsColl.add(lieuTempsColl);
                         edDate.setText(dateTempsColl);
                         edHeureDebut.setText(heureDebut);
                         edHeureFin.setText(heureFin);
@@ -676,6 +675,7 @@ public class UpdateTC extends Activity {
         requestQueue.add(requete_temps_coll);
     }
 
+    /************** Obtention de l'horloge ***************/
     public void getHorlogeHeureDebut() {
         ibHeureDebut = (ImageButton) findViewById(R.id.ibHeureDeb);
         ibHeureDebut.setOnClickListener(new View.OnClickListener() {
@@ -706,6 +706,7 @@ public class UpdateTC extends Activity {
         });
     }
 
+    /************** Obtention de l'horloge ***************/
     public void getHorlogeHeureFin() {
         ibHeureFin = (ImageButton) findViewById(R.id.ibHeureFin);
         ibHeureFin.setOnClickListener(new View.OnClickListener() {

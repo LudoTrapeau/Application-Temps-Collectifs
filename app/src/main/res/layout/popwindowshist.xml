@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content" android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/fond6"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView29"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Descriptif"
+                android:textSize="18sp"
+                android:textStyle="normal|bold" />
+
+            <TextView
+                android:id="@+id/textView26"
+                android:layout_width="400dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView27"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:padding="5dp"
+                android:text="Cette page permet d'afficher un historique des Temps Collectifs qui ont été validés."
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/textView18"
+                android:layout_width="400dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView27"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:padding="5dp"
+                android:text="L'utilisateur peut donc : "
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/textView49"
+                android:layout_width="400dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView27"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:padding="5dp"
+                android:text="⇨ Avoir un affichage de tous les Temps Collectifs qui ont été validés, avec une possibilité de filtrer afin de les classer par lieu ou par RAM."
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/textView30"
+                android:layout_width="400dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView27"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:padding="5dp"
+                android:text="⇨ Afficher les personnes présentes à un Temps Collectif en cliquant sur une ligne"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/textView28"
+                android:layout_width="400dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView27"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:padding="5dp"
+                android:text="⇨ Modifier les présences, c'est à dire que le Temps Collectif repasse en actif le temps que l'on revalide les présences ou préinscriptions"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/textView35"
+                android:layout_width="400dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView27"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:padding="5dp"
+                android:text="⇨ Supprimer le Temps Collectif, donc si on a validé par erreur un temps collectif ou qu'il n'a plus lieu d'exister on peut le supprimer"
+                android:textSize="15sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

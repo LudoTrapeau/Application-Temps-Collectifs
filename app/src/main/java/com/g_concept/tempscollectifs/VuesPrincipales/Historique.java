@@ -2,11 +2,13 @@ package com.g_concept.tempscollectifs.VuesPrincipales;
 
 import android.app.TabActivity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TabHost;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -38,6 +41,8 @@ import com.g_concept.tempscollectifs.ClassesMetiers.Enfant;
 import com.g_concept.tempscollectifs.ClassesMetiers.Parent;
 import com.g_concept.tempscollectifs.ClassesMetiers.Partenaire;
 import com.g_concept.tempscollectifs.ClassesMetiers.Reservation;
+import com.g_concept.tempscollectifs.Fonctionnalites.InfoBulle;
+import com.g_concept.tempscollectifs.Fonctionnalites.InfoBulleHistorique;
 import com.g_concept.tempscollectifs.R;
 
 import org.json.JSONArray;
@@ -54,14 +59,18 @@ public class Historique extends AppCompatActivity {
 
     Context context;
     View post;
+    AlertDialog.Builder adb;
     ConnectivityManager cm;
     ArrayAdapter<String> adapter, adapter2;
     NetworkInfo netInfo;
     LayoutInflater inflater;
     Date myDate;
+    TabActivity tabs;
+    Toast toast;
     String prenomParentPres, nbPlacesReservees, nbPlacesTotal,
-            url_obtenir_datas_temps_coll = "https://www.web-familles.fr/AppliTempsCollectifs/Preinscription/getDatasTempsCollectifsById.php";
-    StringRequest requete_datas_temps_coll;
+            url_obtenir_datas_temps_coll = "https://www.web-familles.fr/AppliTempsCollectifs/Preinscription/getDatasTempsCollectifsById.php",
+            url_delete_tc = "https://www.web-familles.fr/AppliTempsCollectifs/Informations/deleteTC.php";
+    StringRequest requete_datas_temps_coll, requete_delete_tc;
     JSONObject objectNbPlacesReservees, objectNbPlacesTotal, monObjetParentsPresents;
     JSONArray arrayNbPlacesReservees, arrayNbPlaceTotal, monArrayParentsPresents;
     ArrayList<String> numEtId = new ArrayList<>();
@@ -82,17 +91,16 @@ public class Historique extends AppCompatActivity {
     JSONObject leTempsColl, leLieuTempsColl, leRAM, monObjetPersPresente, monObjetEnfPresente, monObjetAMPresente, monObjetPartPresente;
     JSONArray lesTempsColl, lesLieuxTempsColl, lesDetails, lesRAM, monArrayPersPresentes, monArrayENFPresents, monArrayAMPresentes, monArrayPARTPresents;
     TableLayout TLtempscoll;
-    int i = 0, nbPlacesDispo, nbPlacesRestantes;
-    Button btnBackHome, btnModifTC;
+    int i = 0, nbPlacesDispo, nbPlacesRestantes, temp;
+    Button btnBackHome, btnModifTC, btnDeleteTC, btnInfos;
     ImageView ivDetails;
     RequestQueue requestQueue;
-    ArrayList<String> liste = new ArrayList<String>();
-    ArrayList<String> listeRAM = new ArrayList<String>();
-    ArrayList<String> listeEnfPresents = new ArrayList<String>();
-    ArrayList<String> listeAMPresents = new ArrayList<String>();
-    ArrayList<String> listePartPresents = new ArrayList<String>();
-    ArrayList<String> listeParentsPresents = new ArrayList<String>();
-    int temp;
+    ArrayList<String> liste = new ArrayList<String>(),
+            listeRAM = new ArrayList<String>(),
+            listeEnfPresents = new ArrayList<String>(),
+            listeAMPresents = new ArrayList<String>(),
+            listePartPresents = new ArrayList<String>(),
+            listeParentsPresents = new ArrayList<String>();
     LinearLayout llContentLieu, llContentRAM;
     TableRow row;
     Spinner spLieux, spRAM;
@@ -110,6 +118,7 @@ public class Historique extends AppCompatActivity {
         choixDB = intent.getStringExtra(EXTRA_DB);
         System.out.println("MA BDD : " + choixDB);
         btnBackHome = (Button) findViewById(R.id.fabButton);
+        btnInfos = (Button) findViewById(R.id.btnInfos);
         rbLieu = (RadioButton) findViewById(R.id.rbLieu);
         rbRAM = (RadioButton) findViewById(R.id.rbRAM);
         radioGroup = (RadioGroup) findViewById(R.id.radioSex);
@@ -128,10 +137,12 @@ public class Historique extends AppCompatActivity {
         tvPART = (TextView) findViewById(R.id.tvPART);
 
         btnModifTC = (Button) findViewById(R.id.btnModifTC);
+        btnDeleteTC = (Button) findViewById(R.id.btnDeleteTC);
 
         btnModifTC.setVisibility(View.INVISIBLE);
+        btnDeleteTC.setVisibility(View.INVISIBLE);
 
-        tvAvertissement = (TextView)findViewById(R.id.tvAvertissement);
+        tvAvertissement = (TextView) findViewById(R.id.tvAvertissement);
 
         //Menu déroulant contenant les bdd
         spLieux = (Spinner) findViewById(R.id.spLieux);
@@ -165,6 +176,15 @@ public class Historique extends AppCompatActivity {
             public void onClick(View v) {
                 TabActivity tabs = (TabActivity) getParent();
                 tabs.getTabHost().setCurrentTab(0);
+            }
+        });
+
+         btnInfos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                intent = new Intent(getApplicationContext(), InfoBulleHistorique.class);
+                intent.putExtra("id", "1");
+                startActivity(intent);
             }
         });
 
@@ -265,6 +285,9 @@ public class Historique extends AppCompatActivity {
         });
     }
 
+    /**************
+     * Récupération des RAM pour le filtrage
+     * **************/
     public void getRAMCollectifs() {
         requete_ram = new StringRequest(Request.Method.POST, url_obtenir_ram, new Response.Listener<String>() {
             @Override
@@ -299,6 +322,9 @@ public class Historique extends AppCompatActivity {
         requestQueue.add(requete_ram);
     }
 
+    /************
+     * Suppression du temps collectif de l'historique afin de pouvoir modifier ses participants
+     * ***************/
     public void deleteTCtoMofify(final String idTC) {
         requete_delete_tc_to_modify = new StringRequest(Request.Method.POST, url_delete_tc_to_modify, new Response.Listener<String>() {
             @Override
@@ -321,6 +347,9 @@ public class Historique extends AppCompatActivity {
         requestQueue.add(requete_delete_tc_to_modify);
     }
 
+    /************
+     * Récupération des lieux de temps collectifs pour le filtrage
+     * *************/
     public void getLieuxTempsCollectifs() {
         requete_temps_coll = new StringRequest(Request.Method.POST, url_obtenir_lieu_temps_coll, new Response.Listener<String>() {
             @Override
@@ -400,15 +429,90 @@ public class Historique extends AppCompatActivity {
 
                     System.out.println("ARRAYLIST " + numEtId.size());
 
+                    btnDeleteTC.setVisibility(View.VISIBLE);
+                    btnDeleteTC.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            //On instancie notre layout en tant que View
+                            LayoutInflater factory = LayoutInflater.from(Historique.this);
+                            View alertDialogView = factory.inflate(R.layout.alertdialog, null);
+
+                            //Création de l'AlertDialog
+                            adb = new AlertDialog.Builder(Historique.this);
+                            //tvEnfant.setText(((TextView) view).getText());
+
+                            //On affecte la vue personnalisé que l'on a crée à notre AlertDialog
+                            adb.setView(alertDialogView);
+
+                            //On donne un titre à l'AlertDialog
+                            adb.setTitle("Temp collectifs");
+
+                            //On modifie l'icône de l'AlertDialog pour le fun ;)
+                            adb.setIcon(R.drawable.icon);
+
+                            adb.setMessage("Voulez-vous supprimer ce Temps Collectif ? \n\n " + ((TextView) view).getText());
+
+                            //On affecte un bouton "OK" à notre AlertDialog et on lui affecte un évènement
+                            adb.setPositiveButton("Valider", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    deleteTC(id);
+                                }
+                            });
+
+                            //On crée un bouton "Annuler" à notre AlertDialog et on lui affecte un évènement
+                            adb.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //Lorsque l'on cliquera sur annuler on quittera l'application
+                                    adb.setCancelable(true);
+                                }
+                            });
+                            adb.show();
+                        }
+                    });
+
                     btnModifTC.setVisibility(View.VISIBLE);
                     btnModifTC.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
 
-                            deleteTCtoMofify(id);
-                            // Permet de switcher de tab quand on clique sur le bouton de validation de présence
-                            TabActivity tabs = (TabActivity) getParent();
-                            tabs.getTabHost().setCurrentTab(3);
+                            //On instancie notre layout en tant que View
+                            LayoutInflater factory = LayoutInflater.from(Historique.this);
+                            View alertDialogView = factory.inflate(R.layout.alertdialog, null);
+
+                            //Création de l'AlertDialog
+                            adb = new AlertDialog.Builder(Historique.this);
+                            //tvEnfant.setText(((TextView) view).getText());
+
+                            //On affecte la vue personnalisé que l'on a crée à notre AlertDialog
+                            adb.setView(alertDialogView);
+
+                            //On donne un titre à l'AlertDialog
+                            adb.setTitle("Temp collectifs");
+
+                            //On modifie l'icône de l'AlertDialog pour le fun ;)
+                            adb.setIcon(R.drawable.icon);
+
+                            adb.setMessage("Voulez-vous modifier les participants du temps collectif ? ");
+
+                            //On affecte un bouton "OK" à notre AlertDialog et on lui affecte un évènement
+                            adb.setPositiveButton("Valider", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    deleteTCtoMofify(id);
+                                    // Permet de switcher de tab quand on clique sur le bouton de validation de présence
+                                    TabActivity tabs = (TabActivity) getParent();
+                                    tabs.getTabHost().setCurrentTab(3);
+                                }
+                            });
+
+                            //On crée un bouton "Annuler" à notre AlertDialog et on lui affecte un évènement
+                            adb.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //Lorsque l'on cliquera sur annuler on quittera l'application
+                                    adb.setCancelable(true);
+                                }
+                            });
+                            adb.show();
+
                         }
                     });
 
@@ -432,6 +536,9 @@ public class Historique extends AppCompatActivity {
         requestQueue.add(requete_datas_temps_coll);
     }
 
+    /***********
+     * Récupération de tous les temps collectifs
+     * *************/
     public void getTempsCollectifs(final String lieuOuRAM, final String monChoix, final String monRAM, final String choixOrderBy, final String choice) {
         requete_temps_coll = new StringRequest(Request.Method.POST, url_obtenir_temps_coll, new Response.Listener<String>() {
             @Override
@@ -678,11 +785,11 @@ public class Historique extends AppCompatActivity {
                         tvParentsPresents.setText("");
                     } else {
                         // On affiche les sous titres et le titre
-                        tvENF.setText("Enfants (" + nbEnf+")");
-                        tvAM.setText("Assistantes maternelles (" + nbAM+")");
-                        tvPART.setText("Partenaires (" + nbPart+")");
+                        tvENF.setText("Enfants (" + nbEnf + ")");
+                        tvAM.setText("Assistantes maternelles (" + nbAM + ")");
+                        tvPART.setText("Partenaires (" + nbPart + ")");
                         tvTitle.setText("Voici les personnes ayant participé au temps collectif : " + nomTC);
-                        tvParents.setText("Parents (" + nbParents+")");
+                        tvParents.setText("Parents (" + nbParents + ")");
                         tvAvertissement.setVisibility(View.VISIBLE);
 
                         if (listeEnfPresents.size() == 0) {
@@ -752,7 +859,9 @@ public class Historique extends AppCompatActivity {
         requestQueue.add(requete_pers_presentes);
     }
 
-
+    /************
+     * On obtient le nombre de participants
+     * ************/
     private int getNbParticipants(final String idTempsColl, final TextView tv) {
         nbPlacesDispo = 0;
         requete_places_by_tc = new StringRequest(Request.Method.POST, url_places_by_tc, new Response.Listener<String>() {
@@ -788,5 +897,38 @@ public class Historique extends AppCompatActivity {
         cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
+    /************
+     * Suppression définitive du temps collectif sélectionné
+     * *************/
+    public void deleteTC(final String idTC) {
+        requete_delete_tc = new StringRequest(Request.Method.POST, url_delete_tc, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                System.out.println("Voici la requête delete to modify : " + response);
+                if (response.contains("[1]")) {
+                    toast.makeText(Historique.this, "Vous venez de supprimer ce temps collectif ! Vous pouvez dès à présent en créer de nouveaux.", toast.LENGTH_LONG).show();
+                    // Permet de switcher de tab quand on clique sur le bouton de validation de présence
+                    tabs = (TabActivity) getParent();
+                    tabs.getTabHost().setCurrentTab(1);
+                } else if (response.contains("[2]")) {
+                    toast.makeText(Historique.this, "Erreur !", toast.LENGTH_LONG).show();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("Error :", String.valueOf(error));
+            }
+        }) {
+            protected Map<String, String> getParams() throws AuthFailureError {
+                params.put("donnees", choixDB);
+                params.put("idTC", idTC);
+                Log.e("Envoi params Reserv", params.toString());
+                return params;
+            }
+        };
+        requestQueue.add(requete_delete_tc);
     }
 }

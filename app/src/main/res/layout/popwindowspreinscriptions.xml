@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content" android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/fond6"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView29"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Descriptif"
+                android:textSize="18sp"
+                android:textStyle="normal|bold" />
+
+            <TextView
+                android:id="@+id/textView26"
+                android:layout_width="400dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView27"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:padding="5dp"
+                android:text="Cette page permet de préinscrire des personnes à un Temps Collectif."
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/textView18"
+                android:layout_width="400dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView27"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:padding="5dp"
+                android:text="L'utilisateur peut donc : "
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/textView49"
+                android:layout_width="400dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView27"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:padding="5dp"
+                android:text="⇨ Choisir le Temps Collectif pour lequel il veut faire des préinscriptions via une liste."
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/textView30"
+                android:layout_width="400dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView27"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:padding="5dp"
+                android:text="⇨ Lorsque qu'on a choisi ce dernier, les informations comme la date ou le nombre de personnes s'affichent."
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/textView28"
+                android:layout_width="400dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView27"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:padding="5dp"
+                android:text="⇨ On peut ensuite sélectionner des enfants, parents, assmats, ou partenaires afin de les préinscrire."
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/textView35"
+                android:layout_width="400dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView27"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:padding="5dp"
+                android:text="⇨ A noter qu'il est possible de filtrer les personnes en tapant les premières lettres du nom de famille, ou de leur  prénom."
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/textView23"
+                android:layout_width="400dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView27"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:padding="5dp"
+                android:text="⇨ En bas de la page, si un Temps Collectif est sélectionné nous avons un affichage de toutes les personnes préinscrites."
+                android:textSize="15sp" />
+
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

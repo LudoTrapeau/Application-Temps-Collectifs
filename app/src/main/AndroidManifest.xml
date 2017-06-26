@@ -32,6 +32,15 @@
             android:name=".Fonctionnalites.InfoBulle"
             android:theme="@style/AppTheme.CustomTheme" />
         <activity
+            android:name=".Fonctionnalites.InfoBullePreinscriptions"
+            android:theme="@style/AppTheme.CustomTheme" />
+        <activity
+            android:name=".Fonctionnalites.InfoBulleValidation"
+            android:theme="@style/AppTheme.CustomTheme" />
+        <activity
+            android:name=".Fonctionnalites.InfoBulleHistorique"
+            android:theme="@style/AppTheme.CustomTheme" />
+        <activity
             android:name=".Fonctionnalites.UpdateTC"
             android:theme="@style/AppTheme.CustomTheme"
             android:windowSoftInputMode="stateHidden"/>

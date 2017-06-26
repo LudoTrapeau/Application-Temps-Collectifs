@@ -29,7 +29,8 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:weightSum="1">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -52,6 +53,18 @@
                         android:textStyle="bold" />
 
                     <Button
+                        android:id="@+id/btnInfos"
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:background="@drawable/info"
+                        android:clickable="true"
+                        android:minHeight="0dp"
+                        android:minWidth="0dp" />
+
+                    <Button
                         android:id="@+id/fabButton"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
@@ -70,6 +83,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Veuillez dans un premier temps choisir un temps collectif"
+                    android:textColor="@android:color/background_light"
                     android:textSize="15sp"
                     android:textStyle="bold" />
 
@@ -184,7 +198,7 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0.55"
+                        android:layout_weight="0.35"
                         android:orientation="vertical">
 
                         <TextView
@@ -210,11 +224,11 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0.42"
+                        android:layout_weight="0.50"
                         android:orientation="vertical">
 
                         <TextView
-                            android:id="@+id/textView23"
+                            android:id="@+id/textviewtitleNbPlacesDispos"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -258,12 +272,15 @@
                     </LinearLayout>
                 </LinearLayout>
 
-
                 <HorizontalScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="20dp"
+                    android:layout_weight="8.88"
+                    android:background="@drawable/backavecarrondi">
 
                     <LinearLayout
+                        android:id="@+id/llContainer"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
@@ -815,6 +832,7 @@
                         </LinearLayout>
 
                     </LinearLayout>
+
 
                 </HorizontalScrollView>
 

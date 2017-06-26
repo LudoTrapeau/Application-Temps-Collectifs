@@ -86,12 +86,12 @@ public class Infos extends AppCompatActivity {
     Date myDate;
     TabActivity tabs;
     ArrayList<String> liste = new ArrayList<String>(), listeRAM = new ArrayList<String>();
-    int temp, nbPlacesDispo;
+    int temp;
     TableRow row;
     JSONObject json;
     Intent intent;
     TextView tvIsEmpty;
-    String EXTRA_DB = "donnees", titleRAM, nbPlacesEnfant, nbPlacesAdulte, nomTempsColl, choixDB, lieuTempsColl, categorie,
+    String nbPlacesDispo, EXTRA_DB = "donnees", titleRAM, nbPlacesEnfant, nbPlacesAdulte, nomTempsColl, choixDB, lieuTempsColl, categorie,
             url_obtenir_lieu_temps_coll = "https://www.web-familles.fr/AppliTempsCollectifs/Informations/getLieuxTempsCollectifs.php",
             url_obtenir_ram = "https://www.web-familles.fr/AppliTempsCollectifs/CreationTempsColl/getRAM.php", choixRAM;
     StringRequest requete_temps_coll, requete_ram, requete_places_by_tc, requete_delete_tc;
@@ -714,14 +714,14 @@ public class Infos extends AppCompatActivity {
     /*****
      * Chargement des places disponibles de ce temps collectif
      * *******/
-    private int getNbPlacesDispo(final String idTempsColl, final TextView tv) {
-        nbPlacesDispo = 0;
+    private String getNbPlacesDispo(final String idTempsColl, final TextView tv) {
+        nbPlacesDispo = "";
         requete_places_by_tc = new StringRequest(Request.Method.POST, url_places_by_tc, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 System.out.println("Voici la réponse à la permettant de récupérer le nombre de places restantes : " + response);
                 //tvPlacesRestantes.setText("Il reste " + response + " place(s) disponible(s) pour ce temps collectif");
-                nbPlacesDispo = Integer.parseInt(response);
+                nbPlacesDispo = response;
 
                 tv.setText(response);
 

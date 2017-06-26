@@ -32,7 +32,7 @@
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
                 android:text="Création du temps collectif"
-                android:textColor="#ff4181"
+                android:textColor="#10bed3"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
@@ -51,10 +51,10 @@
 
                 <Button
                     android:id="@+id/btnInfo"
-                    android:background="@drawable/info"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
                     android:layout_marginLeft="16dp"
-                    android:layout_height="50dp"
-                    android:layout_width="50dp" />
+                    android:background="@drawable/info" />
             </LinearLayout>
 
             <LinearLayout
@@ -705,14 +705,6 @@
                         android:max="100"
                         android:layout_marginTop="15dp"
                         android:layout_width="220dp" />
-
-                    <Switch
-                        android:text="Indéfini"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/swIndefini2"
-                        android:layout_width="100dp"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginTop="10dp" />
 
                 </LinearLayout>
 

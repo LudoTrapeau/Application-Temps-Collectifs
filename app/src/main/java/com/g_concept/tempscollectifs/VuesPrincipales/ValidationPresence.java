@@ -36,6 +36,8 @@ import com.g_concept.tempscollectifs.ClassesMetiers.Network;
 import com.g_concept.tempscollectifs.ClassesMetiers.ParentBis;
 import com.g_concept.tempscollectifs.ClassesMetiers.PartenaireBis;
 import com.g_concept.tempscollectifs.ClassesMetiers.PersonneBis;
+import com.g_concept.tempscollectifs.Fonctionnalites.InfoBullePreinscriptions;
+import com.g_concept.tempscollectifs.Fonctionnalites.InfoBulleValidation;
 import com.g_concept.tempscollectifs.R;
 import com.g_concept.tempscollectifs.ClassesMetiers.Reservation;
 
@@ -57,11 +59,11 @@ public class ValidationPresence extends AppCompatActivity {
     LayoutInflater vi;
     JSONObject json;
     ImageView imgPers;
-    int amQuantite, enfant0a3Quant, enfant3a6Quant, enfant6plusQuant, parQuantite,total, action, nb, autreQuantite, gardeDomQuant;
+    int amQuantite, enfant0a3Quant, enfant3a6Quant, enfant6plusQuant, parQuantite, total, action, nb, autreQuantite, gardeDomQuant;
     PersonneBis pers;
     EditText etAM, etEnf0a3, etEnf3a6, etEnfplus6, etParents, etAutre, etGardeDomicile;
     TextView tvNbPersonnesCochees;
-    Button btnValidationPersonne, btnValidationSaisieQuantitative, btnCocher;
+    Button btnValidationPersonne, btnValidationSaisieQuantitative, btnCocher, btnInfos;
     CheckBox cb;
     MyCustomAdapterPersonne dataAdapter4 = null;
     Map<String, String> params = new HashMap<String, String>(), params6 = new HashMap<String, String>();
@@ -94,7 +96,7 @@ public class ValidationPresence extends AppCompatActivity {
             url_places_by_tc = "https://www.web-familles.fr/AppliTempsCollectifs/ValidationPresence/getNbPlacesRestantes.php",
             choixDB;
     StringRequest requete_parents, requete_delete_by_tc, requete_places_by_tc, requete_temps_coll, requete_enfants_by_tc, requete_validation_presence,
-                  requete_asmats_by_tc, requete_personnes_by_tc, requete_partenaires_by_tc, requete_validation_saisie_quantitative;
+            requete_asmats_by_tc, requete_personnes_by_tc, requete_partenaires_by_tc, requete_validation_saisie_quantitative;
     JSONObject leTempsColl, leTempsColl1, leTempsColl2, leTempsColl3, leTempsColl4, parent;
     JSONArray lesTempsColl, lesTempsColl1, lesTempsColl2, lesTempsColl3, lesTempsColl4, parents;
     Reservation maReservation;
@@ -108,6 +110,7 @@ public class ValidationPresence extends AppCompatActivity {
         // Initialisation des variables
         spListeTempsColl = (Spinner) findViewById(R.id.spListeTempsColl);
         fabbuton = (Button) findViewById(R.id.fabButton);
+        btnInfos = (Button) findViewById(R.id.btnInfos);
         btnValidationSaisieQuantitative = (Button) findViewById(R.id.btnValidationSaisieQuantitative);
         etAM = (EditText) findViewById(R.id.nbAsmat);
         etEnf0a3 = (EditText) findViewById(R.id.nbEnf0a3);
@@ -169,7 +172,7 @@ public class ValidationPresence extends AppCompatActivity {
 
         if (myNetwork.isOnline()) {
             getTempsCollectifs("1", "date ASC");
-        }else{
+        } else {
             Toast.makeText(ValidationPresence.this, "Veuillez vérifier votre connexion internet", Toast.LENGTH_SHORT).show();
         }
 
@@ -188,6 +191,18 @@ public class ValidationPresence extends AppCompatActivity {
                 tabs.getTabHost().setCurrentTab(0);
             }
         });
+
+        btnCocher.setVisibility(View.GONE);
+
+        btnInfos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                intent = new Intent(getApplicationContext(), InfoBulleValidation.class);
+                intent.putExtra("id", "1");
+                startActivity(intent);
+            }
+        });
+
     }
 
     /*****
@@ -692,9 +707,19 @@ public class ValidationPresence extends AppCompatActivity {
                         idEnf = leTempsColl1.getString("id");
                         nomEnf = leTempsColl1.getString("nom");
                         prenomEnf = leTempsColl1.getString("prenom");
+                        int typeValidationInString = leTempsColl1.getInt("type_validation");
+                        Boolean typeValidation;
+                        if (typeValidationInString == 1) {
+                            typeValidation = true;
+                        } else {
+                            typeValidation = false;
+                        }
+                        System.out.println("valid " + typeValidationInString);
+
+                        //System.out.println(" Pour " + nomEnf + " " + prenomEnf + " -> " + typeValidation + " avec " + idTempsColl);
 
                         // Chargement de l'enfant en tant que personne
-                        pers = new PersonneBis(idEnf, nomEnf, prenomEnf, "", false, "1", idTempsColl);
+                        pers = new PersonneBis(idEnf, nomEnf, prenomEnf, "", typeValidation, "1", idTempsColl);
                         listePers.add(pers);
 
                         System.out.println("Taille de la liste asmats " + listeAM.size());
@@ -705,9 +730,18 @@ public class ValidationPresence extends AppCompatActivity {
                         idAM = leTempsColl2.getString("id");
                         nomAM = leTempsColl2.getString("nom_naissance");
                         prenomAM = leTempsColl2.getString("prenom_naissance");
+                        int typeValidationInString = leTempsColl2.getInt("type_validation");
+                        Boolean typeValidation;
+                        if (typeValidationInString == 1) {
+                            typeValidation = true;
+                        } else {
+                            typeValidation = false;
+                        }
+
+                        System.out.println(" Pour " + nomAM + " " + prenomAM + " -> " + typeValidation + " avec " + idTempsColl);
 
                         // Chargement de l'am en tant que personne
-                        pers = new PersonneBis(idAM, nomAM, prenomAM, "", false, "2", idTempsColl);
+                        pers = new PersonneBis(idAM, nomAM, prenomAM, "", typeValidation, "2", idTempsColl);
                         listePers.add(pers);
 
                         System.out.println("Taille de la liste asmats " + listeAM.size());
@@ -718,9 +752,18 @@ public class ValidationPresence extends AppCompatActivity {
                         idPart = leTempsColl3.getString("id");
                         nomPart = leTempsColl3.getString("nom");
                         prenomPart = leTempsColl3.getString("prenom");
+                        int typeValidationInString = leTempsColl3.getInt("type_validation");
+                        Boolean typeValidation;
+                        if (typeValidationInString == 1) {
+                            typeValidation = true;
+                        } else {
+                            typeValidation = false;
+                        }
+
+                        System.out.println(" Pour " + nomPart + " " + prenomPart + " -> " + typeValidation + " avec " + idTempsColl);
 
                         // Chargement du partenaire en tant que personne
-                        pers = new PersonneBis(idPart, nomPart, prenomPart, "", false, "3", idTempsColl);
+                        pers = new PersonneBis(idPart, nomPart, prenomPart, "", typeValidation, "3", idTempsColl);
                         listePers.add(pers);
 
                         System.out.println("Taille de la liste asmats " + listeAM.size());
@@ -731,9 +774,18 @@ public class ValidationPresence extends AppCompatActivity {
                         id_parent = leTempsColl4.getString("id");
                         nom_parent = leTempsColl4.getString("nom");
                         prenom_parent = leTempsColl4.getString("prenom");
+                        int typeValidationInString = leTempsColl4.getInt("type_validation");
+                        Boolean typeValidation;
+                        if (typeValidationInString == 1) {
+                            typeValidation = true;
+                        } else {
+                            typeValidation = false;
+                        }
+
+                        System.out.println(" Pour " + nom_parent + " " + prenom_parent + " -> " + typeValidation + " avec " + idTempsColl);
 
                         // Chargement du parent en tant que personne
-                        pers = new PersonneBis(id_parent, nom_parent, prenom_parent, "", false, "4", idTempsColl);
+                        pers = new PersonneBis(id_parent, nom_parent, prenom_parent, "", typeValidation, "4", idTempsColl);
                         listePers.add(pers);
 
                         System.out.println("Mon parent " + nom_parent);
@@ -835,19 +887,22 @@ public class ValidationPresence extends AppCompatActivity {
                 holder = new ValidationPresence.MyCustomAdapterPersonne.ViewHolder();
                 holder.name = (CheckBox) convertView.findViewById(R.id.checkBox1);
                 holder.img = (ImageView) convertView.findViewById(R.id.imgPers);
-                holder.name.setSelected(true);
-                holder.name.setChecked(true);
                 convertView.setTag(holder);
 
-                btnCocher.setOnClickListener(new View.OnClickListener() {
+                /*btnCocher.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        /*CheckBox cb = (CheckBox) view;
+                        CheckBox cb = (CheckBox) view;
                         final PersonneBis pers = (PersonneBis) cb.getTag();
                         pers.setSelected(cb.isChecked());
-                        maListePersonnes.add(pers);*/
+                        maListePersonnes.add(pers);
                     }
-                });
+                });*/
+
+                //holder.name.setChecked(true);
+
+                //final PersonneBis pers = (PersonneBis) holder.name.getTag();
+                //pers.setSelected(holder.name.isChecked());
 
                 holder.name.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
@@ -907,9 +962,43 @@ public class ValidationPresence extends AppCompatActivity {
 
             } else {
                 holder = (ValidationPresence.MyCustomAdapterPersonne.ViewHolder) convertView.getTag();
+                System.out.println("Nous sommes dans le holder");
             }
 
             pers = personnesListe.get(position);
+
+            if (pers.isSelected()) {
+                nb = nb + 1;
+            } else {
+                if (nb > 0) {
+                    nb = nb - 1;
+                } else {
+                    nb = 0;
+                }
+            }
+
+            tvNbPersonnesCochees.setText("Nombre de personne(s) sélectionnée(s) : " + nb);
+
+            System.out.println(" NON " + position);
+            System.out.println("   -- " + pers.getSelected());
+
+            if (pers.getSelected()) {
+                holder.name.setChecked(pers.getSelected());
+            }
+
+            /*btnCocher.setVisibility(View.VISIBLE);
+            btnCocher.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    System.out.println("Nombre de personne " + listePers.size());
+                    for (int i = 0; i < listePers.size(); i++) {
+                        listePers.get(i).setSelected(true);
+                    }
+                }
+            });*/
+
+            holder.name.setTag(pers);
+
             if (pers.getTypePersonne().equals("1")) {
                 holder.name.setText(pers.getNom() + " " + pers.getPrenom());
                 holder.img.setImageResource(R.drawable.enf);
@@ -923,9 +1012,6 @@ public class ValidationPresence extends AppCompatActivity {
                 holder.name.setText(pers.getNom() + " " + pers.getPrenom());
                 holder.img.setImageResource(R.drawable.famille1);
             }
-
-            holder.name.setChecked(pers.isSelected());
-            holder.name.setTag(pers);
 
             return convertView;
         }

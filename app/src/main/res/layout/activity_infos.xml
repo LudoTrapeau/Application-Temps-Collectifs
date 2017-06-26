@@ -34,11 +34,21 @@
                     android:layout_height="100dp"
                     android:gravity="center_vertical">
 
+                    <TextView
+                        android:id="@+id/textView39"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="20dp"
+                        android:text="Informations"
+                        android:textSize="25sp"
+                        android:textStyle="bold" />
+
                     <LinearLayout
                         android:id="@+id/llContentLieu"
                         android:layout_width="250dp"
                         android:layout_height="match_parent"
-                        android:layout_marginLeft="5dp"
+                        android:layout_marginLeft="20dp"
                         android:layout_marginTop="20dp"
                         android:orientation="horizontal">
 

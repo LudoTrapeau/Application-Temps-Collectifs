@@ -69,7 +69,6 @@ public class CreationTempsColl extends AppCompatActivity {
     ImageView ibDelete;
     String[] tab;
     AlertDialog.Builder adb;
-    ArrayList<String> maTab = new ArrayList<>();
     Calendar mcurrentTime;
     TextView tvRAM, tvActivite, tvNomTC, tvLieu, editText, tvNbDates, tvDatesListe;
     EditText edDate, edHeureDebut, edHeureFin, edDetailsPublic, edDetailsRAM, dateDeb;
@@ -77,16 +76,19 @@ public class CreationTempsColl extends AppCompatActivity {
     StringBuilder sb, sb2;
     ArrayAdapter<String> adapter2;
     Calendar cal;
+    String[] dates;
+    String maDate;
     LinearLayout llEncadre;
     Network myNetwork, finalMyNetwork;
-    Button btnCreateTempsColl, btnRefresh, btnRefresh2, btnRefresh3, btnDeleteLieu, btnDeleteNom, btnDeleteActivite;
+    Button btnCreateTempsColl, btnRefresh, btnRefresh2, btnRefresh3;
     boolean cancel;
     View focusView;
     Spinner spCategorie;
     String[] tabNbPlaces = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25"
             , "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50",
             "51", "52", "53", "54", "55", "56", "57", "58", "59", "60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72", "73", "74", "75",
-            "76", "77", "78", "79", "80", "81", "82", "83", "84", "85", "86", "87", "88", "89", "90", "91", "92", "93", "94", "95", "96", "97", "98", "99", "100"};
+            "76", "77", "78", "79", "80", "81", "82", "83", "84", "85", "86", "87", "88", "89", "90", "91", "92", "93", "94", "95", "96", "97", "98", "99", "100"},
+            listeCategories = {"ACTIONS COLLECTIVES", "REUNIONS A THEMES", "SORTIES - VISITES - AUTRES"};
     static final int DIALOG_ID = 0;
     int annee, mois, jour, heure, minute, nb = 1;
     Spinner spLieux, spNom, spActivite, spRAM;
@@ -97,10 +99,12 @@ public class CreationTempsColl extends AppCompatActivity {
     Switch swIndefini, swIndefini2;
     TextView tvSeek, tvSeek2, tvNbLimitChar, tvNbLimitChar2;
     Intent intent;
+    LayoutInflater factory;
+    View alertDialogView;
     Handler handler;
-    String  mesDates,datesUpdates, time, heureDebParams, heureFinParams, EXTRA_DB = "donnees", titleRAM, nbPlacesEnfant, nbPlacesAdulte, activiteTempsColl, descriptif, date, heureDebut, heureFin, nomTempsColl, m, j, lieuTempsColl, categorie,
+    String mesDates, datesUpdates, time, heureDebParams, heureFinParams, EXTRA_DB = "donnees", titleRAM, activiteTempsColl, descriptif, date, heureDebut, heureFin, nomTempsColl, m, j, lieuTempsColl, categorie,
             initNom = "Choisissez le nom", initActivite = "Choisissez l'activité", initRAM = "Choisissez le RAM", initLieu = "Choisissez le lieu",
-            url_creation_temps_coll = "https://www.web-familles.fr/AppliTempsCollectifs/CreationTempsColl/createTempsColl.php", db2, email, password, initBDD = "Choisir votre structure", db, choixDB,
+            url_creation_temps_coll = "https://www.web-familles.fr/AppliTempsCollectifs/CreationTempsColl/createTempsColl.php", choixDB,
             url_obtenir_lieu_temps_coll = "https://www.web-familles.fr/AppliTempsCollectifs/Informations/getLieuxTempsCollectifs.php",
             url_obtenir_nom_temps_coll = "https://www.web-familles.fr/AppliTempsCollectifs/CreationTempsColl/getNomsTempsColl.php",
             url_delete_lieu_temps_coll = "https://www.web-familles.fr/AppliTempsCollectifs/CreationTempsColl/deleteLieuTempsColl.php",
@@ -123,9 +127,7 @@ public class CreationTempsColl extends AppCompatActivity {
     ListView listviewDates;
     TabActivity tabs;
     ArrayAdapter spinnerArrayAdapterLieux;
-    ArrayList<String> AllLieuxTempsColl = new ArrayList<String>();
-    ArrayList<String> datesTab = new ArrayList<String>();
-    String[] listeCategories = {"ACTIONS COLLECTIVES", "REUNIONS A THEMES", "SORTIES - VISITES - AUTRES"};
+    ArrayList<String> AllLieuxTempsColl = new ArrayList<String>(), datesTab = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,7 +156,7 @@ public class CreationTempsColl extends AppCompatActivity {
         tvSeek = (TextView) findViewById(R.id.tvNbEnf);
         tvSeek2 = (TextView) findViewById(R.id.tvNbAdultes);
         swIndefini = (Switch) findViewById(R.id.swIndefini);
-        swIndefini2 = (Switch) findViewById(R.id.swIndefini2);
+        // Sysrem.out.swIndefini2 = (Switch) findViewById(R.id.swIndefini2);
         btnRefresh = (Button) findViewById(R.id.btnRefresh);
         btnRefresh2 = (Button) findViewById(R.id.btnRefresh2);
         btnRefresh3 = (Button) findViewById(R.id.btnRefresh3);
@@ -186,7 +188,7 @@ public class CreationTempsColl extends AppCompatActivity {
 
         datesUpdates = edDate.getText().toString();
 
-        mesDates =  edDate.getText().toString();
+        mesDates = edDate.getText().toString();
 
         // Si l'appareil a une connexion internet
         cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -211,21 +213,14 @@ public class CreationTempsColl extends AppCompatActivity {
             Toast.makeText(CreationTempsColl.this, "Veuillez vérifier votre connexion internet", Toast.LENGTH_SHORT).show();
         }
 
-
+        /******** Quand on clique sur une date de la liste *********/
         listviewDates.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     final int position, long id) {
-                // When clicked, show a toast with the TextView text
-
-                //final String num = (String) ((TextView) view).getText();
-
-                //int ocur = (int) ((TextView) view).getLineCount();
-
-                //Toast.makeText(CreationTempsColl.this, num, Toast.LENGTH_SHORT).show();
 
                 //On instancie notre layout en tant que View
-                LayoutInflater factory = LayoutInflater.from(CreationTempsColl.this);
-                View alertDialogView = factory.inflate(R.layout.alertdialog, null);
+                factory = LayoutInflater.from(CreationTempsColl.this);
+                alertDialogView = factory.inflate(R.layout.alertdialog, null);
 
                 //Création de l'AlertDialog
                 adb = new AlertDialog.Builder(CreationTempsColl.this);
@@ -248,30 +243,30 @@ public class CreationTempsColl extends AppCompatActivity {
 
                         datesTab.remove(position);
 
-                        if(datesTab.size() == 0){
+                        if (datesTab.size() == 0) {
                             tvNbDates.setText("Vous n'avez pas sélectionné de date");
                             llEncadre.setVisibility(View.GONE);
                             edDate.setText("");
                             nb = 0;
-                        }else{
-                            if(datesTab.size()>1){
+                        } else {
+                            if (datesTab.size() > 1) {
                                 tvNbDates.setText("Vous avez sélectionné " + datesTab.size() + " dates");
                                 nb--;
-                            }else{
+                            } else {
                                 tvNbDates.setText("Vous avez sélectionné " + datesTab.size() + " date");
                                 nb--;
                             }
                         }
 
-                        System.out.println("position : " + position * 11 + " " + (position+1) * 11 + "Ancienne chaine : " + edDate.getText().toString());
+                        System.out.println("position : " + position * 11 + " " + (position + 1) * 11 + "Ancienne chaine : " + edDate.getText().toString());
 
                         mesDates = edDate.getText().toString();
-                        mesDates.replace(".2017-06-09","");
+                        mesDates.replace(".2017-06-09", "");
 
                         System.out.println("Nouvelle chaine : " + mesDates);
 
                         // On charge les dates récupérées de l'utilisateur et on les affiche dans un listview
-                        adapter2 = new ArrayAdapter<String>(CreationTempsColl.this,android.R.layout.simple_list_item_1, datesTab);
+                        adapter2 = new ArrayAdapter<String>(CreationTempsColl.this, android.R.layout.simple_list_item_1, datesTab);
                         listviewDates.setAdapter(adapter2);
 
                         tab = edDate.getText().toString().split("\\.");
@@ -410,11 +405,13 @@ public class CreationTempsColl extends AppCompatActivity {
             }
         });
 
+        /********** Ajout de l'intitulé *************/
         listeRAM.add(initRAM);
         AllLieuxTempsColl.add(initLieu);
         listeNomsTempsColl.add(initNom);
         listeActivitesTempsColl.add(initActivite);
 
+        /************** Gestion du click sur la rubrique lieux ***************/
         spinnerArrayAdapterLieux = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, AllLieuxTempsColl);
         spLieux.setAdapter(spinnerArrayAdapterLieux);
 
@@ -438,6 +435,7 @@ public class CreationTempsColl extends AppCompatActivity {
         }
         System.out.println("Nous faisons un test");
 
+        /************** Gestion du click sur la rubrique catégorie ***************/
         final ArrayAdapter spinnerArrayAdapterCategorie = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, listeCategories);
         spCategorie.setAdapter(spinnerArrayAdapterCategorie);
 
@@ -454,6 +452,7 @@ public class CreationTempsColl extends AppCompatActivity {
             }
         });
 
+        /************** Gestion du click sur la liste des temps collectifs ***************/
         ArrayAdapter spinnerArrayAdapterNom = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, listeNomsTempsColl);
         spNom.setAdapter(spinnerArrayAdapterNom);
 
@@ -470,6 +469,7 @@ public class CreationTempsColl extends AppCompatActivity {
             }
         });
 
+        /************** Gestion du click sur la rubrique RAM ***************/
         ArrayAdapter spinnerArrayAdapterRAM = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, listeRAM);
         spRAM.setAdapter(spinnerArrayAdapterRAM);
 
@@ -486,6 +486,7 @@ public class CreationTempsColl extends AppCompatActivity {
             }
         });
 
+        /************** Gestion du click sur la rubrique activités  ***************/
         final ArrayAdapter spinnerArrayAdapterActivites = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, listeActivitesTempsColl);
         spActivite.setAdapter(spinnerArrayAdapterActivites);
 
@@ -640,7 +641,7 @@ public class CreationTempsColl extends AppCompatActivity {
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (edDate.getText().toString().equals("")) {
+                    if (edDate.getText().toString().equals("")) {
                     tabs = (TabActivity) getParent();
                     tabs.getTabHost().setCurrentTab(0);
                 } else {
@@ -648,28 +649,6 @@ public class CreationTempsColl extends AppCompatActivity {
                 }
             }
         });
-
-        /*btnDeleteLieu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                deleteLieuTempsCollectifs();
-            }
-        });
-
-        btnDeleteNom.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                deleteNomTempsCollectifs();
-            }
-        });
-
-        btnDeleteActivite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                deleteActiviteTempsCollectifs();
-            }
-        });
-        */
     }
 
     /***********
@@ -695,7 +674,7 @@ public class CreationTempsColl extends AppCompatActivity {
         final TextWatcher mTextEditorWatcher2 = new TextWatcher() {
 
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+                System.out.println(" ");
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -707,7 +686,6 @@ public class CreationTempsColl extends AppCompatActivity {
             }
         };
         edDetailsRAM.addTextChangedListener(mTextEditorWatcher2);
-
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
@@ -734,25 +712,18 @@ public class CreationTempsColl extends AppCompatActivity {
             public void onClick(View v) {
                 if (swIndefini.isChecked()) {
                     seekBar.setEnabled(false);
-                    tvSeek.setText("indéfini");
+                    tvSeek.setText("indefini");
+                    seekBar2.setEnabled(false);
+                    tvSeek2.setText("indefini");
                 } else {
                     seekBar.setEnabled(true);
-                }
-            }
-        });
-
-
-        swIndefini2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (swIndefini2.isChecked()) {
-                    seekBar2.setEnabled(false);
-                    tvSeek2.setText("indéfini");
-                } else {
                     seekBar2.setEnabled(true);
+                    tvSeek.setText("0");
+                    tvSeek2.setText("0");
                 }
             }
         });
+
 
         seekBar2.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
@@ -1231,11 +1202,10 @@ public class CreationTempsColl extends AppCompatActivity {
 
                 String myConcatedString = "";
 
-
-                for ( int i = 0 ; i < datesTab.size() ; i++){
-                    if (i == (datesTab.size()-1)){
+                for (int i = 0; i < datesTab.size(); i++) {
+                    if (i == (datesTab.size() - 1)) {
                         myConcatedString = myConcatedString.concat(convertDateFrenchToEnglish(datesTab.get(i)));
-                    }else{
+                    } else {
                         myConcatedString = myConcatedString.concat(convertDateFrenchToEnglish(datesTab.get(i)).concat("."));
                     }
 
@@ -1312,11 +1282,11 @@ public class CreationTempsColl extends AppCompatActivity {
     /****************
      * On convertit la date francaise en anglaise
      * ******************/
-    public String convertDateFrenchToEnglish(String date){
+    public String convertDateFrenchToEnglish(String date) {
 
-        String[] dates = date.split("-");
+        dates = date.split("-");
 
-        String maDate = dates[2].concat("-").concat(dates[1]).concat("-").concat(dates[0]);
+        maDate = dates[2].concat("-").concat(dates[1]).concat("-").concat(dates[0]);
 
         return maDate;
     }
