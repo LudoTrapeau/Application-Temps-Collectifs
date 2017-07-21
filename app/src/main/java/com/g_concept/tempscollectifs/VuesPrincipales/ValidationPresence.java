@@ -4,7 +4,6 @@ import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -36,10 +35,9 @@ import com.g_concept.tempscollectifs.ClassesMetiers.Network;
 import com.g_concept.tempscollectifs.ClassesMetiers.ParentBis;
 import com.g_concept.tempscollectifs.ClassesMetiers.PartenaireBis;
 import com.g_concept.tempscollectifs.ClassesMetiers.PersonneBis;
-import com.g_concept.tempscollectifs.Fonctionnalites.InfoBullePreinscriptions;
+import com.g_concept.tempscollectifs.ClassesMetiers.Reservation;
 import com.g_concept.tempscollectifs.Fonctionnalites.InfoBulleValidation;
 import com.g_concept.tempscollectifs.R;
-import com.g_concept.tempscollectifs.ClassesMetiers.Reservation;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -54,16 +52,17 @@ public class ValidationPresence extends AppCompatActivity {
     ConnectivityManager cm;
     Network myNetwork;
     PartenaireBis part;
+    Reservation myReservation;
     ParentBis parentBis;
     TabActivity tabs;
     LayoutInflater vi;
     JSONObject json;
     ImageView imgPers;
-    int amQuantite, enfant0a3Quant, enfant3a6Quant, enfant6plusQuant, parQuantite, total, action, nb, autreQuantite, gardeDomQuant;
+    int amQuantite, enfant0a3Quant, enfant3a6Quant, enfant6plusQuant, parQuantite, total, action, nb = 0, autreQuantite, gardeDomQuant;
     PersonneBis pers;
     EditText etAM, etEnf0a3, etEnf3a6, etEnfplus6, etParents, etAutre, etGardeDomicile;
-    TextView tvNbPersonnesCochees;
-    Button btnValidationPersonne, btnValidationSaisieQuantitative, btnCocher, btnInfos;
+    TextView tvNbPersonnesCochees, tvPersCochees;
+    Button btnValidationPersonne, btnValidationSaisieQuantitative, btnInfos, btnNonPrevu;
     CheckBox cb;
     MyCustomAdapterPersonne dataAdapter4 = null;
     Map<String, String> params = new HashMap<String, String>(), params6 = new HashMap<String, String>();
@@ -80,7 +79,8 @@ public class ValidationPresence extends AppCompatActivity {
     ArrayAdapter<String> adapter;
     final ArrayList<Integer> tabNb = new ArrayList<Integer>();
     Intent intent;
-    String text, amQuant, enf0a3Quant, enf3a6Quant, enfPlus6, parentQuant, autreQuant, gardeDomicileQuant, idEnf, nomEnf, prenomEnf,
+    Reservation maResa;
+    String nomTC, text, amQuant, enf0a3Quant, enf3a6Quant, enfPlus6, parentQuant, autreQuant, gardeDomicileQuant, idEnf, nomEnf, prenomEnf,
             id_parent, nom_parent, prenom_parent, idPart, nomPart, prenomPart, temp, idAM, nomAM, prenomAM, idPreinscrit,
             nomPreinscrit, prenomPreinscrit, EXTRA_ID_USER = "idUser", idUser, EXTRA_DB = "donnees", initTC = "Choisir le temps collectif",
             myValue, lieuTempsColl, horaire, idTempsColl, choix, nbPlaces, categorie, nomTempsColl, dateTempsColl,
@@ -90,12 +90,13 @@ public class ValidationPresence extends AppCompatActivity {
             url_asmats_by_tc = "https://www.web-familles.fr/AppliTempsCollectifs/ValidationPresence/getAsmatsByIdTC.php",
             url_personnes_by_tc = "https://www.web-familles.fr/AppliTempsCollectifs/ValidationPresence/getPersonnesByTC.php",
             url_partenaires_by_tc = "https://www.web-familles.fr/AppliTempsCollectifs/ValidationPresence/getPartenairesByIdTC.php",
+            url_obtenir_datas_temps_coll = "https://www.web-familles.fr/AppliTempsCollectifs/Preinscription/getDatasTempsCollectifsById.php",
             url_valider_presences_saisie_quantitative = "https://www.web-familles.fr/AppliTempsCollectifs/ValidationPresence/doValidationQuantitative.php",
             url_valider_presences = "https://www.web-familles.fr/AppliTempsCollectifs/ValidationPresence/validerPresenceEnfants.php",
             url_delete_by_tc = "https://www.web-familles.fr/AppliTempsCollectifs/ValidationPresence/deleteReservation.php",
             url_places_by_tc = "https://www.web-familles.fr/AppliTempsCollectifs/ValidationPresence/getNbPlacesRestantes.php",
             choixDB;
-    StringRequest requete_parents, requete_delete_by_tc, requete_places_by_tc, requete_temps_coll, requete_enfants_by_tc, requete_validation_presence,
+    StringRequest requete_datas_temps_coll,requete_parents, requete_delete_by_tc, requete_places_by_tc, requete_temps_coll, requete_enfants_by_tc, requete_validation_presence,
             requete_asmats_by_tc, requete_personnes_by_tc, requete_partenaires_by_tc, requete_validation_saisie_quantitative;
     JSONObject leTempsColl, leTempsColl1, leTempsColl2, leTempsColl3, leTempsColl4, parent;
     JSONArray lesTempsColl, lesTempsColl1, lesTempsColl2, lesTempsColl3, lesTempsColl4, parents;
@@ -120,11 +121,12 @@ public class ValidationPresence extends AppCompatActivity {
         etAutre = (EditText) findViewById(R.id.nbAutre);
         etGardeDomicile = (EditText) findViewById(R.id.nbGardeDomicile);
         btnValidationPersonne = (Button) findViewById(R.id.btnValidationPersonne);
+        btnNonPrevu = (Button) findViewById(R.id.btnNonPrevu);
         lvPers = (ListView) findViewById(R.id.lvPers);
         requestQueue = Volley.newRequestQueue(getApplicationContext());
         imgPers = (ImageView) findViewById(R.id.imgPers);
-        btnCocher = (Button) findViewById(R.id.btnCocher);
-        tvNbPersonnesCochees = (TextView) findViewById(R.id.tvNbPersonnesCochees);
+        //tvNbPersonnesCochees = (TextView) findViewById(R.id.tvNbPersonnesCochees);
+        tvPersCochees = (TextView) findViewById(R.id.tvPersCochees);
 
         etAM.setText("0");
         etEnf0a3.setText("0");
@@ -152,6 +154,7 @@ public class ValidationPresence extends AppCompatActivity {
             }
         });
 
+        // On charge les parameters de la tabhost
         myFunction();
         myValue = ((Accueil) getParent()).getValue();
         System.out.println("MYVALUE" + myValue);
@@ -165,11 +168,29 @@ public class ValidationPresence extends AppCompatActivity {
         idUser = intent.getStringExtra(EXTRA_ID_USER);
         System.out.println("MA BDD : " + idUser);
 
-        listeTempsColl.add(initTC);
+        String myPosition = ((Accueil) getParent()).getPosition();
+
+        if(myPosition != null){
+            myReservation = ((Accueil) getParent()).getReservation();
+        }else{
+            ((Accueil) getParent()).setReservation(null);
+        }
+
+        // Si l'on a une réservation qui a été envoyée d'un autre onglet
+        if (myReservation != null) {
+            listeTempsColl.add(myReservation.getNom() + " • " + myReservation.getDate() + " • de " + myReservation.getHoraire());
+            tableauReservations.add(myReservation);
+            myHash.put(2, Integer.parseInt(myReservation.getId()));
+            getPersonnesByTC(myReservation.getId());
+            System.out.println("TEST DE LA RESA : " + myReservation.getNom());
+        } else {
+            listeTempsColl.add(initTC);
+        }
 
         cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         myNetwork = new Network(cm);
 
+        // Si on a une Connexion Internet
         if (myNetwork.isOnline()) {
             getTempsCollectifs("1", "date ASC");
         } else {
@@ -184,6 +205,7 @@ public class ValidationPresence extends AppCompatActivity {
         //Enfin on passe l'adapter au Spinner et c'est tout
         spListeTempsColl.setAdapter(adapter);
 
+        /*** Lors de l'appui  ***/
         fabbuton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -192,8 +214,7 @@ public class ValidationPresence extends AppCompatActivity {
             }
         });
 
-        btnCocher.setVisibility(View.GONE);
-
+        /*** Lors du clic sur le bouton Infos ***/
         btnInfos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -202,12 +223,11 @@ public class ValidationPresence extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
     }
 
-    /*****
-     * Chargement des temps collectifs
-     ****/
+    /**********
+    ** Chargement des temps collectifs
+    **********/
     public void getTempsCollectifs(final String lieuOuRAM, final String choixOrderBy) {
         requete_temps_coll = new StringRequest(Request.Method.POST, url_obtenir_temps_coll, new Response.Listener<String>() {
             @Override
@@ -229,7 +249,7 @@ public class ValidationPresence extends AppCompatActivity {
                         maReservation = new Reservation(idTempsColl, dateTempsColl, nomTempsColl, horaire, categorie, nbPlaces, lieuTempsColl, "", "");
                         tableauReservations.add(maReservation);
 
-                        listeTempsColl.add(idTempsColl + " " + nomTempsColl + " • le " + dateTempsColl + " • de " + horaire);
+                        listeTempsColl.add(nomTempsColl + " • le " + dateTempsColl + " • de " + horaire);
                         System.out.println(numEtId + " Les infos : " + nomTempsColl + " " + "date " + dateTempsColl + " et n° :" + i);
 
                         myHash.put(i, Integer.parseInt(idTempsColl));
@@ -241,8 +261,10 @@ public class ValidationPresence extends AppCompatActivity {
                                                    final int position, long id) {
                             temp = String.valueOf(spListeTempsColl.getSelectedItem());
 
-                            System.out.println(" TEST DU HASHMAP " + myHash.get(position - 1));
-                            System.out.println(" Mon temp " + temp);
+                            //System.out.println(" TEST DU HASHMAP " + myHash.get(position - 1));
+                            //System.out.println(" Mon temp " + temp);
+
+                            nb = 0;
 
                             if (temp == initTC) {
                                 listePers.clear();
@@ -251,6 +273,22 @@ public class ValidationPresence extends AppCompatActivity {
                                 listePart.clear();
                                 parentsList.clear();
                             } else {
+
+                                getDatasTempsCollById(myHash.get(position - 1).toString());
+                                //System.out.println("On affiche ma resa : " + maResa.getNom());
+
+                                btnNonPrevu.setVisibility(View.VISIBLE);
+                                tvPersCochees.setVisibility(View.VISIBLE);
+                                btnNonPrevu.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        sendTCtoPreinscriptions(maResa);
+
+                                        tabs = (TabActivity) getParent();
+                                        tabs.getTabHost().setCurrentTab(2);
+                                    }
+                                });
+
                                 getNbPlacesDispo(myHash.get(position - 1).toString());
                                 btnValidationSaisieQuantitative.setOnClickListener(new View.OnClickListener() {
                                     @Override
@@ -645,7 +683,7 @@ public class ValidationPresence extends AppCompatActivity {
         }
     }
 
-    /*************
+    /****************
      * Récupération des places disponibles pour ce temps collectif
      * **************/
     private void getNbPlacesDispo(final String idTempsColl) {
@@ -671,11 +709,10 @@ public class ValidationPresence extends AppCompatActivity {
         requestQueue.add(requete_places_by_tc);
     }
 
-    /*********
+    /************
      * Affichage du listview
      * **********/
     private void displayListView() {
-
         System.out.println(" On est dans la vague 4");
         System.out.println(" Avant l'appel ");
         //create an ArrayAdaptar from the String Array
@@ -687,7 +724,7 @@ public class ValidationPresence extends AppCompatActivity {
         System.out.println(" Après l'appel ");
     }
 
-    /*******
+    /*********
      * Récupération des personnes du temps collectif choisi
      * *******/
     public void getPersonnesByTC(final String idTempsColl) {
@@ -715,8 +752,6 @@ public class ValidationPresence extends AppCompatActivity {
                             typeValidation = false;
                         }
                         System.out.println("valid " + typeValidationInString);
-
-                        //System.out.println(" Pour " + nomEnf + " " + prenomEnf + " -> " + typeValidation + " avec " + idTempsColl);
 
                         // Chargement de l'enfant en tant que personne
                         pers = new PersonneBis(idEnf, nomEnf, prenomEnf, "", typeValidation, "1", idTempsColl);
@@ -814,7 +849,7 @@ public class ValidationPresence extends AppCompatActivity {
         requestQueue.add(requete_personnes_by_tc);
     }
 
-    /*********
+    /***********
      * Validation des présences de pré inscrits à un temps collectif choisi
      ***********/
     public void validerPresence(final String personneReservation, final String idTempsColl, final String typePersonne) {
@@ -849,7 +884,7 @@ public class ValidationPresence extends AppCompatActivity {
 
     /*********
      * Adapter pour afficher les personnes pré-inscrites à un temps collectif
-     * ***********/
+     * *******/
     private class MyCustomAdapterPersonne extends ArrayAdapter<PersonneBis> {
 
         private ArrayList<PersonneBis> personnesListe;
@@ -877,11 +912,8 @@ public class ValidationPresence extends AppCompatActivity {
             ValidationPresence.MyCustomAdapterPersonne.ViewHolder holder = null;
             Log.v("ConvertView", String.valueOf(position));
 
-            System.out.println(" La liste de personnes " + personnesListe);
-
             if (convertView == null) {
-                vi = (LayoutInflater) getSystemService(
-                        Context.LAYOUT_INFLATER_SERVICE);
+                vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = vi.inflate(R.layout.listviewcheckbox, null);
 
                 holder = new ValidationPresence.MyCustomAdapterPersonne.ViewHolder();
@@ -889,24 +921,9 @@ public class ValidationPresence extends AppCompatActivity {
                 holder.img = (ImageView) convertView.findViewById(R.id.imgPers);
                 convertView.setTag(holder);
 
-                /*btnCocher.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        CheckBox cb = (CheckBox) view;
-                        final PersonneBis pers = (PersonneBis) cb.getTag();
-                        pers.setSelected(cb.isChecked());
-                        maListePersonnes.add(pers);
-                    }
-                });*/
-
-                //holder.name.setChecked(true);
-
-                //final PersonneBis pers = (PersonneBis) holder.name.getTag();
-                //pers.setSelected(holder.name.isChecked());
-
                 holder.name.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
-                        cb = (CheckBox) v;
+                        CheckBox cb = (CheckBox) v;
                         PersonneBis pers = (PersonneBis) cb.getTag();
 
                         pers.setSelected(cb.isChecked());
@@ -915,20 +932,19 @@ public class ValidationPresence extends AppCompatActivity {
                         System.out.println(" PERSONNE LISTE1 " + personnesListe);
                         System.out.println(" PERSONNE LISTE2 " + maListePersonnes);
 
-                        for (int i = 0; i < maListePersonnes.size(); i++) {
-                            System.out.println("Ma personne " + i + " est " + maListePersonnes.get(i).getNom() + " " + maListePersonnes.get(i).getPrenom());
-                        }
-
                         btnValidationPersonne.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
 
+                                /******* Correspond au contenu du spinner *******/
                                 text = spListeTempsColl.getSelectedItem().toString();
                                 System.out.println("TC TEST " + text);
                                 Toast.makeText(ValidationPresence.this, text, Toast.LENGTH_SHORT).show();
 
+                                // Si la sélection est égale à l'initTC
                                 if (text.equals(initTC)) {
                                     Toast.makeText(ValidationPresence.this, "Veuillez sélectionner un temps collectif !", Toast.LENGTH_SHORT).show();
+                                    // Sinon on procède à la validation des présences
                                 } else {
                                     for (i = 0; i < maListePersonnes.size(); i++) {
                                         System.out.println(" ma personne " + maListePersonnes.get(i).getCode() + " " + maListePersonnes.get(i).getIdTempsColl());
@@ -955,7 +971,7 @@ public class ValidationPresence extends AppCompatActivity {
                         }
                         System.out.println("Nombre d'éléments sélectionnés : " + nb);
 
-                        tvNbPersonnesCochees.setText("Nombre de personne(s) sélectionnée(s) : " + nb);
+                        //tvNbPersonnesCochees.setText("Nombre de personne(s) sélectionnée(s) : " + nb);
                     }
 
                 });
@@ -965,9 +981,11 @@ public class ValidationPresence extends AppCompatActivity {
                 System.out.println("Nous sommes dans le holder");
             }
 
+            // On récupère la personne à cette position
             pers = personnesListe.get(position);
 
-            if (pers.isSelected()) {
+            if (pers.getSelected()) {
+                holder.name.setChecked(pers.getSelected());
                 nb = nb + 1;
             } else {
                 if (nb > 0) {
@@ -977,28 +995,11 @@ public class ValidationPresence extends AppCompatActivity {
                 }
             }
 
-            tvNbPersonnesCochees.setText("Nombre de personne(s) sélectionnée(s) : " + nb);
-
-            System.out.println(" NON " + position);
-            System.out.println("   -- " + pers.getSelected());
-
-            if (pers.getSelected()) {
-                holder.name.setChecked(pers.getSelected());
-            }
-
-            /*btnCocher.setVisibility(View.VISIBLE);
-            btnCocher.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    System.out.println("Nombre de personne " + listePers.size());
-                    for (int i = 0; i < listePers.size(); i++) {
-                        listePers.get(i).setSelected(true);
-                    }
-                }
-            });*/
+            //tvNbPersonnesCochees.setText("Nombre de personne(s) sélectionnée(s) : " + nb);
 
             holder.name.setTag(pers);
 
+            // On charge les images correspondantes aux personnes
             if (pers.getTypePersonne().equals("1")) {
                 holder.name.setText(pers.getNom() + " " + pers.getPrenom());
                 holder.img.setImageResource(R.drawable.enf);
@@ -1188,5 +1189,64 @@ public class ValidationPresence extends AppCompatActivity {
             }
         };
         requestQueue.add(requete_delete_by_tc);
+    }
+
+    /***********
+    *** Passage de l'objet Reservation vers un autre onglet
+    ***********/
+    public void sendTCtoPreinscriptions(Reservation maResa) {
+        ((Accueil) getParent()).setReservation(maResa);
+        //System.out.println("On envoie cette réservation : " + maResa.getNom());
+    }
+
+    /*****
+     * On charge les datas correspondants au temps collectif choisi
+     *******/
+    public void getDatasTempsCollById(final String id) {
+        requete_datas_temps_coll = new StringRequest(Request.Method.POST, url_obtenir_datas_temps_coll, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    System.out.println("Réponse requète getDatasTempsColl : " + response);
+                    json = new JSONObject(response);
+                    lesTempsColl = json.getJSONArray("temps_collectifs");
+
+                    for (int i = 0; i < lesTempsColl.length(); i++) {
+                        leTempsColl = lesTempsColl.getJSONObject(i);
+                        idTempsColl = leTempsColl.getString("id");
+                        nomTC = leTempsColl.getString("nom");
+                        lieuTempsColl = leTempsColl.getString("lieu");
+                        dateTempsColl = leTempsColl.getString("dateTempsColl");
+                        categorie = leTempsColl.getString("categorie");
+                        nbPlaces = leTempsColl.getString("nb_place");
+                        horaire = leTempsColl.getString("heureDeb") + " - " + leTempsColl.getString("heureFin");
+
+                        //listeTempsColl.add(idTempsColl + " | " + nomTempsColl + " | " + dateTempsColl);
+                        System.out.println(numEtId + " Les infos : " + nomTempsColl + " " + "date " + dateTempsColl + " et n° :" + i);
+                    }
+
+                    maResa = new Reservation(id, dateTempsColl, nomTC, horaire, categorie, nbPlaces, lieuTempsColl, "", "");
+
+                    System.out.println(" Ma resa : " + maResa.getNom());
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("Error :", String.valueOf(error));
+            }
+        }) {
+            protected Map<String, String> getParams() throws AuthFailureError {
+                params.put("id", id);
+                params.put("donnees", choixDB);
+                Log.e("Envoi params Reserv", params.toString());
+                return params;
+            }
+        };
+        requestQueue.add(requete_datas_temps_coll);
     }
 }

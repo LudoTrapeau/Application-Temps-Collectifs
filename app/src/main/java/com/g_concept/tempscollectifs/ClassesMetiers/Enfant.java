@@ -6,12 +6,13 @@ package com.g_concept.tempscollectifs.ClassesMetiers;
 public class Enfant {
 
     String code = null;
+    String nomAM = null;
     String nom = null;
     String dateNaissance = null;
     String prenom = null;
     boolean selected = false;
 
-    public Enfant(String code,String nom, String prenom, String dateNaissance, boolean selected) {
+    public Enfant(String code, String nom, String prenom, String dateNaissance, boolean selected) {
         super();
         this.code = code;
         this.nom = nom;
@@ -20,15 +21,28 @@ public class Enfant {
         this.selected = selected;
     }
 
+    public Enfant(String code, String nom, String prenom, String dateNaissance, boolean selected, String nomAM) {
+        super();
+        this.code = code;
+        this.nom = nom;
+        this.prenom = prenom;
+        this.dateNaissance = dateNaissance;
+        this.selected = selected;
+        this.nomAM = nomAM;
+    }
+
     public String getCode() {
         return code;
     }
+
     public void setCode(String code) {
         this.code = code;
     }
+
     public String getNom() {
         return nom;
     }
+
     public void setNom(String nom) {
         this.nom = nom;
     }
@@ -49,7 +63,7 @@ public class Enfant {
         this.selected = selected;
     }
 
-    public boolean getSelected(){
+    public boolean getSelected() {
         return selected;
     }
 
@@ -60,5 +74,13 @@ public class Enfant {
 
     public void setDateNaissance(String dateNaissance) {
         this.dateNaissance = dateNaissance;
+    }
+
+    public String getNomAM() {
+        return nomAM;
+    }
+
+    public void setNomAM(String nomAM) {
+        this.nomAM = nomAM;
     }
 }

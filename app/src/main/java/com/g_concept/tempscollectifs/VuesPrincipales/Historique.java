@@ -179,7 +179,7 @@ public class Historique extends AppCompatActivity {
             }
         });
 
-         btnInfos.setOnClickListener(new View.OnClickListener() {
+        btnInfos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 intent = new Intent(getApplicationContext(), InfoBulleHistorique.class);
@@ -481,7 +481,6 @@ public class Historique extends AppCompatActivity {
 
                             //Création de l'AlertDialog
                             adb = new AlertDialog.Builder(Historique.this);
-                            //tvEnfant.setText(((TextView) view).getText());
 
                             //On affecte la vue personnalisé que l'on a crée à notre AlertDialog
                             adb.setView(alertDialogView);
@@ -498,6 +497,9 @@ public class Historique extends AppCompatActivity {
                             adb.setPositiveButton("Valider", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     deleteTCtoMofify(id);
+                                    ((Accueil) getParent()).setPosition("Historique");
+                                    final Reservation maResa = new Reservation(id, dateTempsColl, nomTempsColl, horaire, categorie, nbPlaces, lieuTempsColl, nbPlacesEnfant, nbPlacesAdulte);
+                                    myFunction2(maResa);
                                     // Permet de switcher de tab quand on clique sur le bouton de validation de présence
                                     TabActivity tabs = (TabActivity) getParent();
                                     tabs.getTabHost().setCurrentTab(3);
@@ -930,5 +932,12 @@ public class Historique extends AppCompatActivity {
             }
         };
         requestQueue.add(requete_delete_tc);
+    }
+
+    /***********
+     ** Passage de l'objet Reservation vers un autre onglet
+     ********/
+    public void myFunction2(Reservation maResa) {
+        ((Accueil) getParent()).setReservation(maResa);
     }
 }

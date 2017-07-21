@@ -8,8 +8,10 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.WindowManager;
+import android.widget.CheckBox;
 import android.widget.TabHost;
 
+import com.g_concept.tempscollectifs.ClassesMetiers.Documentation;
 import com.g_concept.tempscollectifs.R;
 import com.g_concept.tempscollectifs.ClassesMetiers.Reservation;
 
@@ -20,6 +22,8 @@ public class Accueil extends TabActivity {
     TabHost tabHost;
     public String EXTRA_DB = "donnees", EXTRA_ID_USER = "idUser", idUser, value, choixDB;
     Reservation reservation;
+    CheckBox checkBox;
+    String position;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +97,14 @@ public class Accueil extends TabActivity {
         //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         tabHost.addTab(spec);
 
+        intent = new Intent().setClass(this, Documentation.class).putExtra("donnees", choixDB).putExtra("idUser", idUser).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        /** Ajout du premier onglet à la table */
+        spec = tabHost.newTabSpec("Documentation").setIndicator("", getResources().getDrawable(R.drawable.file)).setContent(intent);
+
+        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        tabHost.addTab(spec);
+
         intent = new Intent().setClass(this, Deconnexion.class).putExtra("donnees", choixDB).putExtra("idUser", idUser).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         /** Ajout du premier onglet à la table */
@@ -119,7 +131,6 @@ public class Accueil extends TabActivity {
         this.value = value;
     }
 
-
     public Reservation getReservation() {
         return this.reservation;
     }
@@ -127,4 +138,21 @@ public class Accueil extends TabActivity {
     public void setReservation(Reservation maReservation) {
         this.reservation = maReservation;
     }
+
+    public String getPosition() {
+        return this.position;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
+    }
+
+    /*public CheckBox getCheck(CheckBox maCheckbox) {
+        return maCheckbox;
+    }
+
+    public void setCheck() {
+        this.checkBox.setChecked(true);
+    }*/
+
 }

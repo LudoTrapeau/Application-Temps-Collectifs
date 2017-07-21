@@ -29,8 +29,8 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
-                android:orientation="vertical"
-                android:weightSum="1">
+                android:weightSum="1"
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -47,7 +47,7 @@
                         android:layout_alignParentStart="true"
                         android:layout_alignParentTop="true"
                         android:layout_weight="1"
-                        android:text="Pré-inscriptions"
+                        android:text="Préinscriptions"
                         android:textColor="#10bed3"
                         android:textSize="24sp"
                         android:textStyle="bold" />
@@ -222,6 +222,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/llPlacesDispos"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.50"
@@ -247,6 +248,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/llPlacesTotal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.42"
@@ -272,6 +274,14 @@
                     </LinearLayout>
                 </LinearLayout>
 
+                <CheckBox
+                    android:id="@+id/cbEnfNonPrevu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:text="Personnes non prévu"
+                    android:visibility="gone" />
+
                 <HorizontalScrollView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -283,12 +293,12 @@
                         android:id="@+id/llContainer"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
+                        android:orientation="horizontal"
+                        android:weightSum="1">
 
                         <LinearLayout
                             android:id="@+id/linearLayoutAM"
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_alignParentTop="true"
                             android:layout_centerHorizontal="true"
@@ -359,14 +369,14 @@
                             </LinearLayout>
 
                             <LinearLayout
-                                android:layout_width="match_parent"
+                                android:layout_width="613dp"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal">
 
                                 <ListView
                                     android:id="@+id/lvAsmat"
-                                    android:layout_width="300dp"
-                                    android:layout_height="400dp"
+                                    android:layout_width="280dp"
+                                    android:layout_height="350dp"
                                     android:layout_margin="10dp"
                                     android:choiceMode="none"
                                     android:focusable="false"
@@ -374,7 +384,7 @@
 
                                 <LinearLayout
                                     android:layout_width="match_parent"
-                                    android:layout_height="407dp"
+                                    android:layout_height="wrap_content"
                                     android:orientation="vertical">
 
                                     <TextView
@@ -387,8 +397,8 @@
 
                                     <ListView
                                         android:id="@+id/lvEnfByAM"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="326dp"
+                                        android:layout_width="280dp"
+                                        android:layout_height="287dp"
                                         android:layout_margin="20dp"
                                         android:choiceMode="none"
                                         android:focusable="false"
@@ -409,7 +419,6 @@
                                     android:layout_width="150dp"
                                     android:layout_height="match_parent"
                                     android:layout_marginRight="10dp"
-                                    android:layout_weight="1"
                                     android:background="#10bed3"
                                     android:shadowRadius="10"
                                     android:text="PREINSCRIRE ASSMATS"
@@ -516,14 +525,14 @@
                             </LinearLayout>
 
                             <LinearLayout
-                                android:layout_width="match_parent"
+                                android:layout_width="613dp"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal">
 
                                 <ListView
                                     android:id="@+id/lvParents"
                                     android:layout_width="300dp"
-                                    android:layout_height="400dp"
+                                    android:layout_height="350dp"
                                     android:layout_margin="10dp"
                                     android:choiceMode="none"
                                     android:focusable="false"
@@ -531,7 +540,7 @@
 
                                 <LinearLayout
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
+                                    android:layout_height="wrap_content"
                                     android:orientation="vertical">
 
                                     <TextView
@@ -544,8 +553,8 @@
 
                                     <ListView
                                         android:id="@+id/lvEnfByParent"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
+                                        android:layout_width="280dp"
+                                        android:layout_height="287dp"
                                         android:layout_margin="20dp"
                                         android:choiceMode="none"
                                         android:focusable="false"
@@ -679,7 +688,7 @@
                                 <ListView
                                     android:id="@+id/listView1"
                                     android:layout_width="match_parent"
-                                    android:layout_height="400dp"
+                                    android:layout_height="365dp"
                                     android:layout_margin="10dp" />
 
                             </LinearLayout>
@@ -692,7 +701,7 @@
 
                                 <Button
                                     android:id="@+id/btnResEnfants"
-                                    android:layout_width="150dp"
+                                    android:layout_width="210dp"
                                     android:layout_height="match_parent"
                                     android:background="#10bed3"
                                     android:text="PREINSCRIRE ENFANTS"
@@ -700,11 +709,11 @@
 
                                 <Button
                                     android:id="@+id/btnResValidEnfants"
-                                    android:layout_width="165dp"
+                                    android:layout_width="210dp"
                                     android:layout_height="match_parent"
                                     android:layout_marginLeft="10dp"
                                     android:background="#ee5d16"
-                                    android:text="PREINSCRIRE ET VALIDER ENFANTS"
+                                    android:text="PREINSCRIRE ET VALIDER PRESENCE ENFANTS"
                                     android:textColor="#FFFFFF" />
 
                             </LinearLayout>
@@ -783,7 +792,7 @@
                                 <ListView
                                     android:id="@+id/lvPart"
                                     android:layout_width="match_parent"
-                                    android:layout_height="400dp"
+                                    android:layout_height="365dp"
                                     android:layout_margin="10dp"
                                     android:choiceMode="none"
                                     android:focusable="true"
@@ -822,17 +831,25 @@
 
                                 <Button
                                     android:id="@+id/btnResPart"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="210dp"
                                     android:layout_height="match_parent"
                                     android:background="#10bed3"
                                     android:text="PREINSCRIRE PARTENAIRES"
+                                    android:textColor="#FFFFFF" />
+
+                                <Button
+                                    android:id="@+id/btnPartenairePreinscrireEtValider"
+                                    android:layout_width="210dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="10dp"
+                                    android:background="#ee5d16"
+                                    android:text="PREINSCRIRE ET VALIDER PARTENAIRES"
                                     android:textColor="#FFFFFF" />
                             </LinearLayout>
 
                         </LinearLayout>
 
                     </LinearLayout>
-
 
                 </HorizontalScrollView>
 
@@ -961,7 +978,6 @@
                             android:layout_weight="1"
                             android:gravity="center"
                             android:orientation="vertical">
-
                         </LinearLayout>
 
                     </LinearLayout>
@@ -970,7 +986,8 @@
 
             </LinearLayout>
 
-
         </ScrollView>
+
     </LinearLayout>
+
 </RelativeLayout>

@@ -57,20 +57,16 @@ public class Infos extends AppCompatActivity {
     ArrayList<String> numEtId = new ArrayList<>();
     ConnectivityManager cm;
     Network myNetwork;
-    NetworkInfo netInfo;
-    Reservation myReservation;
     Map<Integer, Integer> myMap = new HashMap<Integer, Integer>();
     Spinner spLieux, spRAM;
     TextView tv;
     int number;
     Toast toast;
-    Reservation maReservation;
     AlertDialog.Builder adb;
     TableLayout.LayoutParams tableRowParams;
     Button btnInfos, floatingActionButton;
     ArrayAdapter<String> adapter;
     int tab, res, j, i = 0;
-    // Strings to Show In Dialog with Radio Buttons
     final CharSequence[] items = {"Modifier le Temps Collectif", " Supprimer le Temps Collectif"};
     String var, horaire, initLieu = "Choisir un lieu", initRAM = "Choisir un RAM", idTempsColl, choix, nbPlaces, dateTempsColl,
             url_delete_tc = "https://www.web-familles.fr/AppliTempsCollectifs/Informations/deleteTC.php",
@@ -143,6 +139,7 @@ public class Infos extends AppCompatActivity {
         cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         myNetwork = new Network(cm);
 
+        // Si on est connecté au réseau Internet
         if (myNetwork.isOnline()) {
             getLieuxTempsCollectifs();
             getRAMCollectifs();
@@ -150,6 +147,10 @@ public class Infos extends AppCompatActivity {
             toast.makeText(Infos.this, "Veuillez vérifier votre connexion internet", toast.LENGTH_SHORT).show();
         }
 
+        /**** Remise à zéro de l'objet Reservation ****/
+        ((Accueil) getParent()).setReservation(null);
+
+        /***** On affiche le container du RAM ****/
         llContentRAM.setVisibility(View.GONE);
 
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -221,6 +222,7 @@ public class Infos extends AppCompatActivity {
                 cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
                 myNetwork = new Network(cm);
 
+                /*** Si notre périphérique est connecté à un réseau internet ***/
                 if (myNetwork.isOnline()) {
                     try {
                         liste.clear();
@@ -282,33 +284,42 @@ public class Infos extends AppCompatActivity {
             }
         });
 
+        /**** Quand on veut trier les temps collectifs par nom ****/
         tvNom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 TLtempscoll.removeAllViews();
                 i++;
                 if (i % 2 == 0) {
+                    // On charge les temps collectifs par ordre croissant
                     getTempsCollectifs("1", choix, "", "nom ASC");
                 } else {
+                    // On charge les temps collectifs par ordre décroissant
                     getTempsCollectifs("1", choix, "", "nom DESC");
                 }
             }
         });
 
+        /**** Quand on veut trier les temps collectifs par date ****/
         tvDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 TLtempscoll.removeAllViews();
                 i++;
                 if (i % 2 == 0) {
+                    // On charge les temps collectifs par ordre croissant
                     getTempsCollectifs("1", choix, "", "date ASC");
                 } else {
+                    // On charge les temps collectifs par ordre décroissant
                     getTempsCollectifs("1", choix, "", "date DESC");
                 }
             }
         });
     }
 
+    /*********
+     * Lorsque l'on veut supprimer un temps collectif
+     *********/
     public void deleteTC(final String idTC) {
         requete_delete_tc = new StringRequest(Request.Method.POST, url_delete_tc, new Response.Listener<String>() {
             @Override
@@ -506,6 +517,7 @@ public class Infos extends AppCompatActivity {
 
         myMap.put(variable, Integer.parseInt(idTempsColl));
 
+        // Pour l'affichage de la date du temps collectif
         for (int j = 1; j <= 1; j++) {
             tv = new TextView(this);
 
@@ -533,7 +545,7 @@ public class Infos extends AppCompatActivity {
             row.addView(tv);
         }
 
-        // inner for loop
+        // Pour l'affichage du nom du temps collectif
         for (int j = 2; j <= 2; j++) {
             tv = new TextView(this);
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -550,10 +562,9 @@ public class Infos extends AppCompatActivity {
                 tv.setBackgroundColor(Color.parseColor("#6d6c6c"));
             }
             row.addView(tv);
-
         }
 
-        // inner for loop
+        // Pour l'affichage de l'horaire
         for (int j = 3; j <= 3; j++) {
             tv = new TextView(this);
             tv.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -566,7 +577,7 @@ public class Infos extends AppCompatActivity {
             row.addView(tv);
         }
 
-        // inner for loop
+        // Pour l'affichage de la catégorie
         for (int j = 4; j <= 4; j++) {
             tv = new TextView(this);
             tv.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -579,7 +590,7 @@ public class Infos extends AppCompatActivity {
             row.addView(tv);
         }
 
-        // inner for loop
+        // Pour l'affichage de l'id du temps collectif
         for (int j = 5; j <= 5; j++) {
             tv = new TextView(this);
             tv.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
@@ -592,6 +603,7 @@ public class Infos extends AppCompatActivity {
             row.addView(tv);
         }
 
+        // Création d'une réservation afin de la transmettre à la page de préinscriptions
         final Reservation maReservation = new Reservation(idTempsColl, dateTempsColl, nomTempsColl, horaire, categorie, nbPlaces, lieuTempsColl, nbPlacesEnfant, nbPlacesAdulte);
 
         row.setOnClickListener(new View.OnClickListener() {
@@ -641,6 +653,7 @@ public class Infos extends AppCompatActivity {
                 //On donne un titre à l'AlertDialog
                 adb.setTitle("Vous souhaitez :");
 
+                // Lors du clic sur le bouton Valider
                 adb.setPositiveButton("Valider", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         System.out.println("RES " + res);
@@ -672,11 +685,13 @@ public class Infos extends AppCompatActivity {
                             }
                             res = 0;
 
+                            // Si on veut faire une modification du temps collectif
                         } else if ((res == 0)) {
                             intent = new Intent(getApplicationContext(), UpdateTC.class);
                             intent.putExtra("idTC", idTC);
                             intent.putExtra("donnees", choixDB);
                             startActivity(intent);
+                            // Si on valide mais sans avoir coché de case
                         } else {
                             toast.makeText(getApplicationContext(), "Veuillez faire un choix !", toast.LENGTH_SHORT).show();
                         }
@@ -697,30 +712,30 @@ public class Infos extends AppCompatActivity {
         tb.addView(row);
     }
 
-    /***********
+    /********
      * Passage de données vers les autres onglets
      ********/
     public void myFunction() {
         ((Accueil) getParent()).setValue(Integer.toString(tab));
     }
 
-    /***********
+    /*********
      * Passage de l'objet Reservation vers un autre onglet
      ********/
     public void myFunction2(Reservation maResa) {
         ((Accueil) getParent()).setReservation(maResa);
     }
 
-    /*****
-     * Chargement des places disponibles de ce temps collectif
-     * *******/
+    /**********
+     ** Chargement des places disponibles de ce temps collectif
+     **********/
     private String getNbPlacesDispo(final String idTempsColl, final TextView tv) {
         nbPlacesDispo = "";
         requete_places_by_tc = new StringRequest(Request.Method.POST, url_places_by_tc, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 System.out.println("Voici la réponse à la permettant de récupérer le nombre de places restantes : " + response);
-                //tvPlacesRestantes.setText("Il reste " + response + " place(s) disponible(s) pour ce temps collectif");
+
                 nbPlacesDispo = response;
 
                 tv.setText(response);
@@ -742,4 +757,5 @@ public class Infos extends AppCompatActivity {
 
         return nbPlacesDispo;
     }
+
 }

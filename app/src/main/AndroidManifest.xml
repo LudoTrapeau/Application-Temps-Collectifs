@@ -43,7 +43,7 @@
         <activity
             android:name=".Fonctionnalites.UpdateTC"
             android:theme="@style/AppTheme.CustomTheme"
-            android:windowSoftInputMode="stateHidden"/>
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".VuesPrincipales.Accueil"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -53,15 +53,22 @@
             android:screenOrientation="portrait" />
         <activity android:name=".VuesPrincipales.Infos" />
         <activity android:name=".VuesPrincipales.Historique" />
-        <activity android:name=".VuesPrincipales.Preinscription"
-            android:windowSoftInputMode="stateHidden"
-            />
+        <activity
+            android:name=".VuesPrincipales.Preinscription"
+            android:windowSoftInputMode="stateHidden" />
 
         <service
             android:name=".Fonctionnalites.Bundle"
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".VuesPrincipales.Deconnexion"></activity>
+        <activity android:name=".VuesPrincipales.Deconnexion" />
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="3dc000946cc5b87273ba385b3e0a20ed2daae4eb" />
+
+        <activity android:name=".ClassesMetiers.Documentation"></activity>
     </application>
+
 </manifest>

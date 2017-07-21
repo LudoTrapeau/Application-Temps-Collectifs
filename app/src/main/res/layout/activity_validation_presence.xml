@@ -5,12 +5,12 @@
     android:id="@+id/activity_validation_presence"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#636262"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.g_concept.tempscollectifs.VuesPrincipales.ValidationPresence"
-    android:background="#636262">
+    tools:context="com.g_concept.tempscollectifs.VuesPrincipales.ValidationPresence">
 
 
     <ScrollView
@@ -136,7 +136,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="500dp"
+                android:layout_height="550dp"
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="50dp"
@@ -167,24 +167,44 @@
                         app:srcCompat="@drawable/famille" />
                 </LinearLayout>
 
-                <Button
-                    android:id="@+id/btnCocher"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Tout cocher" />
-
-                <TextView
+                <!--<TextView
                     android:id="@+id/tvNbPersonnesCochees"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Nombre de personne(s) sélectionnée(s) : "
-                    android:textStyle="bold" />
+                    android:textStyle="bold" />-->
 
                 <ListView
                     android:id="@+id/lvPers"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="346dp"
                     android:layout_margin="20dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btnNonPrevu"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:background="@drawable/encadrechampslogin"
+                        android:padding="10dp"
+                        android:text="Valider des personnes non prévues"
+                        android:textColor="#068ca9"
+                        android:visibility="invisible" />
+
+                    <TextView
+                        android:id="@+id/tvPersCochees"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:text="ATTENTION ! Les personnes déjà cochées ont déjà leur présence validée antérieurement. Le temps collectif, on souhaite donc modifier les participants de ce temps collectif"
+                        android:textColor="@android:color/holo_red_dark"
+                        android:visibility="invisible" />
+                </LinearLayout>
 
             </LinearLayout>
 

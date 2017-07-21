@@ -641,7 +641,7 @@ public class CreationTempsColl extends AppCompatActivity {
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    if (edDate.getText().toString().equals("")) {
+                if (edDate.getText().toString().equals("")) {
                     tabs = (TabActivity) getParent();
                     tabs.getTabHost().setCurrentTab(0);
                 } else {
@@ -1237,9 +1237,9 @@ public class CreationTempsColl extends AppCompatActivity {
         System.out.println("2/ VOICI " + AllLieuxTempsColl);
     }
 
-    /**********
-     * Obtention des heures paramétrées depuis Gramweb
-     * ************/
+    /**************
+    * Obtention des heures paramétrées depuis Gramweb
+    **************/
     public void getHeuresParams() {
         requete_heures_params = new StringRequest(Request.Method.POST, url_heures_params, new Response.Listener<String>() {
             @Override
@@ -1290,5 +1290,4 @@ public class CreationTempsColl extends AppCompatActivity {
 
         return maDate;
     }
-
 }
